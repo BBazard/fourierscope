@@ -25,11 +25,11 @@ protected:
     it = 100;
     radius = 5;
     threshold = 0.0000001;
-    printf("coucou");
+
     input = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     output = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     forward = fftw_plan_dft_2d(dim, dim, output, output, FFTW_FORWARD, FFTW_ESTIMATE);
-    printf("coucou2");
+
     matrix_random(dim, input, 256);
     matrix_init(dim, output, 0);
   }
