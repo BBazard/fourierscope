@@ -43,12 +43,12 @@ clean:
 	printf "\033[0;33m"
 	printf "Cleaning tests directory\n"
 	printf "\033[0m"
-	rm -rf $(OUTPUTDIR)
+	-rm -rf $(OUTPUTDIR)
 .PHONY: clean
 
 mrproper: clean
 	printf "\033[0;33m"
 	printf "Suppressing $(TESTNAME) binary\n"
 	printf "\033[0m"
-	rm -f $(BINDIR)/$(TESTNAME)
+	-rm -f $(BINDIR)/$(TESTNAME)
 .PHONY: mrproper

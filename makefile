@@ -13,7 +13,7 @@ export BINDIR:=$(ROOT)/bin
 export BUILDDIR:=$(ROOT)/build
 export RELEASEDIR:=$(ROOT)/release
 export TESTSDIR:=$(ROOT)/tests
-export DOCDIR:=$(ROOT)/docs
+export DOCDIR:=$(ROOT)/doc
 
 export EXECNAME:=epics
 export TESTNAME:=runtests
@@ -33,7 +33,11 @@ tests:
 .PHONY: tests
 
 doc:
-	doxygen $(DOCDIR)/config/config.cfg
+	printf "\033[0;34m"
+	printf "Generating Documentation\n"
+	doxygen $(DOCDIR)/config/doxygen.cfg
+	cat $(BUILDDIR)/logs/docwarnings
+	printf "\033[0m"
 .PHONY: doc
 
 clean:
@@ -44,5 +48,6 @@ clean:
 mrproper:
 	$(MAKE) -C $(RELEASEDIR) $@
 	$(MAKE) -C $(TESTSDIR) $@
-	rmdir $(BINDIR) $(BUILDDIR)
+	-rm -r $(DOCDIR)/html $(DOCDIR)/latex
+	-rmdir $(BINDIR) $(BUILDDIR)
 .PHONY: mrproper
