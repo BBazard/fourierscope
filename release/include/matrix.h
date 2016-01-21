@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef EPICS_INCLUDE_MATRIX_H
-#define EPICS_INCLUDE_MATRIX_H
+#ifndef EPICS_RELEASE_INCLUDE_MATRIX_H
+#define EPICS_RELEASE_INCLUDE_MATRIX_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,4 +23,4 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
 void get_modarg(fftw_complex in, fftw_complex out);
 void get_algebraic(fftw_complex in, fftw_complex out);
 
-#endif /* EPICS_INCLUDE_MATRIX_H */
+#endif /* EPICS_RELEASE_INCLUDE_MATRIX_H */

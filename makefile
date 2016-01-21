@@ -33,6 +33,7 @@ tests:
 .PHONY: tests
 
 doc:
+	mkdir -p build/logs
 	printf "\033[0;34m"
 	printf "Generating Documentation\n"
 	doxygen $(DOCDIR)/config/doxygen.cfg
@@ -48,6 +49,9 @@ clean:
 mrproper:
 	$(MAKE) -C $(RELEASEDIR) $@
 	$(MAKE) -C $(TESTSDIR) $@
-	-rm -r $(DOCDIR)/html $(DOCDIR)/latex
-	-rmdir $(BINDIR) $(BUILDDIR)
+	printf "\033[0;33m"
+	printf "Suppressing html and latex documentation\n"
+	printf "\033[0m"
+	-rm -r $(DOCDIR)/html $(DOCDIR)/latex 2> /dev/null
+	-rm -rf $(BINDIR) $(BUILDDIR)
 .PHONY: mrproper

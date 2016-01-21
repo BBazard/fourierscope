@@ -43,9 +43,19 @@ int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
 }
 
 /**
- *  @brief Computes the von_neumann voisinnage
- *  @TODO make doxydoc
+ *  @brief Computes the von_neumann
+ *  @param[in] x The line on which the function is applied
+ *  @param[in] y The column on which the function is applied
+ *  @param[in] radius The radius of the disk, see below
+ *  @param[in,out] mat The reference matrix used to remember the previous states
+ *  @param[in] dim The dimension of the matrix
+ *  @param[in] in The matrix in which to cut a disk
+ *  @param[out] out The matrix in which is stored the result
  *
+ *  This function is a recursive function spanning from the center of disk
+ *  (initial call with right x and y values) to its border by decreasing
+ *  radius by one each time it is called.
+ *  In fact it copies the part which is in the disk to the output matrix.
  *
  */
 void von_neumann(int x, int y, int radius, int *mat, int dim,

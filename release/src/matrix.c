@@ -91,7 +91,9 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
  *  @param[in] in The algebraic complexe
  *  @param[out] out The module and argument
  *
- *  @TODO better doxydoc
+ *  This function take an algebraic complexe number
+ *  a+ib,  stored in the in parameter
+ *  and computes the module and argument, returned in the out parameter.
  *  
  */
 void get_modarg(fftw_complex in, fftw_complex out) {
@@ -112,7 +114,8 @@ void get_modarg(fftw_complex in, fftw_complex out) {
  *  @param[in] in The module and argument
  *  @param[out] out The algebraic notation
  *
- *  @TODO better doxydoc
+ *  This function computes the algebraic form of a complexe
+ *  given its module and argument.
  *
  */
 void get_algebraic(fftw_complex in, fftw_complex out) {
