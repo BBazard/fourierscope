@@ -64,9 +64,19 @@ TEST_F(matrix_suite, get_modarg_test_values) {
 }
 
 TEST_F(matrix_suite, get_algebraic_test_zero) {
-  c[0];
-  d[0];
+  c[0] = 0;
+  c[1] = 0;
 
   get_algebraic(c,d);
-  //  ASSERT_DOUBLE_EQ(
+  ASSERT_DOUBLE_EQ(0, d[0]);
+  ASSERT_DOUBLE_EQ(0, d[1]);
+}
+
+TEST_F(matrix_suite, get_algebraic_test_values) {
+  c[0] = sqrt(34);
+  c[1] = (M_PI/2.)-atan(3.0/5.0);
+
+  get_algebraic(c,d);
+  EXPECT_DOUBLE_EQ(3, d[0]);
+  EXPECT_DOUBLE_EQ(5, d[1]);
 }
