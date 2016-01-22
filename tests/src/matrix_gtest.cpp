@@ -17,10 +17,13 @@ protected:
   fftw_complex c;
   fftw_complex d;
 
+  double *mod;
+  
   virtual void SetUp() {
     dim = 10;
     a = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     b = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
+    mod = (double *) malloc(dim * dim * sizeof(double));
     for (int i=0; i < dim*dim; i++) {
       (a[i])[0] = i;
       (a[i])[1] = -i;
@@ -31,6 +34,7 @@ protected:
   virtual void TearDown() {
     fftw_free(a);
     fftw_free(b);
+    free(mod);
   }
 
   static double fun(double d) {return 2*d+1;}
@@ -79,4 +83,15 @@ TEST_F(matrix_suite, get_algebraic_test_values) {
   get_algebraic(c,d);
   EXPECT_DOUBLE_EQ(3, d[0]);
   EXPECT_DOUBLE_EQ(5, d[1]);
+}
+
+TEST_F(matrix_suite, matrix_realpart_test) {
+  matrix_random(dim, a, 1000);
+  matrix_realpart(dim, a, mod);
+
+  for (int i=0; i < dim; i++) {
+    for (int j=0; j < dim; j++) {
+      EXPECT_EQ(mod[i*dim+j], (a[i*dim+j])[0]);
+    }
+  }
 }

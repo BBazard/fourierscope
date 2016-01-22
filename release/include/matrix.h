@@ -23,4 +23,6 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
 void get_modarg(fftw_complex in, fftw_complex out);
 void get_algebraic(fftw_complex in, fftw_complex out);
 
+void matrix_realpart(int dim, fftw_complex *in, double *out);
+
 #endif /* EPICS_RELEASE_INCLUDE_MATRIX_H */

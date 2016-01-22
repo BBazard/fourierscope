@@ -38,11 +38,10 @@ void matrix_init(int dim, fftw_complex *mat, double value) {
 void matrix_random(int dim, fftw_complex *mat, int max_rand) {
   srand(time(NULL));
 
-  for (int i=0; i < 10; i++)
-    for (int j=0; j < 10; j++) {
-      (mat[i*10+j])[0] = rand() % max_rand;
-      (mat[i*10+j])[1] = rand() % max_rand;
-      (mat[i*10+j])[1] /= 10000000000;
+  for (int i=0; i < dim; i++)
+    for (int j=0; j < dim; j++) {
+      (mat[i*dim+j])[0] = rand() % max_rand;
+      (mat[i*dim+j])[1] = 0;
     }
 }
 
@@ -58,7 +57,7 @@ void matrix_random(int dim, fftw_complex *mat, int max_rand) {
 void matrix_print(int dim, fftw_complex *mat) {
   for (int i=0; i < dim; i++) {
     for (int j=0; j < dim; j++)
-      printf("%07.1f;%07.1f  ", (mat[i*10+j])[0], (mat[i*10+j])[1]);
+      printf("%7.1f;%7.1f  ", (mat[i*dim+j])[0], (mat[i*dim+j])[1]);
     printf("\n");
   }
   printf("\n");
@@ -102,10 +101,10 @@ void get_modarg(fftw_complex in, fftw_complex out) {
     out[1] = 0;
   } else {
     out[1] = acos(in[0]/out[0]);
-    /* while (out[1] <= -M_PI) */
-    /*   out[1] += M_PI; */
-    /* while (out[1] > M_PI) */
-    /*   out[1] -= M_PI; */
+    while (out[1] <= 0)
+      out[1] += 2*M_PI;
+    while (out[1] > 2*M_PI)
+      out[1] -= 2*M_PI;
   }
 }
 
@@ -121,4 +120,20 @@ void get_modarg(fftw_complex in, fftw_complex out) {
 void get_algebraic(fftw_complex in, fftw_complex out) {
   out[0] = in[0]*cos(in[1]);
   out[1] = in[0]*sin(in[1]);
+}
+
+/**
+ *  @brief Get the real part of a fftw_complex matrix
+ *  @param[in] dim The dimension of both matrix
+ *  @param[in] complex The fftw_complex matrix
+ *  @param[out] real The real double matrix that results
+ *
+ *  Get the real part of a fftw_complex into a double matrix.
+ *  This can also be used with get_modarg to get a matrix of module
+ *
+ */
+void matrix_realpart(int dim, fftw_complex *in, double *out) {
+  for (int i=0; i < dim*dim; i++){
+    out[i] = (in[i])[0];
+  }
 }
