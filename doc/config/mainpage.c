@@ -1,11 +1,11 @@
 /* Main Doxygen page */
 
 /** 
- * @mainpage EPICS Project Reference
+ * @mainpage FourierScope Project Reference
  *
  * @section intro_sec Introduction
  *
- * This is the complete API reference for EPICS (EPICS is a Parallelism Image Computation Service)
+ * This is the complete API reference for FourierScope
  *
  * @subsection require Requirements
  *
@@ -15,7 +15,7 @@
  *
  * @subsection install Installation 
  *
- * To build the EPICS binary, you will need:
+ * To build the fourierscope binary, you will need:
  * * a C compiler
  * * libfftw
  * * libtiff
@@ -26,7 +26,7 @@
  * * libtiff
  * * libgtest
  * 
- * @subsection run Just execute bin/epics or bin/runtests
+ * @subsection run Just execute bin/fourierscope or bin/runtests
  *
  */
 

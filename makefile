@@ -15,7 +15,7 @@ export RELEASEDIR:=$(ROOT)/release
 export TESTSDIR:=$(ROOT)/tests
 export DOCDIR:=$(ROOT)/doc
 
-export EXECNAME:=epics
+export EXECNAME:=fourierscope
 export TESTNAME:=runtests
 
 MAKE:=make -se
