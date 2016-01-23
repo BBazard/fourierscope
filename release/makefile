@@ -12,6 +12,7 @@ CFLAGS+=-O2
 OUTPUTDIR:=$(BUILDDIR)/release
 
 SRC:=$(wildcard src/*.c)
+INCLUDE:=$(wildcard include/*.h)
 OBJS:=$(patsubst src/%.c,$(OUTPUTDIR)/%.o,$(SRC))
 
 IFLAGS:=-I$(CURDIR)
@@ -29,6 +30,11 @@ $(OUTPUTDIR)/%.o: src/%.c
 	printf "Creating object file $(@F)\n"
 	printf "\033[0m"
 	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
+
+lint: 
+	$(LINT) $(SRC) 2>&1 | grep -vE "^Done"
+	$(LINT) --root=$(ROOT) $(INCLUDE) 2>&1 | grep -vE "^Done"
+.PHONY: lint
 
 clean:
 	printf "\033[0;33m"

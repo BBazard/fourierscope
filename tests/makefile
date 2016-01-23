@@ -14,8 +14,11 @@ OUTPUTDIR:=$(BUILDDIR)/tests
 
 RELEASESRC:=$(filter-out $(RELEASEDIR)/src/main.c, $(wildcard $(RELEASEDIR)/src/*.c))
 TESTSRC:=$(wildcard src/*.cpp)
+TESTINCLUDE:=$(wildcard include/*.h)
+
 RELEASEOBJS:=$(patsubst $(RELEASEDIR)/src/%.c,$(OUTPUTDIR)/%_xx.o,$(RELEASESRC))
 TESTOBJS:=$(patsubst src/%.cpp,$(OUTPUTDIR)/%.o,$(TESTSRC))
+
 
 IFLAGS:=-I$(RELEASEDIR)
 
@@ -38,6 +41,11 @@ $(OUTPUTDIR)/%_xx.o: $(RELEASEDIR)/src/%.c
 	printf "Creating object file $(@F)\n"
 	printf "\033[0m"
 	$(CXX) $(IFLAGS) $(CXXFLAGS) -c $< -o $@
+
+lint :
+	$(LINT) $(TESTSRC) 2>&1 | grep -vE "^Done"
+	$(LINT) --root=$(ROOT) $(TESTINCLUDE) 2>&1 | grep -vE "^Done"
+.PHONY : lint
 
 clean:
 	printf "\033[0;33m"

@@ -2,6 +2,7 @@ export CC:=gcc
 export LD:=$(CC)
 export CXX:=g++
 export LDXX:=$(CXX)
+export LINT:=cpplint --extensions=c,h,cpp
 
 ROOT:=$(CURDIR)
 
@@ -14,6 +15,7 @@ export BUILDDIR:=$(ROOT)/build
 export RELEASEDIR:=$(ROOT)/release
 export TESTSDIR:=$(ROOT)/tests
 export DOCDIR:=$(ROOT)/doc
+export LOGDIR:=$(BUILDDIR)/logs
 
 export EXECNAME:=fourierscope
 export TESTNAME:=runtests
@@ -33,13 +35,21 @@ tests:
 .PHONY: tests
 
 doc:
-	mkdir -p build/logs
+	mkdir -p $(LOGDIR)
 	printf "\033[0;34m"
 	printf "Generating Documentation\n"
-	doxygen $(DOCDIR)/config/doxygen.cfg
-	cat $(BUILDDIR)/logs/docwarnings
+	doxygen $(DOCDIR)/config/doxygen.cfg 2>&1 | tee -a $(LOGDIR)/doc
+	cat $(LOGDIR)/doc
 	printf "\033[0m"
 .PHONY: doc
+
+lint :
+	printf "\033[0;36m"
+	printf "Lint in progress\n"
+	$(MAKE) -C $(RELEASEDIR) $@
+	$(MAKE) -C $(TESTSDIR) $@
+	printf "\033[0m"
+.PHONY : lint
 
 clean:
 	$(MAKE) -C $(RELEASEDIR) $@
