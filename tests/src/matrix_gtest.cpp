@@ -1,3 +1,4 @@
+/* Copyright [2016] <Alexis Lescouet, Benoît Bazard> */
 /**
  *  @file
  *
@@ -9,16 +10,16 @@
 #include "gtest/gtest.h"
 
 class matrix_suite : public ::testing::Test {
-protected:
+ protected:
   int dim;
-  
+
   fftw_complex *a;
   fftw_complex *b;
   fftw_complex c;
   fftw_complex d;
 
   double *mod;
-  
+
   virtual void SetUp() {
     dim = 10;
     a = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
@@ -53,7 +54,7 @@ TEST_F(matrix_suite, get_modarg_test_zero) {
   c[0] = 0;
   c[1] = 0;
 
-  get_modarg(c,d);
+  get_modarg(c, d);
   ASSERT_DOUBLE_EQ(0, d[0]);
   ASSERT_DOUBLE_EQ(0, d[1]);
 }
@@ -62,7 +63,7 @@ TEST_F(matrix_suite, get_modarg_test_values) {
   c[0] = 3;
   c[1] = 5;
 
-  get_modarg(c,d);
+  get_modarg(c, d);
   EXPECT_DOUBLE_EQ(sqrt(34), d[0]);
   EXPECT_DOUBLE_EQ((M_PI/2.)-atan(3.0/5.0), d[1]);
 }
@@ -71,7 +72,7 @@ TEST_F(matrix_suite, get_algebraic_test_zero) {
   c[0] = 0;
   c[1] = 0;
 
-  get_algebraic(c,d);
+  get_algebraic(c, d);
   ASSERT_DOUBLE_EQ(0, d[0]);
   ASSERT_DOUBLE_EQ(0, d[1]);
 }
@@ -80,7 +81,7 @@ TEST_F(matrix_suite, get_algebraic_test_values) {
   c[0] = sqrt(34);
   c[1] = (M_PI/2.)-atan(3.0/5.0);
 
-  get_algebraic(c,d);
+  get_algebraic(c, d);
   EXPECT_DOUBLE_EQ(3, d[0]);
   EXPECT_DOUBLE_EQ(5, d[1]);
 }

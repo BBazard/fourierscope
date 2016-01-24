@@ -1,3 +1,4 @@
+/* Copyright [2016] <Alexis Lescouet, Benoit Bazard> */
 /**
  *  @file
  *
@@ -7,6 +8,8 @@
  */
 
 #include "include/matrix.h"
+
+static unsigned int seed = 10;
 
 /**
  *  @brief Initializes a fftw_complex matrix
@@ -36,11 +39,9 @@ void matrix_init(int dim, fftw_complex *mat, double value) {
  *
  */
 void matrix_random(int dim, fftw_complex *mat, int max_rand) {
-  srand(time(NULL));
-
   for (int i=0; i < dim; i++)
     for (int j=0; j < dim; j++) {
-      (mat[i*dim+j])[0] = rand() % max_rand;
+      (mat[i*dim+j])[0] = rand_r(&seed) % max_rand;
       (mat[i*dim+j])[1] = 0;
     }
 }
@@ -68,6 +69,7 @@ void matrix_print(int dim, fftw_complex *mat) {
  *  @param[in] from The matrix on which to apply the transformation
  *  @param[out] to The matrix to store the result into
  *  @param[in] dim The dimension of both matrix
+ *  @param[in] fun The function to apply to each real and imaginary part
  *
  *  This function apply a basic function on double to a matrix,
  *  taking the content of the matrix "from" and storing it
@@ -133,7 +135,7 @@ void get_algebraic(fftw_complex in, fftw_complex out) {
  *
  */
 void matrix_realpart(int dim, fftw_complex *in, double *out) {
-  for (int i=0; i < dim*dim; i++){
+  for (int i=0; i < dim*dim; i++) {
     out[i] = (in[i])[0];
   }
 }

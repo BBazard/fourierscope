@@ -1,3 +1,4 @@
+/* Copyright [2016] <Alexis Lescouet, Benoît Bazard> */
 /**
  *  @file
  *
@@ -5,8 +6,8 @@
  *
  */
 
-#ifndef EPICS_RELEASE_INCLUDE_MATRIX_H
-#define EPICS_RELEASE_INCLUDE_MATRIX_H
+#ifndef RELEASE_INCLUDE_MATRIX_H_
+#define RELEASE_INCLUDE_MATRIX_H_
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -25,4 +26,4 @@ void get_algebraic(fftw_complex in, fftw_complex out);
 
 void matrix_realpart(int dim, fftw_complex *in, double *out);
 
-#endif /* EPICS_RELEASE_INCLUDE_MATRIX_H */
+#endif /* RELEASE_INCLUDE_MATRIX_H_ */

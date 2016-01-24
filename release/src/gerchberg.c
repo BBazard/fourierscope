@@ -1,3 +1,4 @@
+/* Copyright [2016] <Alexis Lescouet, Benoit Bazard> */
 /**
  *  @file
  *
@@ -31,7 +32,7 @@ int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
   } else {
     int *ref;
     ref = (int*) malloc(dim * dim * sizeof(int));
-    
+
     for (int i = 0; i < dim * dim; i++)
       ref[i] = -1;
 
@@ -81,7 +82,7 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
       von_neumann(x, y-1, radius-1, mat, dim, in, out);
     }
   }
-}     
+}
 
 double identity(double d) {return d;}
 double div_dim(double d) {return d/100;}
@@ -96,39 +97,42 @@ double div_dim(double d) {return d/100;}
  *  @TODO Full doxydoc description
  *
  */
-void gerchberg(int dim, fftw_complex *input, fftw_complex *output, int exec_limit, int radius) {
+void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
+               int exec_limit, int radius) {
   fftw_complex *in;
   fftw_complex *tf;
   fftw_complex *disk;
   fftw_complex *itf;
   fftw_complex *modarg;
-  
+
   in = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
   tf = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
   disk = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
   itf = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
   modarg = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
-  
-  fftw_plan forward = fftw_plan_dft_2d(dim, dim, in, tf, FFTW_FORWARD, FFTW_ESTIMATE);
-  fftw_plan backward = fftw_plan_dft_2d(dim, dim, disk, itf, FFTW_BACKWARD, FFTW_ESTIMATE);
-  
+
+  fftw_plan forward = fftw_plan_dft_2d(dim, dim, in, tf,
+                                       FFTW_FORWARD, FFTW_ESTIMATE);
+  fftw_plan backward = fftw_plan_dft_2d(dim, dim, disk, itf,
+                                        FFTW_BACKWARD, FFTW_ESTIMATE);
+
   matrix_operation(input, in, dim, identity);
   matrix_init(dim, tf, 0);
   matrix_init(dim, disk, 0);
-  matrix_init(dim, itf, 0);  
+  matrix_init(dim, itf, 0);
 
   for (int it=0; it < exec_limit; it++) {
     fftw_execute(forward);
 
     /* matrix_print(dim, tf); */
-    
+
     cut_disk(tf, disk, dim, radius);
-  
+
     /* matrix_print(dim, disk); */
-    
+
     fftw_execute(backward);
     matrix_operation(itf, in, dim, div_dim);
-    
+
     /* matrix_print(dim, itf); */
 
     for (int i=0; i < dim*dim; i++) {
@@ -141,10 +145,10 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output, int exec_limi
     /* matrix_print(dim, in); */
   }
   matrix_operation(in, output, dim, identity);
-  
+
   fftw_destroy_plan(forward);
   fftw_destroy_plan(backward);
-      
+
   fftw_free(in);
   fftw_free(tf);
   fftw_free(disk);

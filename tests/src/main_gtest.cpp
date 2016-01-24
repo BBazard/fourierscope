@@ -1,8 +1,8 @@
+/* Copyright [2016] <Alexis Lescouet, Benoît Bazard> */
 /**
  *  @file
  *
  *  Main Test file
- *
  *
  */
 

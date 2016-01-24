@@ -1,3 +1,4 @@
+/* Copyright [2016] <Alexis Lescouet, Benoit Bazard> */
 /**
  *  @file
  *
@@ -5,15 +6,16 @@
  *
  *
  */
+
 #include "include/gerchberg.h"
 #include "gtest/gtest.h"
 
 class gerchberg_suite : public ::testing::Test {
-protected:
+ protected:
   int dim;
   int it;
   int radius;
-  int threshold;
+  double threshold;
 
   char *display;
   double *mod;
@@ -25,16 +27,17 @@ protected:
 
   virtual void SetUp() {
     dim = 100;
-    it = 1000;
+    it = 100;
     radius = 20;
-    threshold = 0.1;
+    threshold = 0.20;
 
     display = (char*) malloc(dim * dim * sizeof(char));
     mod = (double*) malloc(dim * dim * sizeof(double));
     input = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     output = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     fft =  (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
-    forward = fftw_plan_dft_2d(dim, dim, output, output, FFTW_FORWARD, FFTW_ESTIMATE);
+    forward = fftw_plan_dft_2d(dim, dim, output, output,
+                               FFTW_FORWARD, FFTW_ESTIMATE);
 
     matrix_random(dim, input, 256);
     matrix_init(dim, output, 0);
@@ -44,14 +47,14 @@ protected:
       display[i] = 0;
     }
   }
-  
+
   virtual void TearDown() {
     free(display);
     free(mod);
     fftw_free(input);
     fftw_free(output);
   }
-  
+
   static double by_log(double d) {return log(fabs(d));}
 
   static double average(int dim, double *mat) {
@@ -79,11 +82,11 @@ TEST_F(gerchberg_suite, gerchberg_test) {
     mod[i] = log(mod[i]);
 
   double mod_average = average(dim, mod);
-  
+
   for (int i=0; i < dim*dim; i++) {
-    if (mod[i] < 0.9*mod_average) {
+    if (mod[i] < (1-threshold)*mod_average) {
       display[i] = '_';
-    } else if (mod[i] > 1.1*mod_average) {
+    } else if (mod[i] > (1+threshold)*mod_average) {
       display[i] = '#';
     } else {
       display[i] = '*';
@@ -95,9 +98,9 @@ TEST_F(gerchberg_suite, gerchberg_test) {
       printf("%c", display[i*dim+j]);
     printf("\n");
   }
-  
+
   printf("%lf\n", mod_average);
-  
+
   // for (int i=0; i < dim*dim; i++) {
   //   EXPECT_NEAR(0, (output[i])[0], threshold);
   //   EXPECT_NEAR(0, (output[i])[1], threshold);
