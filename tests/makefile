@@ -43,8 +43,8 @@ $(OUTPUTDIR)/%_xx.o: $(RELEASEDIR)/src/%.c
 	$(CXX) $(IFLAGS) $(CXXFLAGS) -c $< -o $@
 
 lint :
-	$(LINT) $(TESTSRC) 2>&1 | grep -vE "^Done"
-	$(LINT) --root=$(ROOT) $(TESTINCLUDE) 2>&1 | grep -vE "^Done"
+	$(LINT) $(TESTSRC) | true
+	$(LINT) --root=$(ROOT) $(TESTINCLUDE) | true
 .PHONY : lint
 
 clean:

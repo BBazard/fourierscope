@@ -32,8 +32,8 @@ $(OUTPUTDIR)/%.o: src/%.c
 	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
 
 lint: 
-	$(LINT) $(SRC) 2>&1 | grep -vE "^Done"
-	$(LINT) --root=$(ROOT) $(INCLUDE) 2>&1 | grep -vE "^Done"
+	$(LINT) $(SRC) | true
+	$(LINT) --root=$(ROOT) $(INCLUDE) | true
 .PHONY: lint
 
 clean:
