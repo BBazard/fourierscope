@@ -9,8 +9,6 @@
 
 #include "include/matrix.h"
 
-#define PI acos(-1.0)
-
 /**
  *  @brief Initializes a fftw_complex matrix
  *  @param[in] dim The matrix dimension

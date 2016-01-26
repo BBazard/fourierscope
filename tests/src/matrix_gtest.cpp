@@ -41,6 +41,10 @@ class matrix_suite : public ::testing::Test {
   static double fun(double d) {return 2*d+1;}
 };
 
+TEST_F(matrix_suite, pi_value) {
+  ASSERT_DOUBLE_EQ(3.141592653589793, PI);
+}
+
 TEST_F(matrix_suite, matrix_operation_test) {
   matrix_operation(a, b, dim, fun);
 
