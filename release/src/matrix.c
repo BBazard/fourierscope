@@ -9,7 +9,7 @@
 
 #include "include/matrix.h"
 
-static unsigned int seed = 10;
+#define PI acos(-1.0)
 
 /**
  *  @brief Initializes a fftw_complex matrix
@@ -39,9 +39,11 @@ void matrix_init(int dim, fftw_complex *mat, double value) {
  *
  */
 void matrix_random(int dim, fftw_complex *mat, int max_rand) {
+  srand(time(NULL));
+  
   for (int i=0; i < dim; i++)
     for (int j=0; j < dim; j++) {
-      (mat[i*dim+j])[0] = rand_r(&seed) % max_rand;
+      (mat[i*dim+j])[0] = rand() % max_rand;
       (mat[i*dim+j])[1] = 0;
     }
 }
@@ -104,9 +106,9 @@ void get_modarg(fftw_complex in, fftw_complex out) {
   } else {
     out[1] = acos(in[0]/out[0]);
     while (out[1] <= 0)
-      out[1] += 2*M_PI;
-    while (out[1] > 2*M_PI)
-      out[1] -= 2*M_PI;
+      out[1] += 2*PI;
+    while (out[1] > 2*PI)
+      out[1] -= 2*PI;
   }
 }
 
