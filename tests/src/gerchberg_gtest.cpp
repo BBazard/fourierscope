@@ -35,7 +35,7 @@ class gerchberg_suite : public ::testing::Test {
     mod = (double*) malloc(dim * dim * sizeof(double));
     input = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     output = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
-    fft =  (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
+    fft = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     forward = fftw_plan_dft_2d(dim, dim, output, output,
                                FFTW_FORWARD, FFTW_ESTIMATE);
 
