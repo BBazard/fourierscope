@@ -42,8 +42,6 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
   buf = _TIFFmalloc(TIFFScanlineSize(tiff));
   data = (unsigned char*) malloc(dimw * sizeof(char));
 
-  printf("%d", TIFFScanlineSize(tiff));
-
   for (uint32 row=0; row < diml; row++) {
     if (TIFFReadScanline(tiff, buf, row, 0) == -1)
       return 1;
