@@ -40,10 +40,10 @@ void matrix_init(int dim, fftw_complex *mat, double value) {
  */
 void matrix_random(int dim, fftw_complex *mat, int max_rand) {
   srand(time(NULL));
-  
+
   for (int i=0; i < dim; i++)
     for (int j=0; j < dim; j++) {
-      (mat[i*dim+j])[0] = rand() % max_rand;
+      (mat[i*dim+j])[0] = rand() % max_rand; /* NOLINT(runtime/threadsafe_fn) */
       (mat[i*dim+j])[1] = 0;
     }
 }
@@ -97,7 +97,7 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
  *  This function take an algebraic complexe number
  *  a+ib,  stored in the in parameter
  *  and computes the module and argument, returned in the out parameter.
- *  
+ *
  */
 void get_modarg(fftw_complex in, fftw_complex out) {
   out[0] = sqrt(in[0]*in[0] + in[1]*in[1]);

@@ -16,7 +16,7 @@
  *  @param[out] out The fftw_complex 2d matrix used as output
  *  @param[in] dim The dimension of the matrix (supposed square matrix)
  *  @param[in] radius The radius of the disk
- *  @return 1 If the radius of the circle cannot feet in the matrix
+ *  @return 1 If the radius of the circle cannot fit in the matrix
  *  @return 0 Otherwise
  *
  *  This function computes a disk in the input matrix using taxicab geometry.
