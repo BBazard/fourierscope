@@ -24,6 +24,9 @@ class matrix_suite : public ::testing::Test {
 
   double *mod; /**< A double matrix used to test the realpart function */
 
+  /** An array of pointers to parameters for matrix_operation function */
+  void **args;
+
   /**
    *  @brief setup function for matrix_suite tests
    *
@@ -41,6 +44,8 @@ class matrix_suite : public ::testing::Test {
       (a[i])[1] = -i;
     }
     matrix_init(dim, b, 0);
+
+    args = malloc(2*sizeof(void*));
   }
 
   /**
@@ -53,13 +58,24 @@ class matrix_suite : public ::testing::Test {
     fftw_free(a);
     fftw_free(b);
     free(mod);
+    free(args);
   }
 
   /**
    *  @brief a random linear function used in matrix_operation test
    *
    */
-  static double fun(double d) {return 2*d+1;}
+  static double fun(double d, void **args) {return 2*d+1;}
+
+  /**
+   *  @brief a more complicated function used in matrix_operation
+   *
+   *  This one function uses the array of pointers to parameters
+   *
+   */
+  static double complicated_fun(double d, void **args) {
+    return d/(double) *((int*) args[0]);
+  }
 };
 
 /**
@@ -80,12 +96,29 @@ TEST_F(matrix_suite, pi_value) {
  *  stored the good result in the b matrix
  *
  */
-TEST_F(matrix_suite, matrix_operation_test) {
-  matrix_operation(a, b, dim, fun);
+TEST_F(matrix_suite, matrix_operation_test_no_args) {
+  matrix_operation(a, b, dim, fun, NULL);
 
   for (int i=0; i < dim*dim; i++) {
     ASSERT_EQ((b[i])[0], 2*(a[i])[0]+1);
     ASSERT_EQ((b[i])[1], 2*(a[i])[1]+1);
+  }
+}
+
+/**
+ *  @brief matrix_operation function test
+ *
+ *  A more complicated test involving the args array of parameters
+ *
+ */
+TEST_F(matrix_suite, matrix_operation_test_with_args) {
+  args[0] = &dim;
+  args[1] = NULL;
+  matrix_operation(a, b, dim, complicated_fun, args);
+
+  for (int i=0; i < dim*dim; i++) {
+    ASSERT_EQ((b[i])[0], (a[i])[0]/dim);
+    ASSERT_EQ((b[i])[1], (a[i])[1]/dim);
   }
 }
 

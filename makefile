@@ -7,7 +7,7 @@ export LINT:=cpplint --extensions=c,h,cpp
 ROOT:=$(CURDIR)
 
 export CFLAGS += -Wpedantic -std=c11
-export CXXFLAGS += -Wpedantic -std=c++11
+export CXXFLAGS += -Wpedantic -std=c++11 -fpermissive
 export LDFLAGS += -ltiff -lfftw3 -lm
 
 export BINDIR:=$(ROOT)/bin

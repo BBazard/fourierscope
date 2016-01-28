@@ -70,6 +70,7 @@ void matrix_print(int dim, fftw_complex *mat) {
  *  @param[out] to The matrix to store the result into
  *  @param[in] dim The dimension of both matrix
  *  @param[in] fun The function to apply to each real and imaginary part
+ *  @param[in] args The array of pointers to several parameters
  *
  *  This function apply a basic function on double to a matrix,
  *  taking the content of the matrix "from" and storing it
@@ -80,10 +81,10 @@ void matrix_print(int dim, fftw_complex *mat) {
  *
  */
 void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
-                      double (*fun)(double)) {
+                      double (*fun)(double, void**), void **args) {
   for (int i=0; i < dim*dim; i++) {
-    (to[i])[0] = (*fun)((from[i])[0]);
-    (to[i])[1] = (*fun)((from[i])[1]);
+    (to[i])[0] = (*fun)((from[i])[0], args);
+    (to[i])[1] = (*fun)((from[i])[1], args);
   }
 }
 
