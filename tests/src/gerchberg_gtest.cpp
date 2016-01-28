@@ -71,6 +71,7 @@ class gerchberg_suite : public ::testing::Test {
     fftw_destroy_plan(forward);
     fftw_free(input);
     fftw_free(output);
+    fftw_cleanup();
   }
 
   /**
