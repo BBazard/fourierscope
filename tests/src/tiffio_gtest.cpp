@@ -16,10 +16,13 @@
  */
 class tiffio_suite : public ::testing::Test {
  protected:
-  const char *true_input = "/home/al/fourierscope/images/grayscale.tiff"; /**< Path of an existing tiff image */
-  const char *false_input = "/home/al/fourierscope/images/false.tiff"; /**< Path of an non-existing tiff image */
+  /** Path of an existing tiff image */
+  const char *true_input = "/home/al/fourierscope/images/grayscale.tiff";
+  /** Path of an non-existing tiff image */
+  const char *false_input = "/home/al/fourierscope/images/false.tiff";
 
-  const char *true_output = "/home/al/fourierscope/images/test_write.tiff"; /**< Existing path for an output */
+  /** Existing path for an output */
+  const char *true_output = "/home/al/fourierscope/images/test_write.tiff";
 
   double *matrix; /**< The matrix storing the image when using doubles */
   uint32 diml; /**< Number of lines in the image */
