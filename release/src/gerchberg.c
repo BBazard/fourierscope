@@ -91,10 +91,13 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
 double identity(double d) {return d;}
 
 /**
- *  @brief A function to divide by 100 used in matrix_operation
+ *  @brief A function to divide by 10000 used in matrix_operation
+ *
+ *  @todo VERY IMPORTANT: find a more convenient way to change dim than
+ *  changing it in this function
  *
  */
-double div_dim(double d) {return d/100;}
+double div_dim(double d) {return d/10000;}
 
 /**
  *  @brief Gerchberg-Saxon algorithm
