@@ -10,25 +10,51 @@
 #include "include/tiffio.h"
 #include "gtest/gtest.h"
 
+/**
+ *  @brief tiffio.c file test suite
+ *
+ */
 class tiffio_suite : public ::testing::Test {
  protected:
-  const char *true_input = "/home/al/fourierscope/images/grayscale.tiff";
-  const char *false_input = "/home/al/fourierscope/images/false.tiff";
+  const char *true_input = "/home/al/fourierscope/images/grayscale.tiff"; /**< Path of an existing tiff image */
+  const char *false_input = "/home/al/fourierscope/images/false.tiff"; /**< Path of an non-existing tiff image */
 
-  const char *true_output = "/home/al/fourierscope/images/test_write.tiff";
+  const char *true_output = "/home/al/fourierscope/images/test_write.tiff"; /**< Existing path for an output */
 
-  double *matrix;
-  uint32 diml, dimw;
+  double *matrix; /**< The matrix storing the image when using doubles */
+  uint32 diml; /**< Number of lines in the image */
+  uint32 dimw; /**< Number of columns in the image */
 
+  /**
+   *  @brief setup function for tiffio_suite tests
+   *
+   *  It prepares all the memory allocations and initializes the members
+   *  of the tiffio_suite.
+   *
+   */
   virtual void SetUp() {
     diml = 0;
     dimw = 0;
   }
 
+  /**
+   *  @brief teardown function for tiffio_suite tests
+   *
+   *  Free all memory allocations (here for conventions
+   *  but currently doing nothing)
+   *
+   */
   virtual void TearDown() {
   }
 };
 
+/**
+ *  @brief tiff_getsize function test
+ *
+ *  Test if the getsize function used on an existing image
+ *  returns 0 and the good dimensions
+ *
+ */
 TEST_F(tiffio_suite, tiff_getsize_true) {
   ASSERT_EQ(0, tiff_getsize(true_input, &diml, &dimw));
 
@@ -36,11 +62,25 @@ TEST_F(tiffio_suite, tiff_getsize_true) {
   ASSERT_EQ(600, dimw);
 }
 
+/**
+ *  @brief tiff_getsize function test
+ *
+ *  Test if the getsize function used on an existing image
+ *  returns 1 and exit
+ *
+ */
 TEST_F(tiffio_suite, tiff_getsize_false) {
   ASSERT_EQ(1, tiff_getsize(false_input, &diml, &dimw));
 }
 
-
+/**
+ *  @brief tiff_tomatrix function test
+ *
+ *  Test the tiff_tomatrix import function.
+ *
+ *  @todo Write a better test
+ *
+ */
 TEST_F(tiffio_suite, tiff_tomatrix) {
   tiff_getsize(true_input, &diml, &dimw);
 
@@ -51,6 +91,18 @@ TEST_F(tiffio_suite, tiff_tomatrix) {
   free(matrix);
 }
 
+/**
+ *  @brief tiff_frommatrix function test
+ *
+ *  Test the tiff_frommatrix export function by importing
+ *  an existing one, then change helf of it in the matrix
+ *  and finally exporting it in a new image.
+ *
+ *  The tester must check the new image.
+ *
+ *  @todo write a better test
+ *
+ */
 TEST_F(tiffio_suite, tiff_frommatrix) {
   tiff_getsize(true_input, &diml, &dimw);
 
