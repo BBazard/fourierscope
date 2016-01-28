@@ -134,8 +134,8 @@ void get_algebraic(fftw_complex in, fftw_complex out) {
  *  This can also be used with get_modarg to get a matrix of module
  *
  */
-void matrix_realpart(int dim, fftw_complex *in, double *out) {
+void matrix_realpart(int dim, fftw_complex *complex, double *real) {
   for (int i=0; i < dim*dim; i++) {
-    out[i] = (in[i])[0];
+    real[i] = (complex[i])[0];
   }
 }
