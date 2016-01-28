@@ -10,24 +10,34 @@
 #include "include/gerchberg.h"
 #include "gtest/gtest.h"
 
+/**
+ *  @brief gerchberg.c file test suite
+ *
+ */
 class gerchberg_suite : public ::testing::Test {
  protected:
-  int dim;
-  int it;
-  int radius;
-  double threshold;
+  int dim; /**< The dimension of the matrix */
+  int it; /**< The number of iterations */
+  int radius; /**< The radius of the circle */
+  double threshold; /**< The threshold for "char" representation */
 
-  char *display;
-  double *mod;
-  fftw_complex *input;
-  fftw_complex *output;
-  fftw_complex *fft;
+  char *display; /**< The char matrix used to display human readable */
+  double *mod; /**< Contains the module of the result matrix */
+  fftw_complex *input; /**< The complexe input of the gerchberg function */
+  fftw_complex *output; /**< The complexe output of the gerchberg function */
 
-  fftw_plan forward;
+  fftw_plan forward; /**< The fftw_plan in which is executed the fft */
 
+  /**
+   *  @brief setup function for gerchberg_suite tests
+   *
+   *  It prepares all the memory allocations and initializes the members
+   *  of the gerchberg_suite.
+   *
+   */
   virtual void SetUp() {
     dim = 100;
-    it = 100;
+    it = 1;
     radius = 20;
     threshold = 0.20;
 
@@ -35,9 +45,9 @@ class gerchberg_suite : public ::testing::Test {
     mod = (double*) malloc(dim * dim * sizeof(double));
     input = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     output = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
-    fft = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
+
     forward = fftw_plan_dft_2d(dim, dim, output, output,
-                               FFTW_FORWARD, FFTW_ESTIMATE);
+                                         FFTW_FORWARD, FFTW_ESTIMATE);
 
     matrix_random(dim, input, 256);
     matrix_init(dim, output, 0);
@@ -48,15 +58,29 @@ class gerchberg_suite : public ::testing::Test {
     }
   }
 
+
+  /**
+   *  @brief teardown function for gerchberg_suite tests
+   *
+   *  Free all memory allocations
+   *
+   */
   virtual void TearDown() {
     free(display);
     free(mod);
+    fftw_destroy_plan(forward);
     fftw_free(input);
     fftw_free(output);
   }
 
-  static double by_log(double d) {return log(fabs(d));}
-
+  /**
+   *  @brief Average of a matrix
+   *  @param[in] dim The dimension of the matrix
+   *  @param[in] mat The matrix used for computation
+   *
+   *  Computes the average of a given double matrix
+   *
+   */
   static double average(int dim, double *mat) {
     double average = 0;
     for (int i=0; i < dim*dim; i++)
@@ -67,6 +91,19 @@ class gerchberg_suite : public ::testing::Test {
   }
 };
 
+
+/**
+ *  @brief gerchberg function test
+ *
+ *  Applies the gerchberg algorithm to a random matrix
+ *  and then displays a char matrix composed of three different
+ *  symbols:
+ *  - '_' if the result matrix cell is less than (1-thershold)*average
+ *  - '*' if the result matrix cell is between  (1-thershold)*average and
+ *   (1+thershold)*average
+ *  - '#' if the result matrix cell is less than (1+thershold)*average
+ *
+ */
 TEST_F(gerchberg_suite, gerchberg_test) {
   gerchberg(dim, input, output, it, radius);
   fftw_execute(forward);
