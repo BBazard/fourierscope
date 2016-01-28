@@ -164,7 +164,7 @@ TEST_F(matrix_suite, matrix_realpart_test) {
 
   for (int i=0; i < dim; i++) {
     for (int j=0; j < dim; j++) {
-      ASSERT_DOUbLE_EQ(mod[i*dim+j], (a[i*dim+j])[0]);
+      ASSERT_DOUBLE_EQ(mod[i*dim+j], (a[i*dim+j])[0]);
     }
   }
 }
