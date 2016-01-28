@@ -38,8 +38,8 @@ doc:
 	mkdir -p $(LOGDIR)
 	printf "\033[0;34m"
 	printf "Generating Documentation\n"
-	doxygen $(DOCDIR)/config/doxygen.cfg 2>&1 | tee -a $(LOGDIR)/doc
-	cat $(LOGDIR)/doc
+	doxygen $(DOCDIR)/config/doxygen.cfg
+	cat $(LOGDIR)/docwarnings
 	printf "\033[0m"
 .PHONY: doc
 
