@@ -84,7 +84,16 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
   }
 }
 
+/**
+ *  @brief The identity function used in matrix_operation
+ *
+ */
 double identity(double d) {return d;}
+
+/**
+ *  @brief A function to divide by 100 used in matrix_operation
+ *
+ */
 double div_dim(double d) {return d/100;}
 
 /**
@@ -93,8 +102,14 @@ double div_dim(double d) {return d/100;}
  *  @param[in] input The matrix on which to apply the algorithm
  *  @param[out] output The matrix in which to store the result
  *  @param[in] exec_limit The number of iteration to execute
+ *  @param[in] radius The radius of the circle used to limit the spectrum
  *
- *  @TODO Full doxydoc description
+ *  This funtion implements the Gerchberg-Saxon algorithm, and will store the
+ *  result of this algorithm in the output parameter given a number
+ *  of iteration and a radius.
+ *
+ *  Note that after a given number of iteration the results will stop
+ *  getting better.
  *
  */
 void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
@@ -144,4 +159,5 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
   fftw_free(tf);
   fftw_free(disk);
   fftw_free(itf);
+  fftw_free(modarg);
 }
