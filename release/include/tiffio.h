@@ -15,7 +15,7 @@
 #include <tiff.h>
 #include <tiffio.h>
 
-void tiff_getsize(const char *name, uint32 *diml, uint32 *dimw);
+int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw);
 int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw);
 int tiff_frommatrix(const char *name, double *matrix, uint32 diml, uint32 dimw);
 
