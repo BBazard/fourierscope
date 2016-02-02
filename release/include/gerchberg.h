@@ -2,7 +2,7 @@
 /**
  *  @file
  *
- *  Gerchberg-Saxon algorithm header
+ *  Gerchberg-Saxton algorithm header
  *
  */
 

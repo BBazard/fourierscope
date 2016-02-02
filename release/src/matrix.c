@@ -2,20 +2,20 @@
 /**
  *  @file
  *
- *  This file implements several basic functions to
- *  manipulate matrix and complexes
+ *  This file implements several basic functions for
+ *  matrices and complex numbers manipulation.
  *
  */
 
 #include "include/matrix.h"
 
 /**
- *  @brief Initializes a fftw_complex matrix
+ *  @brief Initialize a fftw_complex matrix
  *  @param[in] dim The matrix dimension
- *  @param[in,out] mat The matrix to init
+ *  @param[in,out] mat The matrix to initialize
  *  @param[in] value The value with which to initialize the matrix
  *
- *  This function init a matrix with 0 in complexity O(n^{2})
+ *  This function initializes a matrix with 0 in complexity O(n^{2})
  *
  */
 void matrix_init(int dim, fftw_complex *mat, double value) {
@@ -26,13 +26,13 @@ void matrix_init(int dim, fftw_complex *mat, double value) {
 }
 
 /**
- *  @brief Initializes a matrix with random complexes
+ *  @brief Initialize a matrix with random complexes
  *  @param[in] dim The dimension of the matrix
  *  @param[out] mat The fftw_complex matrix to initialize
  *  @param[in] max_rand The maximum value for random numbers
  *
  *  This function initializes a matrix of fftw_complex with
- *  randomly generated numbers (integers)
+ *  randomly generated integers
  *
  *
  */
@@ -47,7 +47,7 @@ void matrix_random(int dim, fftw_complex *mat, int max_rand) {
 }
 
 /**
- *  @brief Prints a matrix
+ *  @brief Print a matrix
  *  @param[in] dim The dimension of the matrix
  *  @param[in] mat The matrix to print
  *
@@ -65,14 +65,14 @@ void matrix_print(int dim, fftw_complex *mat) {
 }
 
 /**
- *  @brief Apply a basix operation on a matrix
+ *  @brief Apply a basic operation on a matrix
  *  @param[in] from The matrix on which to apply the transformation
  *  @param[out] to The matrix to store the result into
  *  @param[in] dim The dimension of both matrix
  *  @param[in] fun The function to apply to each real and imaginary part
  *  @param[in] args The array of pointers to several parameters
  *
- *  This function apply a basic function on double to a matrix,
+ *  This function apply a basic function on doubles to a matrix,
  *  taking the content of the matrix "from" and storing it
  *  into the matrix "to", not altering the first one.
  *
@@ -89,12 +89,12 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
 }
 
 /**
- *  @brief Get module and argument from algebraic notation
- *  @param[in] in The algebraic complexe
+ *  @brief Get module and argument from algebraic form
+ *  @param[in] in The algebraic complex
  *  @param[out] out The module and argument
  *
- *  This function take an algebraic complexe number
- *  a+ib,  stored in the in parameter
+ *  This function takes an algebraic complex number a+ib,
+ *  stored in the in parameter,
  *  and computes the module and argument, returned in the out parameter.
  *
  */
@@ -112,11 +112,11 @@ void get_modarg(fftw_complex in, fftw_complex out) {
 }
 
 /**
- *  @brief Get algebraic notation from argument and module
+ *  @brief Get algebraic form from argument and module
  *  @param[in] in The module and argument
- *  @param[out] out The algebraic notation
+ *  @param[out] out The algebraic form
  *
- *  This function computes the algebraic form of a complexe
+ *  This function computes the algebraic form of a complex
  *  given its module and argument.
  *
  */
@@ -132,7 +132,7 @@ void get_algebraic(fftw_complex in, fftw_complex out) {
  *  @param[out] real The real double matrix that results
  *
  *  Get the real part of a fftw_complex into a double matrix.
- *  This can also be used with get_modarg to get a matrix of module
+ *  This can also be used with get_modarg to get a matrix of module.
  *
  */
 void matrix_realpart(int dim, fftw_complex *complex, double *real) {

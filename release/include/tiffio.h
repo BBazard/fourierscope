@@ -2,7 +2,7 @@
 /**
  *  @file
  *
- *  Tiff input/output header file
+ *  Tiff input/output header
  *
  */
 

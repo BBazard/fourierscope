@@ -2,7 +2,7 @@
 /**
  *  @file
  *
- *  Gerchberg-Saxon algorithm test file
+ *  Gerchberg-Saxton algorithm test file
  *
  *
  */
@@ -18,13 +18,13 @@ class gerchberg_suite : public ::testing::Test {
  protected:
   int dim; /**< The dimension of the matrix */
   int it; /**< The number of iterations */
-  int radius; /**< The radius of the circle */
+  int radius; /**< The radius of the disk */
   double threshold; /**< The threshold for "char" representation */
 
   char *display; /**< The char matrix used to display human readable */
   double *mod; /**< Contains the module of the result matrix */
-  fftw_complex *input; /**< The complexe input of the gerchberg function */
-  fftw_complex *output; /**< The complexe output of the gerchberg function */
+  fftw_complex *input; /**< The complex input of the gerchberg function */
+  fftw_complex *output; /**< The complex output of the gerchberg function */
 
   fftw_plan forward; /**< The fftw_plan in which is executed the fft */
 

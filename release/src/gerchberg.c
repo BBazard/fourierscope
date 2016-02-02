@@ -2,7 +2,7 @@
 /**
  *  @file
  *
- *  This file implements the Gerchberg-Saxon algorithm.
+ *  This file implements the Gerchberg-Saxton algorithm.
  *  It allows to retrieve the phase of the light when a picture
  *  was taken from the intensity of it.
  *
@@ -11,17 +11,17 @@
 #include "include/gerchberg.h"
 
 /**
- *  @brief Erase all information outside of a disk
+ *  @brief Set all the matrix cells outside of a disk to 0
  *  @param[in] in The fftw_complex 2d matrix used as input
  *  @param[out] out The fftw_complex 2d matrix used as output
- *  @param[in] dim The dimension of the matrix (supposed square matrix)
+ *  @param[in] dim The dimension of the matrix (assumed square)
  *  @param[in] radius The radius of the disk
  *  @return 1 If the radius of the circle cannot fit in the matrix
  *  @return 0 Otherwise
  *
  *  This function computes a disk in the input matrix using taxicab geometry.
  *  The circle is centered on the middle of the matrix (not exact if the matrix
- *  dimension is an even number)
+ *  dimension is an even number).
  *
  */
 int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
@@ -44,7 +44,7 @@ int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
 }
 
 /**
- *  @brief Computes the von_neumann
+ *  @brief Compute the von_neumann
  *  @param[in] x The line on which the function is applied
  *  @param[in] y The column on which the function is applied
  *  @param[in] radius The radius of the disk, see below
@@ -104,14 +104,14 @@ double div_dim(double d, void **args) {
 }
 
 /**
- *  @brief Gerchberg-Saxon algorithm
+ *  @brief Gerchberg-Saxton algorithm
  *  @param[in] dim The dimension of the matrix
  *  @param[in] input The matrix on which to apply the algorithm
  *  @param[out] output The matrix in which to store the result
  *  @param[in] exec_limit The number of iteration to execute
  *  @param[in] radius The radius of the circle used to limit the spectrum
  *
- *  This funtion implements the Gerchberg-Saxon algorithm, and will store the
+ *  This funtion implements the Gerchberg-Saxton algorithm, and will store the
  *  result of this algorithm in the output parameter given a number
  *  of iteration and a radius.
  *

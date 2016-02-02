@@ -2,15 +2,15 @@
 /**
  *  @file
  *
- *  This file contains the function to make input and output
- *  on tiff files
+ *  This file contains the functions to make input and output
+ *  on tiff files.
  *
  */
 
 #include "include/tiffio.h"
 
 /**
- *  @brief Get the size of an tiff image
+ *  @brief Get the size of a tiff image
  *  @param[in] name The path to the tiff image
  *  @param[out] diml The length of the image
  *  @param[out] dimw The width of the image
@@ -18,7 +18,7 @@
  *  @return 0 Otherwise
  *
  *  Get the size of the image which path is "name" and store it in
- *  diml and dimw
+ *  diml and dimw.
  *
  */
 int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw) {
@@ -35,7 +35,7 @@ int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw) {
 }
 
 /**
- *  @brief Import a extern tiff file
+ *  @brief Import an extern tiff file
  *  @param[in] name The path to the image to import
  *  @param[out] matrix The matrix where to put the imported image
  *  @param[out] diml The length of the created matrix (line)
@@ -44,7 +44,7 @@ int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw) {
  *  @return 0 Otherwise
  *
  *  This function imports an image which path is "name" into a matrix
- *  given the length and the width. By convention, length means number of line
+ *  given the length and the width. By convention, length means number of lines
  *  and width means number of columns.
  *
  */
@@ -78,13 +78,13 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
  *  @brief Export an matrix into a tiff image
  *  @param[in] name The path in which the image is saved
  *  @param[in] matrix The matrix to save
- *  @param[in] diml The number of line
- *  @param[in] dimw The number of column
+ *  @param[in] diml The number of lines
+ *  @param[in] dimw The number of columns
  *  @return 1 If there is a writing error
  *  @return 0 Otherwise
  *
  *  This function exports a matrix into an image which path is "name"
- *  given the two dimension of the matrix.
+ *  given the two dimensions of the matrix.
  *
  */
 int tiff_frommatrix(const char *name, double *matrix,
