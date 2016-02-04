@@ -14,8 +14,12 @@
 #include <string.h>
 #include <tiff.h>
 #include <tiffio.h>
+#include "include/matrix.h"
 
 int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw);
+int tiff_fullscale(double min, double max, double tosample);
+int tiff_maxnormalized(double max, double tosample);
+
 int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw);
 int tiff_frommatrix(const char *name, double *matrix, uint32 diml, uint32 dimw);
 

@@ -35,6 +35,19 @@ int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw) {
 }
 
 /**
+ * @todo doc
+ *
+ *
+ */
+int tiff_fullscale(double min, double max, double tosample) {
+  return (int) (tosample - min)*255/(max-min);
+}
+
+int tiff_maxnormalized(double max, double tosample) {
+  return (int) tosample*255/max;
+}
+
+/**
  *  @brief Import a extern tiff file
  *  @param[in] name The path to the image to import
  *  @param[out] matrix The matrix where to put the imported image
@@ -102,9 +115,12 @@ int tiff_frommatrix(const char *name, double *matrix,
   TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8);
   TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
 
+  double max = matrix_max(diml, dimw, matrix); /**< @todo change this diml */
+  double min = matrix_min(diml, dimw, matrix);
+
   for (uint32 row=0; row < diml; row++) {
     for (int i=0; i < dimw; i++)
-      data[i] = (int) matrix[row*dimw+i];
+      data[i] = tiff_fullscale(min, max, matrix[row*dimw+i]);
     memcpy(buf, data, dimw*sizeof(char));
 
     if (TIFFWriteScanline(tiff, buf, row, 0) == -1)

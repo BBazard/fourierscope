@@ -99,8 +99,8 @@ double identity(double d, void **args) {return d;}
  *
  */
 double div_dim(double d, void **args) {
-  double dim = (double) *((int*) args[0]);
-  return d/(dim*dim);
+  int dim = *((int*) args[0]);
+  return d/(double) (dim*dim);
 }
 
 /**
