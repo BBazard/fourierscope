@@ -68,7 +68,7 @@ TEST_F(tiffio_suite, tiff_getsize_true) {
 /**
  *  @brief tiff_getsize function test
  *
- *  Test if the getsize function used on an existing image
+ *  Test if the getsize function used on a non-existing image
  *  returns 1 and exit
  *
  */
@@ -98,7 +98,7 @@ TEST_F(tiffio_suite, tiff_tomatrix) {
  *  @brief tiff_frommatrix function test
  *
  *  Test the tiff_frommatrix export function by importing
- *  an existing one, then change helf of it in the matrix
+ *  an existing one, then changing half of it in the matrix
  *  and finally exporting it in a new image.
  *
  *  The tester must check the new image.

@@ -92,8 +92,8 @@ TEST_F(matrix_suite, pi_value) {
 /**
  *  @brief matrix_operation function test
  *
- *  Test if the matrix_operation function applied to the a matrix
- *  stored the good result in the b matrix
+ *  Test if the matrix_operation function applied to the matrix a
+ *  stored the good result in the matrix b
  *
  */
 TEST_F(matrix_suite, matrix_operation_test_no_args) {
