@@ -140,3 +140,29 @@ void matrix_realpart(int dim, fftw_complex *complex, double *real) {
     real[i] = (complex[i])[0];
   }
 }
+
+/**
+ *  @todo doxydoc
+ *
+ */
+double matrix_max(int diml, int dimw, double *matrix) {
+  double max = matrix[0];
+  for (int i=0; i < diml; i++)
+    for (int j=1; j < dimw; j++)
+      if (matrix[i*dimw+j] > max)
+        max = matrix[i*dimw+j];
+  return max;
+}
+
+/**
+ *  @todo doxydoc
+ *
+ */
+double matrix_min(int diml, int dimw, double *matrix) {
+  double min = matrix[0];
+  for (int i=0; i < diml; i++)
+    for (int j=1; j < dimw; j++)
+      if (matrix[i*dimw+j] < min)
+        min = matrix[i*dimw+j];
+  return min;
+}

@@ -28,4 +28,7 @@ void get_algebraic(fftw_complex in, fftw_complex out);
 
 void matrix_realpart(int dim, fftw_complex *in, double *out);
 
+double matrix_max(int diml, int dimw, double *matrix);
+double matrix_min(int diml, int dimw, double *matrix);
+
 #endif /* RELEASE_INCLUDE_MATRIX_H_ */
