@@ -31,4 +31,6 @@ void matrix_realpart(int dim, fftw_complex *in, double *out);
 double matrix_max(int diml, int dimw, double *matrix);
 double matrix_min(int diml, int dimw, double *matrix);
 
+int matrix_extract(int smallDim, int bigDim, fftw_complex* small, fftw_complex* big, int offX, int offY);
+
 #endif /* RELEASE_INCLUDE_MATRIX_H_ */

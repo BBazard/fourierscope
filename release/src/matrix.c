@@ -166,3 +166,25 @@ double matrix_min(int diml, int dimw, double *matrix) {
         min = matrix[i*dimw+j];
   return min;
 }
+
+/**
+ *  @brief Extract a little part of a matrix from a bigger one
+ *
+ *  @return 1 If the little matrix can't fit in the big one
+ *  @return 0 Otherwise
+ *
+ */
+int matrix_extract(int smallDim, int bigDim, fftw_complex* small, fftw_complex* big, int offX, int offY) {
+  if (smallDim + offX > bigDim || smallDim + offY > bigDim) {
+    return 1;
+  } else {
+    for (int i = 0; i < smallDim; i++) {
+      for (int j = 0; j < smallDim; j++) {
+        (small[i*smallDim+j])[0] = (big[(i+offX)*bigDim+(j+offY)])[0];
+        (small[i*smallDim+j])[1] = (big[(i+offX)*bigDim+(j+offY)])[1];
+      }
+    }
+    return 0;
+  }
+}
+
