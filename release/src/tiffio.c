@@ -43,6 +43,10 @@ int tiff_fullscale(double min, double max, double tosample) {
   return (int) (tosample - min)*255/(max-min);
 }
 
+/**
+ *  @todo doc
+ *
+ */
 int tiff_maxnormalized(double max, double tosample) {
   return (int) tosample*255/max;
 }
