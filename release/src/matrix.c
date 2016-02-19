@@ -97,18 +97,23 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
  *  stored in the in parameter,
  *  and computes the module and argument, returned in the out parameter.
  *
+ *  in and out parameters can be the same memory address.
+ *
  */
 void get_modarg(fftw_complex in, fftw_complex out) {
-  out[0] = sqrt(in[0]*in[0] + in[1]*in[1]);
-  if (out[0] == 0) {
-    out[1] = 0;
+  fftw_complex tmp;
+  tmp[0] = sqrt(in[0]*in[0] + in[1]*in[1]);
+  if (tmp[0] == 0) {
+    tmp[1] = 0;
   } else {
-    out[1] = acos(in[0]/out[0]);
-    while (out[1] <= 0)
-      out[1] += 2*PI;
-    while (out[1] > 2*PI)
-      out[1] -= 2*PI;
+    tmp[1] = acos(in[0]/out[0]);
+    while (tmp[1] <= 0)
+      tmp[1] += 2*PI;
+    while (tmp[1] > 2*PI)
+      tmp[1] -= 2*PI;
   }
+  out[0] = tmp[0];
+  out[1] = tmp[1];
 }
 
 /**
@@ -128,14 +133,15 @@ void get_algebraic(fftw_complex in, fftw_complex out) {
 /**
  *  @brief Get the real part of a fftw_complex matrix
  *  @param[in] dim The dimension of both matrix
- *  @param[in] complex The fftw_complex matrix
- *  @param[out] real The real double matrix that results
+ *  @param[in] complex_matrix The fftw_complex matrix
+ *  @param[out] real_matrix The real double matrix that results
  *
  *  Get the real part of a fftw_complex into a double matrix.
  *  This can also be used with get_modarg to get a matrix of module.
  *
  */
-void matrix_realpart(int dim, fftw_complex *complex_matrix, double *real_matrix) {
+void matrix_realpart(int dim, fftw_complex *complex_matrix,
+                     double *real_matrix) {
   for (int i=0; i < dim*dim; i++) {
     real_matrix[i] = (complex_matrix[i])[0];
   }
@@ -174,7 +180,8 @@ double matrix_min(int diml, int dimw, double *matrix) {
  *  @return 0 Otherwise
  *
  */
-int matrix_extract(int smallDim, int bigDim, fftw_complex* small, fftw_complex* big, int offX, int offY) {
+int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
+                   fftw_complex* big, int offX, int offY) {
   if (smallDim + offX > bigDim || smallDim + offY > bigDim) {
     return 1;
   } else {
@@ -187,4 +194,3 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small, fftw_complex* 
     return 0;
   }
 }
-
