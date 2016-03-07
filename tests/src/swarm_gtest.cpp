@@ -8,6 +8,7 @@
  */
 
 #include "include/matrix.h"
+#include "include/tiffio.h"
 #include "include/gerchberg.h"
 #include "gtest/gtest.h"
 
@@ -37,6 +38,9 @@ class swarm_suite : public ::testing::Test {
   /** The fftw_plan in which is executed the fft */
   fftw_plan forward;
 
+  /** The matrix to be printed in external images */
+  double *to_print;
+  
   /**
    *  @brief setup function for swarm_suite tests
    *
@@ -62,6 +66,8 @@ class swarm_suite : public ::testing::Test {
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
         thumbnail[i] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim * sizeof(fftw_complex));
 
+    to_print = (double *) fftw_malloc(thumbnailDim * thumbnailDim * sizeof(double));
+    
     srand(time(NULL)); // @todo is it fine to do this ?
 
     for (int i=0; i < toSplitDim*toSplitDim; i++) {
@@ -111,7 +117,12 @@ TEST_F(swarm_suite, swarm_test) {
   fftw_execute(forward);
 
   int mid = toSplitDim/2 + toSplitDim%2;
-
+  char name[7];
+  name[0] = 'i';
+  name[1] = 'm';
+  name[2] = 'a';
+  name[3] = 'g';
+  name[4] = 'e';
   for (int i = -jorga_x; i < jorga_x; i++)
     for (int j = -jorga_y; j < jorga_y; j++) {
       int offX = mid + i*delta_x;
@@ -135,6 +146,9 @@ TEST_F(swarm_suite, swarm_test) {
       // get module
       get_modarg((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[0], (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[0]);
       get_modarg((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[1], (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[1]);
+      name[5] = i + '0';
+      name[6] = j + '0';
+      matrix_realpart(thumbnailDim, thumbnail[i*thumbnailDim+j], to_print);
+      tiff_frommatrix(name, to_print, thumbnailDim, thumbnailDim);
     }
 }
-
