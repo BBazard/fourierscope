@@ -106,7 +106,7 @@ void get_modarg(fftw_complex in, fftw_complex out) {
   if (tmp[0] == 0) {
     tmp[1] = 0;
   } else {
-    tmp[1] = acos(in[0]/out[0]);
+    tmp[1] = acos(in[0]/tmp[0]);
     while (tmp[1] <= 0)
       tmp[1] += 2*PI;
     while (tmp[1] > 2*PI)
