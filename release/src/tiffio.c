@@ -114,33 +114,36 @@ int tiff_frommatrix(const char *name, double *matrix,
   unsigned char *data;
 
   TIFF* tiff = TIFFOpen(name, "w");
+  if (tiff) {
+    buf = _TIFFmalloc(dimw*sizeof(char));
+    data = (unsigned char *) malloc(dimw*sizeof(unsigned char));
 
-  buf = _TIFFmalloc(dimw*sizeof(char));
-  data = (unsigned char *) malloc(dimw*sizeof(unsigned char));
+    TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, diml);
+    TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, dimw);
+    TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8);
+    TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
 
-  TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, diml);
-  TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, dimw);
-  TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8);
-  TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
+    double max = matrix_max(diml, dimw, matrix); /**< @todo change this diml */
+    double min = matrix_min(diml, dimw, matrix);
 
-  double max = matrix_max(diml, dimw, matrix); /**< @todo change this diml */
-  double min = matrix_min(diml, dimw, matrix);
+    for (uint32 row=0; row < diml; row++) {
+      for (int i=0; i < dimw; i++) {
+        data[i] = tiff_fullscale(min, max, matrix[row*dimw+i]);
+        /* if (matrix[row*dimw+i] > max*0.8) */
+        /*   printf("(%d) %f; %f; %f; %d\n", i, min, max, matrix[row*dimw+i], data[i]); */
+      }
+      memcpy(buf, data, dimw*sizeof(char));
 
-  for (uint32 row=0; row < diml; row++) {
-    for (int i=0; i < dimw; i++) {
-      data[i] = tiff_fullscale(min, max, matrix[row*dimw+i]);
-      /* if (matrix[row*dimw+i] > max*0.8) */
-      /*   printf("(%d) %f; %f; %f; %d\n", i, min, max, matrix[row*dimw+i], data[i]); */
+      if (TIFFWriteScanline(tiff, buf, row, 0) == -1)
+        return 1;
     }
-    memcpy(buf, data, dimw*sizeof(char));
 
-    if (TIFFWriteScanline(tiff, buf, row, 0) == -1)
-      return 1;
+    free(data);
+    _TIFFfree(buf);
+    TIFFClose(tiff);
+
+    return 0;
+  } else {
+    return 1;
   }
-
-  free(data);
-  _TIFFfree(buf);
-  TIFFClose(tiff);
-
-  return 0;
 }

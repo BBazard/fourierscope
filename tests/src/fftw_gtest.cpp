@@ -18,12 +18,12 @@
 class fftw_suite : public ::testing::Test {
  protected:
   /** Path of an existing tiff image */
-  const char *input = "/home/al/fourierscope/images/square.tiff";
+  const char *input = "../images/square.tiff";
 
   /** Existing path for an output */
-  const char *before = "/home/al/fourierscope/images/fftw_before.tiff";
-  const char *ft = "/home/al/fourierscope/images/fftw_ft.tiff";
-  const char *ift = "/home/al/fourierscope/images/fftw_ift.tiff";
+  const char *before = "../images/fftw_before.tiff";
+  const char *ft = "../images/fftw_ft.tiff";
+  const char *ift = "../images/fftw_ift.tiff";
 
   double *matrix; /**< The matrix storing the image when using doubles */
   fftw_complex *comp_mat; /**< The matrix storing the complex image */
@@ -73,7 +73,7 @@ class fftw_suite : public ::testing::Test {
 };
 
 TEST_F(fftw_suite, fftw_execute) {
-  tiff_getsize(input, &diml, &dimw);
+  ASSERT_EQ(0, tiff_getsize(input, &diml, &dimw));
   args[0] = &dimw;
   args[1] = &diml;
 
@@ -85,7 +85,7 @@ TEST_F(fftw_suite, fftw_execute) {
   backward = fftw_plan_dft_2d(diml, dimw, comp_mat, comp_mat2,
                               FFTW_FORWARD, FFTW_ESTIMATE);
 
-  tiff_tomatrix(input, matrix, diml, dimw);
+  ASSERT_EQ(0, tiff_tomatrix(input, matrix, diml, dimw));
   for (int i = 0; i < diml; i++)
     for (int j = 0; j < dimw; j++)
       (comp_mat[i*dimw+j])[0] = matrix[i*dimw+j];
