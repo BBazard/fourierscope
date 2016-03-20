@@ -16,14 +16,6 @@
  */
 class tiffio_suite : public ::testing::Test {
  protected:
-  /** Path of an existing tiff image */
-  const char *true_input = "images/grayscale.tiff";
-  /** Path of an non-existing tiff image */
-  const char *false_input = "images/false.tiff";
-
-  /** Existing path for an output */
-  const char *true_output = "images/test_write.tiff";
-
   double *matrix; /**< The matrix storing the image when using doubles */
   uint32 diml; /**< Number of lines in the image */
   uint32 dimw; /**< Number of columns in the image */
@@ -51,6 +43,33 @@ class tiffio_suite : public ::testing::Test {
   }
 };
 
+class existing_input_units : public tiffio_suite {
+ protected:
+  /** Path of an existing tiff image */
+  const char *input = "images/grayscale.tiff";
+  /** Existing path for an output */
+  const char *output = "images/test_write.tiff";
+
+  virtual void SetUp() {
+    tiffio_suite::SetUp();
+    tiff_getsize(input, &diml, &dimw);
+    matrix = (double*) malloc(diml * dimw * sizeof(double));
+  }
+
+  virtual void TearDown() {
+    free(matrix);
+    tiffio_suite::TearDown();
+  }
+};
+
+
+class non_existing_input_units : public tiffio_suite {
+ protected:
+  /** Path of an non-existing tiff image */
+  const char *input = "images/false.tiff";
+};
+
+
 /**
  *  @brief tiff_getsize function test
  *
@@ -58,8 +77,8 @@ class tiffio_suite : public ::testing::Test {
  *  returns 0 and the good dimensions
  *
  */
-TEST_F(tiffio_suite, tiff_getsize_true) {
-  ASSERT_EQ(0, tiff_getsize(true_input, &diml, &dimw));
+TEST_F(existing_input_units, tiff_getsize_true) {
+  ASSERT_EQ(0, tiff_getsize(input, &diml, &dimw));
 
   ASSERT_EQ(800, diml);
   ASSERT_EQ(600, dimw);
@@ -72,8 +91,8 @@ TEST_F(tiffio_suite, tiff_getsize_true) {
  *  returns 1 and exit
  *
  */
-TEST_F(tiffio_suite, tiff_getsize_false) {
-  ASSERT_EQ(1, tiff_getsize(false_input, &diml, &dimw));
+TEST_F(non_existing_input_units, tiff_getsize_false) {
+  ASSERT_EQ(1, tiff_getsize(input, &diml, &dimw));
 }
 
 /**
@@ -84,14 +103,8 @@ TEST_F(tiffio_suite, tiff_getsize_false) {
  *  @todo Write a better test
  *
  */
-TEST_F(tiffio_suite, tiff_tomatrix) {
-  tiff_getsize(true_input, &diml, &dimw);
-
-  matrix = (double*) malloc(diml * dimw * sizeof(double));
-
-  ASSERT_EQ(0, tiff_tomatrix(true_input, matrix, diml, dimw));
-
-  free(matrix);
+TEST_F(existing_input_units, tiff_tomatrix) {
+  ASSERT_EQ(0, tiff_tomatrix(input, matrix, diml, dimw));
 }
 
 /**
@@ -106,18 +119,12 @@ TEST_F(tiffio_suite, tiff_tomatrix) {
  *  @todo write a better test
  *
  */
-TEST_F(tiffio_suite, tiff_frommatrix) {
-  tiff_getsize(true_input, &diml, &dimw);
-
-  matrix = (double*) malloc(diml * dimw * sizeof(double));
-
-  tiff_tomatrix(true_input, matrix, diml, dimw);
+TEST_F(existing_input_units, tiff_frommatrix) {
+  tiff_tomatrix(input, matrix, diml, dimw);
 
   for (int i=0; i < diml; i++)
     for (int j=0; j < dimw/2; j++)
       matrix[i*dimw+j] = 120;
 
-  tiff_frommatrix(true_output, matrix, diml, dimw);
-
-  free(matrix);
+  tiff_frommatrix(output, matrix, diml, dimw);
 }
