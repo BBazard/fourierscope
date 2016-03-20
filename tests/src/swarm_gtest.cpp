@@ -71,7 +71,7 @@ class swarm_suite : public ::testing::Test {
     to_print = (double*) malloc(thumbnailDim * thumbnailDim * sizeof(double));
     import = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
 
-    args = malloc(5*sizeof(void*));
+    args = (void**) malloc(5*sizeof(void*));
     args[0] = &toSplitDim;
     args[1] = NULL;
 

@@ -127,7 +127,7 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
   fftw_complex *itf;
   fftw_complex *modarg;
 
-  void **args = malloc(2*sizeof(void*));
+  void **args = (void**) malloc(2*sizeof(void*));
   args[0] = &dim;
   args[1] = NULL;
 

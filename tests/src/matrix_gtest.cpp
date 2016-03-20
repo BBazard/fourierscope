@@ -45,7 +45,7 @@ class matrix_suite : public ::testing::Test {
     }
     matrix_init(dim, b, 0);
 
-    args = malloc(2*sizeof(void*));
+    args = (void**) malloc(2*sizeof(void*));
   }
 
   /**

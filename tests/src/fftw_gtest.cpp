@@ -46,7 +46,7 @@ class fftw_suite : public ::testing::Test {
   virtual void SetUp() {
     diml = 0;
     dimw = 0;
-    args = malloc(5*sizeof(void*));
+    args = (void**) malloc(5*sizeof(void*));
   }
 
   /**

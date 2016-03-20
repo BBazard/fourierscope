@@ -75,7 +75,7 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
   TIFF* tiff = TIFFOpen(name, "r");
   if (tiff) {
     buf = _TIFFmalloc(TIFFScanlineSize(tiff));
-    data = (unsigned char*) malloc(dimw * sizeof(char));
+    data = (unsigned char*) malloc(dimw * sizeof(unsigned char));
 
     for (uint32 row=0; row < diml; row++) {
       if (TIFFReadScanline(tiff, buf, row, 0) == -1)
@@ -116,7 +116,7 @@ int tiff_frommatrix(const char *name, double *matrix,
   TIFF* tiff = TIFFOpen(name, "w");
 
   buf = _TIFFmalloc(dimw*sizeof(char));
-  data = (unsigned char *) malloc(dimw*sizeof(char));
+  data = (unsigned char *) malloc(dimw*sizeof(unsigned char));
 
   TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, diml);
   TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, dimw);
