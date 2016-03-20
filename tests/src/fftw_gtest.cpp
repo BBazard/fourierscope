@@ -18,12 +18,12 @@
 class fftw_suite : public ::testing::Test {
  protected:
   /** Path of an existing tiff image */
-  const char *input = "../images/square.tiff";
+  const char *input = "images/square.tiff";
 
   /** Existing path for an output */
-  const char *before = "../images/fftw_before.tiff";
-  const char *ft = "../images/fftw_ft.tiff";
-  const char *ift = "../images/fftw_ift.tiff";
+  const char *before = "images/fftw_before.tiff";
+  const char *ft = "images/fftw_ft.tiff";
+  const char *ift = "images/fftw_ift.tiff";
 
   double *matrix; /**< The matrix storing the image when using doubles */
   fftw_complex *comp_mat; /**< The matrix storing the complex image */
