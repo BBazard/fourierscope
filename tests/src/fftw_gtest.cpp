@@ -57,10 +57,7 @@ class fftw_suite : public ::testing::Test {
    *
    */
   virtual void TearDown() {
-    free(matrix);
-    fftw_free(comp_mat);
-    fftw_destroy_plan(forward);
-    fftw_destroy_plan(backward);
+    free(args);
   }
 
   static double div_dim(double d, void **args) {
@@ -95,7 +92,7 @@ TEST_F(fftw_suite, fftw_execute) {
       get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
     }
-  tiff_frommatrix(before, matrix, diml, dimw);
+  ASSERT_EQ(0, tiff_frommatrix(before, matrix, diml, dimw));
 
   fftw_execute(forward);
   matrix_operation(comp_mat2, comp_mat, dimw, div_dim, args);
@@ -105,7 +102,7 @@ TEST_F(fftw_suite, fftw_execute) {
       get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
     }
-  tiff_frommatrix(ft, matrix, diml, dimw);
+  ASSERT_EQ(0, tiff_frommatrix(ft, matrix, diml, dimw));
 
   fftw_execute(backward);
   matrix_operation(comp_mat2, comp_mat, dimw, identity, NULL);
@@ -119,5 +116,10 @@ TEST_F(fftw_suite, fftw_execute) {
     // printf("\n");
   }
 
-  tiff_frommatrix(ift, matrix, diml, dimw);
+  ASSERT_EQ(0, tiff_frommatrix(ift, matrix, diml, dimw));
+  fftw_destroy_plan(backward);
+  fftw_destroy_plan(forward);
+  fftw_free(comp_mat2);
+  fftw_free(comp_mat);
+  free(matrix);
 }
