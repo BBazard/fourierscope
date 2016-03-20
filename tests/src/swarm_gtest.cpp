@@ -114,6 +114,7 @@ class swarm_suite : public ::testing::Test {
     free(import);
     free(args);
     fftw_free(toSplit);
+    fftw_cleanup();
   }
   /**
    *  @brief A function to divide by dim used in matrix_operation
