@@ -197,4 +197,6 @@ TEST_F(swarm_suite, swarm_test) {
       matrix_realpart(thumbnailDim, thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)], to_print);
       tiff_frommatrix(name, to_print, thumbnailDim, thumbnailDim);
     }
+
+  free(printable);
 }
