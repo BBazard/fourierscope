@@ -78,8 +78,12 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
     data = (unsigned char*) malloc(dimw * sizeof(unsigned char));
 
     for (uint32 row=0; row < diml; row++) {
-      if (TIFFReadScanline(tiff, buf, row, 0) == -1)
+      if (TIFFReadScanline(tiff, buf, row, 0) == -1) {
+        free(data);
+        _TIFFfree(buf);
+        TIFFClose(tiff);
         return 1;
+      }
       memcpy(data, buf, dimw*sizeof(char));
       for (int i=0; i < dimw; i++)
         matrix[row*dimw+i] = (double) data[i];
@@ -134,8 +138,12 @@ int tiff_frommatrix(const char *name, double *matrix,
       }
       memcpy(buf, data, dimw*sizeof(char));
 
-      if (TIFFWriteScanline(tiff, buf, row, 0) == -1)
+      if (TIFFWriteScanline(tiff, buf, row, 0) == -1) {
+        free(data);
+        _TIFFfree(buf);
+        TIFFClose(tiff);
         return 1;
+      }
     }
 
     free(data);
