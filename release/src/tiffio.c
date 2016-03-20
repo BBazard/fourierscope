@@ -73,21 +73,25 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
   uint16 sample;
 
   TIFF* tiff = TIFFOpen(name, "r");
+  if (tiff) {
+    buf = _TIFFmalloc(TIFFScanlineSize(tiff));
+    data = (unsigned char*) malloc(dimw * sizeof(char));
 
-  buf = _TIFFmalloc(TIFFScanlineSize(tiff));
-  data = (unsigned char*) malloc(dimw * sizeof(char));
+    for (uint32 row=0; row < diml; row++) {
+      if (TIFFReadScanline(tiff, buf, row, 0) == -1)
+        return 1;
+      memcpy(data, buf, dimw*sizeof(char));
+      for (int i=0; i < dimw; i++)
+        matrix[row*dimw+i] = (double) data[i];
+    }
 
-  for (uint32 row=0; row < diml; row++) {
-    if (TIFFReadScanline(tiff, buf, row, 0) == -1)
-      return 1;
-    memcpy(data, buf, dimw*sizeof(char));
-    for (int i=0; i < dimw; i++)
-      matrix[row*dimw+i] = (double) data[i];
+    free(data);
+    _TIFFfree(buf);
+    TIFFClose(tiff);
+    return 0;
+  } else {
+    return 1;
   }
-
-  free(data);
-  _TIFFfree(buf);
-  TIFFClose(tiff);
 }
 
 
@@ -122,8 +126,6 @@ int tiff_frommatrix(const char *name, double *matrix,
   double max = matrix_max(diml, dimw, matrix); /**< @todo change this diml */
   double min = matrix_min(diml, dimw, matrix);
 
-
-
   for (uint32 row=0; row < diml; row++) {
     for (int i=0; i < dimw; i++) {
       data[i] = tiff_fullscale(min, max, matrix[row*dimw+i]);
@@ -139,4 +141,6 @@ int tiff_frommatrix(const char *name, double *matrix,
   free(data);
   _TIFFfree(buf);
   TIFFClose(tiff);
+
+  return 0;
 }
