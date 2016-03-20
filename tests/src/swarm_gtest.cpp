@@ -111,6 +111,8 @@ class swarm_suite : public ::testing::Test {
       fftw_free(thumbnail[i]);
     free(thumbnail);
     free(to_print);
+    free(import);
+    free(args);
     fftw_free(toSplit);
   }
   /**
