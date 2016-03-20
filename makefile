@@ -105,13 +105,13 @@ clean:
 	printf "\033[0;33m"
 	printf "Cleaning build directory\n"
 	printf "\033[0m"
-	-rm -r $(BUILDDIR)
+	-rm -r $(BUILDDIR) 2> /dev/null
 .PHONY: clean
 
 mrproper: clean
 	printf "\033[0;33m"
 	printf "Cleaning binary directory\n"
 	printf "\033[0m"
-	-rm -r $(DOCDIR)/{latex,html}
-	-rm -r $(BINDIR)
+	-rm -r $(DOCDIR)/{latex,html} 2> /dev/null
+	-rm -r $(BINDIR) 2> /dev/null
 .PHONY: mrproper
