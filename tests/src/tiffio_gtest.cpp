@@ -48,7 +48,7 @@ class existing_input_units : public tiffio_suite {
   /** Path of an existing tiff image */
   const char *input = "images/grayscale.tiff";
   /** Existing path for an output */
-  const char *output = "images/test_write.tiff";
+  const char *output = "build/test_write.tiff";
 
   virtual void SetUp() {
     tiffio_suite::SetUp();

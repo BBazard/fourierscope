@@ -66,9 +66,9 @@ class square_input_units : public fftw_suite {
   const char *input = "images/square.tiff";
 
   /** Existing path for an output */
-  const char *before = "images/fftw_before.tiff";
-  const char *ft = "images/fftw_ft.tiff";
-  const char *ift = "images/fftw_ift.tiff";
+  const char *before = "build/fftw_before.tiff";
+  const char *ft = "build/fftw_ft.tiff";
+  const char *ift = "build/fftw_ift.tiff";
 
   virtual void SetUp() {
     fftw_suite::SetUp();
