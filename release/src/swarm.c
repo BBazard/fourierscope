@@ -8,6 +8,36 @@
  */
 
 #include "include/swarm.h"
+
+/* image centrale D(0,0) -> TF -> Disk D(0,0,r) -> TFI -> */
+/* ei^{\phi}*Image départ -> TF -> actualisation du spectre dans D(0,0,R) */
+void update_spetrum(fftw_complex *thumb, int th_dim, int radius,
+                    fftw_plan forward, fftw_plan backward, fftw_complex *itf,
+                    fftw_complex *tf) {
+  matrix_operation(thumb, itf, th_dim, identity, NULL);
+  fftw_execute(forward);
+
+  for (int i = 0; i < th_dim*th_dim; i++) {
+    (itf[i])[0] = 0;
+    (itf[i])[1] = 0;
+  }
+
+  cut_disk(tf, itf, th_dim, radius);
+
+  /** @todo optimize fftw_plans */
+  matrix_operation(itf, tf, th_dim, identity, NULL);
+  fftw_execute(backward);
+
+  for (int i = 0; i < th_dim*th_dim; i++) {
+    get_modarg(thumb[i], tf[i]);
+    get_modarg(itf[i], itf[i]);
+    (itf[i])[0] = (tf[i])[0];
+    get_algebraic(itf[i], itf[i]);
+  }
+
+  fftw_execute(forward);
+}
+
 #if 0
 /**
  *  @brief Unite multiples small images in a big one

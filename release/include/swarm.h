@@ -11,6 +11,8 @@
 
 #include "include/matrix.h"
 
+void update_spetrum(fftw_complex *thumb, int th_dim, fftw_plan forward,
+                    fftw_plan backward, fftw_complex *tf, fftw_complex *itf);
 int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
           int radius, fftw_complex *out);
 

@@ -257,7 +257,7 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
   int offX = centerX-mid;
   int offY = centerY-mid;
 
-  int radius_max = (dim-1)/2; // without offset
+  int radius_max = (dim-1)/2;  // without offset
   // when the dimension is even
   // a negative offset is mitigated by one
   // for exemple with dim = 4 the "mid" is bottom-right
