@@ -201,3 +201,48 @@ TEST_F(matrix_suite, matrix_realpart_test) {
     }
   }
 }
+
+/**
+ *  @brief cut_disk_with_offset function test
+ *
+ *  Call the cut_disk_with_offset function and test when
+ *  called with wrong arguments
+ *
+ */
+TEST_F(matrix_suite, cut_disk_with_offset_test) {
+  int radius_max = (dim-1)/2; // radius maximum when no offset
+  int mid = dim/2+dim%2; // coordinates of the center
+
+  int radius = dim/4;
+  int centerX = mid, centerY = mid;
+  ASSERT_EQ(0, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+
+  radius = 2*radius_max+1;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+
+  radius = dim/4;
+  centerX = 2*dim;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+  centerX = -mid;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+
+  centerX = mid;
+  centerY = 2*dim;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+  centerY = -dim;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+
+  // dim = 2*radius_max+1 when no offset
+  centerX = mid, centerY = mid;
+  radius = (dim-1)/2;
+  ASSERT_EQ(0, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+  radius++;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+  radius--;
+  centerX++;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+  centerX--;
+  centerY++;
+  ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
+}
+

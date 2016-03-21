@@ -215,7 +215,7 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
 }
 
 /**
- *  @brief Set all the matrix cells outside of a disk to 0
+ *  @brief Set all the matrix cells outside of a centered disk to 0
  *  @param[in] in The fftw_complex 2d matrix used as input
  *  @param[out] out The fftw_complex 2d matrix used as output
  *  @param[in] dim The dimension of the matrix (assumed square)
@@ -223,15 +223,49 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
  *  @return 1 If the radius of the circle cannot fit in the matrix
  *  @return 0 Otherwise
  *
- *  This function computes a disk in the input matrix using taxicab geometry.
- *  The circle is centered on the middle of the matrix (not exact if the matrix
- *  dimension is an even number).
+ *  This is just a wrapper of cut_disk_with_offset
  *
  */
 int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
-  int mid = dim/2 + dim % 2;
+  int mid = dim/2+dim%2;
+  return cut_disk_with_offset(in, out, dim, radius, mid, mid);
+}
 
-  if (radius > mid) {
+/**
+ *  @brief Set all the matrix cells outside of a disk to 0
+ *  @param[in] in The fftw_complex 2d matrix used as input
+ *  @param[out] out The fftw_complex 2d matrix used as output
+ *  @param[in] dim The dimension of the matrix (assumed square)
+ *  @param[in] radius The radius of the disk
+ *  @param[in] centerX The X coordinate of the center of the disk
+ *  @param[in] centerX The Y coordinate of the center of the disk
+ *  @return 1 If the radius of the circle cannot fit in the matrix
+ *  @return 0 Otherwise
+ *
+ *  This function computes a disk in the input matrix using taxicab geometry.
+ *  The center of the circle has the coordinates centerX;centerY
+ *
+ */
+int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim, int radius, int centerX, int centerY) {
+  int mid = dim/2+dim%2;
+  int offX = centerX-mid;
+  int offY = centerY-mid;
+
+  // when the dimension is even
+  // a negative offset is mitigated by one
+  // for exemple with dim = 4 the "mid" is bottom-right
+  // even with a negative offset of one, the maximum radius is still 0
+  if(dim%2 == 0) {
+    // as offX is only use to test if the disk fit
+    // offX++ only reduce abs(offX)
+    if(offX < 0);
+      offX++;
+    if(offY < 0);
+      offY++;
+  }
+
+  if (dim <= 0 || radius <= 0 ||
+      abs(offX)+2*radius+1 > dim || abs(offY)+2*radius+1 > dim) {
     return 1;
   } else {
     int *ref;
@@ -240,8 +274,8 @@ int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
     for (int i = 0; i < dim * dim; i++)
       ref[i] = -1;
 
-    ref[mid*dim+mid] = radius;
-    von_neumann(mid, mid, radius-1, ref, dim, in, out);
+    ref[centerX*dim+centerY] = radius;
+    von_neumann(centerX, centerY, radius-1, ref, dim, in, out);
     free(ref);
     return 0;
   }
