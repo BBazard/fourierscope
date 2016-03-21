@@ -100,7 +100,6 @@ valgrind:
 	printf "\033[0m"
 .PHONY: valgrind
 
-
 clean:
 	printf "\033[0;33m"
 	printf "Cleaning build directory\n"
@@ -112,6 +111,9 @@ mrproper: clean
 	printf "\033[0;33m"
 	printf "Cleaning binary directory\n"
 	printf "\033[0m"
-	-rm -r $(DOCDIR)/{latex,html} 2> /dev/null
 	-rm -r $(BINDIR) 2> /dev/null
+	printf "\033[0;33m"
+	printf "Cleaning doc directory\n"
+	printf "\033[0m"
+	-rm -r $(DOCDIR)/{html,latex} 2> /dev/null
 .PHONY: mrproper
