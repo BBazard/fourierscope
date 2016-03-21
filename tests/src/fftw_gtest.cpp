@@ -78,8 +78,8 @@ class square_input_units : public fftw_suite {
     args[1] = &diml;
 
     matrix = (double *) malloc(diml * dimw * sizeof(double));
-    comp_mat = (fftw_complex *) fftw_malloc(diml * dimw * sizeof(fftw_complex));
-    comp_mat2 = (fftw_complex *) fftw_malloc(diml * dimw * sizeof(fftw_complex));
+    comp_mat = (fftw_complex *) fftw_malloc(diml*dimw*sizeof(fftw_complex));
+    comp_mat2 = (fftw_complex *) fftw_malloc(diml*dimw*sizeof(fftw_complex));
     forward = fftw_plan_dft_2d(diml, dimw, comp_mat, comp_mat2,
                                FFTW_FORWARD, FFTW_ESTIMATE);
     backward = fftw_plan_dft_2d(diml, dimw, comp_mat, comp_mat2,

@@ -39,7 +39,7 @@ double div_dim(double d, void **args);
 
 int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius);
 int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
-              int radius, int centerX, int centerY);
+                         int radius, int centerX, int centerY);
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out);
 

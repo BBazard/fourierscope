@@ -246,7 +246,8 @@ int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
  *  The center of the circle has the coordinates centerX;centerY
  *
  */
-int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim, int radius, int centerX, int centerY) {
+int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
+                         int radius, int centerX, int centerY) {
   int mid = dim/2+dim%2;
   int offX = centerX-mid;
   int offY = centerY-mid;
@@ -255,7 +256,7 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim, int radiu
   // a negative offset is mitigated by one
   // for exemple with dim = 4 the "mid" is bottom-right
   // even with a negative offset of one, the maximum radius is still 0
-  if(dim%2 == 0) {
+  if (dim%2 == 0) {
     // as offX is only use to test if the disk fit
     // offX++ only reduce abs(offX)
     if(offX < 0);

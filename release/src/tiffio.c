@@ -133,8 +133,6 @@ int tiff_frommatrix(const char *name, double *matrix,
     for (uint32 row=0; row < diml; row++) {
       for (int i=0; i < dimw; i++) {
         data[i] = tiff_fullscale(min, max, matrix[row*dimw+i]);
-        /* if (matrix[row*dimw+i] > max*0.8) */
-        /*   printf("(%d) %f; %f; %f; %d\n", i, min, max, matrix[row*dimw+i], data[i]); */
       }
       memcpy(buf, data, dimw*sizeof(char));
 

@@ -210,8 +210,8 @@ TEST_F(matrix_suite, matrix_realpart_test) {
  *
  */
 TEST_F(matrix_suite, cut_disk_with_offset_test) {
-  int radius_max = (dim-1)/2; // radius maximum when no offset
-  int mid = dim/2+dim%2; // coordinates of the center
+  int radius_max = (dim-1)/2;  // radius maximum when no offset
+  int mid = dim/2+dim%2;  // coordinates of the center
 
   int radius = dim/4;
   int centerX = mid, centerY = mid;
