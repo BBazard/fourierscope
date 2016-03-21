@@ -259,9 +259,9 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
   if (dim%2 == 0) {
     // as offX is only use to test if the disk fit
     // offX++ only reduce abs(offX)
-    if(offX < 0);
+    if (offX < 0)
       offX++;
-    if(offY < 0);
+    if (offY < 0)
       offY++;
   }
 
