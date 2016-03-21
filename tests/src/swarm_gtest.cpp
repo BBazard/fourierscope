@@ -150,15 +150,7 @@ TEST_F(swarm_suite, swarm_test) {
   matrix_operation(toSplit, toSplit, toSplitDim, div_dim, args);
 
   double *printable = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
-  // for (int p = 0; p < toSplitDim * toSplitDim; p++) {
-  //   // printf("alg: %f;%f\n", (toSplit[p])[0], (toSplit[p])[1]);
-  //   get_modarg(toSplit[p], toSplit[p]);
-  //   // printf("mod: %f;%f\n", (toSplit[p])[0], (toSplit[p])[1]);
-  // }
   matrix_realpart(toSplitDim, toSplit, printable);
-  // matrix_operation(toSplit, toSplit, toSplitDim, by_log, NULL);
-  // for (int p = 0; p < toSplitDim * toSplitDim; p++)
-  //   printf("%f\n", printable[p]);
   tiff_frommatrix("build/test.tiff", printable, toSplitDim, toSplitDim);
 
   int mid = toSplitDim/2 + toSplitDim%2;
@@ -171,8 +163,6 @@ TEST_F(swarm_suite, swarm_test) {
 
       /* extract the thumbnail */
       ASSERT_EQ(0, matrix_extract(thumbnailDim, toSplitDim, thumbnail_buf[0], toSplit, offX, offY)); /**< @bug mid is not in mid but in left-high corner */
-      // matrix_realpart(thumbnailDim, thumbnail_buf[0], to_print);
-      // tiff_frommatrix(name, to_print, thumbnailDim, thumbnailDim);
 
       /* set zero outside the disk (default value) */
       for (int k = 0; k < thumbnailDim*thumbnailDim; k++) {
@@ -181,9 +171,7 @@ TEST_F(swarm_suite, swarm_test) {
       }
 
       ASSERT_EQ(0, cut_disk(thumbnail_buf[0], thumbnail_buf[1], thumbnailDim, radius));
-      // matrix_realpart(thumbnailDim, thumbnail_buf[1], to_print);
-      // tiff_frommatrix(name, to_print, thumbnailDim, thumbnailDim);
-      // invert fourier transform
+      /* invert fourier transform */
       fftw_execute(backward);
 
       matrix_operation(thumbnail_buf[0],
@@ -198,6 +186,5 @@ TEST_F(swarm_suite, swarm_test) {
       matrix_realpart(thumbnailDim, thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)], to_print);
       tiff_frommatrix(name, to_print, thumbnailDim, thumbnailDim);
     }
-
   free(printable);
 }
