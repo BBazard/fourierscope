@@ -32,18 +32,17 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   int s = 1;
   int jorga_x = 2;
 
-  if ( (out = malloc(out_dim*out_dim*sizeof(fftw_complex))) == NULL )
+  if ( (itf = (fftw_complex *) malloc(th_dim*th_dim*
+                                      sizeof(fftw_complex))) == NULL )
     return 1;
 
-  if ( (itf = malloc(th_dim*th_dim*sizeof(fftw_complex))) == NULL )
+  if ( (tf = (fftw_complex *) malloc(th_dim*th_dim*
+                                     sizeof(fftw_complex))) == NULL )
     return 1;
 
-  if ( (tf = malloc(th_dim*th_dim*sizeof(fftw_complex))) == NULL )
-    return 1;
-
-  forward = fftw_plan_dft_2d(th_dim, th_dim, itf, tf
+  forward = fftw_plan_dft_2d(th_dim, th_dim, itf, tf,
                               FFTW_FORWARD, FFTW_ESTIMATE);
-  backward = fftw_plan_dft_2d(th_dim, th_dim, tf, itf
+  backward = fftw_plan_dft_2d(th_dim, th_dim, tf, itf,
                               FFTW_BACKWARD, FFTW_ESTIMATE);
 
   /* Spiral loop*/
