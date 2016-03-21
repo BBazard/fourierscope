@@ -34,4 +34,11 @@ double matrix_min(int diml, int dimw, double *matrix);
 int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
                    fftw_complex* big, int offX, int offY);
 
+double identity(double d, void **args);
+double div_dim(double d, void **args);
+
+int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius);
+void von_neumann(int x, int y, int radius, int *mat, int dim,
+                 fftw_complex *in, fftw_complex *out);
+
 #endif /* RELEASE_INCLUDE_MATRIX_H_ */

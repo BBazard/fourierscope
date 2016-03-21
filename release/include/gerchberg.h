@@ -11,12 +11,6 @@
 
 #include "include/matrix.h"
 
-double identity(double d, void **args);
-double div_dim(double d, void **args);
-
-int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius);
-void von_neumann(int x, int y, int radius, int *mat, int dim,
-                 fftw_complex *in, fftw_complex *out);
 void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
                int exec_limit, int radius);
 

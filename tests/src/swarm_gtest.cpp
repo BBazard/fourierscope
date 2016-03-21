@@ -9,7 +9,6 @@
 
 #include "include/matrix.h"
 #include "include/tiffio.h"
-#include "include/gerchberg.h"
 #include "gtest/gtest.h"
 
 /**
