@@ -143,10 +143,15 @@ void get_modarg(fftw_complex in, fftw_complex out) {
  *  This function computes the algebraic form of a complex
  *  given its module and argument.
  *
+ *  in and out parameters can be the same memory address.
+ *
  */
 void get_algebraic(fftw_complex in, fftw_complex out) {
-  out[0] = in[0]*cos(in[1]);
-  out[1] = in[0]*sin(in[1]);
+  fftw_complex tmp;
+  tmp[0] = in[0]*cos(in[1]);
+  tmp[1] = in[0]*sin(in[1]);
+  out[0] = tmp[0];
+  out[1] = tmp[1];
 }
 
 /**
