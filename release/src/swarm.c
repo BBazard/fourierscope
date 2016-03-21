@@ -31,10 +31,10 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   int j = 0;
   int s = 1;
   int jorga_x = 2;
-  
+
   if ( (out = malloc(out_dim*out_dim*sizeof(fftw_complex))) == NULL )
     return 1;
-  
+
   if ( (itf = malloc(th_dim*th_dim*sizeof(fftw_complex))) == NULL )
     return 1;
 
@@ -48,15 +48,15 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
 
   /* Spiral loop*/
   for (int p = 1; p < 2*jorga_x+1; p++) {
-    for (int a = 0; a < p; i-=s,a++) {
+    for (int a = 0; a < p; i-=s, a++) {
       printf("%d, %d\n", i, j);
     }
-    for (int a = 0; a < p; j+=s,a++) {
+    for (int a = 0; a < p; j+=s, a++) {
       printf("%d, %d\n", i, j);
     }
     s *= -1;
   }
-  for (int a = 0; a < 2*jorga_x+1; i-=s,a++) {
+  for (int a = 0; a < 2*jorga_x+1; i-=s, a++) {
     printf("%d, %d\n", i, j);
   }
   return 0;

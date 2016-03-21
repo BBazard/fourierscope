@@ -21,6 +21,8 @@ class swarm_suite : public ::testing::Test {
   int thumbnailDim; /**< The dimension of the thumbnails created in the tests */
   int radius;
 
+  const char *input = "images/square.tiff";
+
   /**
    *  The number of thumbnails from the center to the extremities
    *  in the Fourier domain
@@ -32,15 +34,15 @@ class swarm_suite : public ::testing::Test {
 
   fftw_complex *toSplit; /**< A fftw_complex matrix to split in thumbnails */
   fftw_complex **thumbnail; /**< @todo what is a thumbnail */
-  fftw_complex *thumbnail_buf[2]; /**< buffers the same dimensions as a thumbnail */
+  fftw_complex *thumbnail_buf[2]; /**< buffers same dimensions as a thumbnail */
 
   /** The fftw_plan in which is executed the fft */
   fftw_plan forward;
   fftw_plan backward;
 
   /** The matrix to be printed in external images */
-  double *to_print;
-  double *import;
+  double *io_small;
+  double *io_big;
 
   void **args;
 
@@ -59,16 +61,21 @@ class swarm_suite : public ::testing::Test {
     radius = 10;
     delta_x = 20, delta_y = 20;
 
-    toSplit = (fftw_complex*) fftw_malloc(toSplitDim * toSplitDim * sizeof(fftw_complex));
-    thumbnail_buf[0] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim * sizeof(fftw_complex));
-    thumbnail_buf[1] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim * sizeof(fftw_complex));
+    toSplit = (fftw_complex*) fftw_malloc(toSplitDim * toSplitDim *
+                                          sizeof(fftw_complex));
+    thumbnail_buf[0] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
+                                                   sizeof(fftw_complex));
+    thumbnail_buf[1] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
+                                                   sizeof(fftw_complex));
 
-    thumbnail = (fftw_complex**) malloc((2*jorga_x+1)*(2*jorga_y+1)*sizeof(fftw_complex*));
+    thumbnail = (fftw_complex**) malloc((2*jorga_x+1)*(2*jorga_y+1)*
+                                        sizeof(fftw_complex*));
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
-        thumbnail[i] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim * sizeof(fftw_complex));
+        thumbnail[i] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
+                                                   sizeof(fftw_complex));
 
-    to_print = (double*) malloc(thumbnailDim * thumbnailDim * sizeof(double));
-    import = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
+    io_small = (double*) malloc(thumbnailDim * thumbnailDim * sizeof(double));
+    io_big = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
 
     args = (void**) malloc(5*sizeof(void*));
     args[0] = &toSplitDim;
@@ -109,8 +116,8 @@ class swarm_suite : public ::testing::Test {
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
       fftw_free(thumbnail[i]);
     free(thumbnail);
-    free(to_print);
-    free(import);
+    free(io_small);
+    free(io_big);
     free(args);
     fftw_free(toSplit);
     fftw_cleanup();
@@ -140,17 +147,16 @@ TEST_F(swarm_suite, swarm_test) {
   ASSERT_EQ(1, (jorga_x*delta_x+thumbnailDim < toSplitDim));
   ASSERT_EQ(1, (jorga_y*delta_y+thumbnailDim < toSplitDim));
 
-  ASSERT_EQ(0, tiff_tomatrix("images/square.tiff", import, toSplitDim, toSplitDim));
+  ASSERT_EQ(0, tiff_tomatrix(input, io_big, toSplitDim, toSplitDim));
   for (int i = 0; i < toSplitDim * toSplitDim; i++)
-    (toSplit[i])[0] = import[i];
+    (toSplit[i])[0] = io_big[i];
 
   /* fourier transform toSplit */
   fftw_execute(forward);
   matrix_operation(toSplit, toSplit, toSplitDim, div_dim, args);
 
-  double *printable = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
-  matrix_realpart(toSplitDim, toSplit, printable);
-  tiff_frommatrix("build/test.tiff", printable, toSplitDim, toSplitDim);
+  matrix_realpart(toSplitDim, toSplit, io_big);
+  tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
 
   int mid = toSplitDim/2 + toSplitDim%2;
   char name[14] = "build/xx.tiff";
@@ -161,7 +167,9 @@ TEST_F(swarm_suite, swarm_test) {
       int offY = mid + j*delta_y;
 
       /* extract the thumbnail */
-      ASSERT_EQ(0, matrix_extract(thumbnailDim, toSplitDim, thumbnail_buf[0], toSplit, offX, offY)); /**< @bug mid is not in mid but in left-high corner */
+      /** @bug mid is not in mid but in left-high corner */
+      ASSERT_EQ(0, matrix_extract(thumbnailDim, toSplitDim, thumbnail_buf[0],
+                                  toSplit, offX, offY));
 
       /* set zero outside the disk (default value) */
       for (int k = 0; k < thumbnailDim*thumbnailDim; k++) {
@@ -169,7 +177,9 @@ TEST_F(swarm_suite, swarm_test) {
         ((thumbnail_buf[1])[k])[1] = 0;
       }
 
-      ASSERT_EQ(0, cut_disk(thumbnail_buf[0], thumbnail_buf[1], thumbnailDim, radius));
+      ASSERT_EQ(0, cut_disk(thumbnail_buf[0], thumbnail_buf[1],
+                            thumbnailDim, radius));
+
       /* invert fourier transform */
       fftw_execute(backward);
 
@@ -179,11 +189,14 @@ TEST_F(swarm_suite, swarm_test) {
 
       /* get module */
       for (int k = 0; k < thumbnailDim * thumbnailDim; k++)
-        get_modarg((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k], (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k]); /**< @bug good type but not good place*/
+        /** @bug good type but not good place*/
+        get_modarg((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k],
+                   (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k]);
       name[6] = (i + jorga_x) + '0';
       name[7] = (j + jorga_y) + '0';
-      matrix_realpart(thumbnailDim, thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)], to_print);
-      tiff_frommatrix(name, to_print, thumbnailDim, thumbnailDim);
+      matrix_realpart(thumbnailDim,
+                      thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)],
+                      io_small);
+      tiff_frommatrix(name, io_small, thumbnailDim, thumbnailDim);
     }
-  free(printable);
 }
