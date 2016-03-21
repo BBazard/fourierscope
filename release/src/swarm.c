@@ -8,7 +8,7 @@
  */
 
 #include "include/swarm.h"
-
+#if 0
 /**
  *  @brief Unite multiples small images in a big one
  *  @param[in] thumbnails All the thumbnails in one big matrix
@@ -60,3 +60,4 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   }
   return 0;
 }
+#endif

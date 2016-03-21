@@ -21,7 +21,7 @@ class swarm_suite : public ::testing::Test {
   int thumbnailDim; /**< The dimension of the thumbnails created in the tests */
   int radius;
 
-  const char *input = "images/square.tiff";
+  void **args; /**< arguments vector for matrix_operation function */
 
   /**
    *  The number of thumbnails from the center to the extremities
@@ -31,20 +31,6 @@ class swarm_suite : public ::testing::Test {
 
   /** The distance in pixel between deux thumbnails */
   int delta_x, delta_y;
-
-  fftw_complex *toSplit; /**< A fftw_complex matrix to split in thumbnails */
-  fftw_complex **thumbnail; /**< @todo what is a thumbnail */
-  fftw_complex *thumbnail_buf[2]; /**< buffers same dimensions as a thumbnail */
-
-  /** The fftw_plan in which is executed the fft */
-  fftw_plan forward;
-  fftw_plan backward;
-
-  /** The matrix to be printed in external images */
-  double *io_small;
-  double *io_big;
-
-  void **args;
 
   /**
    *  @brief setup function for swarm_suite tests
@@ -61,6 +47,59 @@ class swarm_suite : public ::testing::Test {
     radius = 10;
     delta_x = 20, delta_y = 20;
 
+    args = (void**) malloc(5*sizeof(void*));
+    args[0] = &toSplitDim;
+    args[1] = NULL;
+
+    srand(time(NULL));  // @todo is it fine to do this ?
+  }
+
+  /**
+   *  @brief teardown function for swarm_suite tests
+   *
+   *  Free all memory allocations
+   *
+   */
+  virtual void TearDown() {
+    free(args);
+  }
+
+  /**
+   *  @brief A function to divide by dim used in matrix_operation
+   *
+   *  args[0] MUST contains the pointer to the dimension of the matrix
+   *
+   */
+  static double div_dim(double d, void **args) {
+    int dim = *((int*) args[0]);
+    return d/(double) (dim);
+  }
+};
+
+/**
+ *  @brief fftw_complex_units class
+ *
+ *  This class should be inherited if fftw_complex allocations are needed
+ *
+ */
+class fftw_complex_units : public virtual swarm_suite {
+ protected:
+  fftw_complex *toSplit; /**< A fftw_complex matrix to split in thumbnails */
+  fftw_complex **thumbnail; /**< @todo what is a thumbnail */
+  fftw_complex *thumbnail_buf[2]; /**< buffers same dimensions as a thumbnail */
+
+  /** The fftw_plan in which is executed the fft */
+  fftw_plan forward; /**< A fftw_plan for fourier transform */
+  fftw_plan backward; /**< A fftw_plan for inverse fourier transform */
+
+  /**
+   *  @brief fftw_complex_units SetUp function
+   *
+   *  Allocate memory for fftw_complex and double matrix structures.
+   *
+   */
+  virtual void SetUp() {
+    swarm_suite::SetUp();
     toSplit = (fftw_complex*) fftw_malloc(toSplitDim * toSplitDim *
                                           sizeof(fftw_complex));
     thumbnail_buf[0] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
@@ -71,20 +110,11 @@ class swarm_suite : public ::testing::Test {
     thumbnail = (fftw_complex**) malloc((2*jorga_x+1)*(2*jorga_y+1)*
                                         sizeof(fftw_complex*));
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
-        thumbnail[i] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
-                                                   sizeof(fftw_complex));
-
-    io_small = (double*) malloc(thumbnailDim * thumbnailDim * sizeof(double));
-    io_big = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
-
-    args = (void**) malloc(5*sizeof(void*));
-    args[0] = &toSplitDim;
-    args[1] = NULL;
-
-    srand(time(NULL));  // @todo is it fine to do this ?
+      thumbnail[i] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
+                                                 sizeof(fftw_complex));
 
     forward = fftw_plan_dft_2d(toSplitDim, toSplitDim, toSplit, toSplit,
-                                       FFTW_FORWARD, FFTW_ESTIMATE);
+                               FFTW_FORWARD, FFTW_ESTIMATE);
     backward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, thumbnail_buf[1],
                                 thumbnail_buf[0], FFTW_BACKWARD, FFTW_ESTIMATE);
 
@@ -101,39 +131,82 @@ class swarm_suite : public ::testing::Test {
   }
 
   /**
-   *  @brief teardown function for swarm_suite tests
+   *  @brief fftw_complex_units TearDown function
    *
-   *  Free all memory allocations
+   *  Free previously allocated memory
    *
    */
   virtual void TearDown() {
     fftw_destroy_plan(forward);
     fftw_destroy_plan(backward);
 
-    fftw_free(thumbnail_buf[0]);
-    fftw_free(thumbnail_buf[1]);
-
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
       fftw_free(thumbnail[i]);
     free(thumbnail);
-    free(io_small);
-    free(io_big);
-    free(args);
+
+    fftw_free(thumbnail_buf[0]);
+    fftw_free(thumbnail_buf[1]);
+
     fftw_free(toSplit);
+
     fftw_cleanup();
+    swarm_suite::TearDown();
   }
+};
+
+/**
+ *  @brief io_units class
+ *
+ *  This class should be inherited if there is a need
+ *  for images input or output
+ *
+ */
+class io_units : public virtual swarm_suite {
+ protected:
+  const char *input = "images/square.tiff"; /**< Image input */
+
+  double *io_small; /**< For small dim outputs */
+  double *io_big; /**< For big dim outputs */
+
   /**
-   *  @brief A function to divide by dim used in matrix_operation
+   *  @brief io_units SetUp function
    *
-   *  args[0] MUST contains the pointer to the dimension of the matrix
+   *  Allocate memory for both a small and big input/ouput buffers
    *
    */
-  static double div_dim(double d, void **args) {
-    int dim = *((int*) args[0]);
-    return d/(double) (dim);
+  virtual void SetUp() {
+    io_small = (double*) malloc(thumbnailDim * thumbnailDim * sizeof(double));
+    io_big = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
   }
 
-  static double by_log(double d, void **args) {return log(d);}
+  /**
+   *  @brief io_units TearDown function
+   *
+   *  Free previously allocated memory
+   *
+   */
+  virtual void TearDown() {
+    free(io_small);
+    free(io_big);
+  }
+};
+
+/**
+ *  @brief fftw_and_io_units class
+ *
+ *  Inherits both io_units and fftw_complex_units classes
+ *
+ */
+class fftw_and_io_units : public io_units, public fftw_complex_units {
+  virtual void SetUp() {
+    fftw_complex_units::SetUp();
+    io_units::SetUp();
+  }
+
+  virtual void TearDown() {
+    io_units::TearDown();
+    fftw_complex_units::TearDown();
+  }
 };
 
 /**
@@ -143,7 +216,7 @@ class swarm_suite : public ::testing::Test {
  *  from this image
  *
  */
-TEST_F(swarm_suite, swarm_test) {
+TEST_F(fftw_and_io_units, swarm_test) {
   ASSERT_EQ(1, (jorga_x*delta_x+thumbnailDim < toSplitDim));
   ASSERT_EQ(1, (jorga_y*delta_y+thumbnailDim < toSplitDim));
 
