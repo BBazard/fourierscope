@@ -83,7 +83,7 @@ class square_input_units : public fftw_suite {
     forward = fftw_plan_dft_2d(diml, dimw, comp_mat, comp_mat2,
                                FFTW_FORWARD, FFTW_ESTIMATE);
     backward = fftw_plan_dft_2d(diml, dimw, comp_mat, comp_mat2,
-                                FFTW_FORWARD, FFTW_ESTIMATE);
+                                FFTW_BACKWARD, FFTW_ESTIMATE);
 
     for (int i = 0; i < diml; i++)
       for (int j = 0; j < dimw; j++) {
