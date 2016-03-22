@@ -345,7 +345,7 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
  *  If dimension even
  *  0 1 X 3     5 X X X
  *  2 X X X ->  X X 4 X
- *  X X 5 X ->  X 3 O 1
+ *  X X 5 X ->  X 3 0 1
  *  4 X X X     X X 2 X
  * 
  *  If dimension is odd
@@ -361,7 +361,7 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
  *  the algorithm is not-in-place
  * 
  */
-void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset)
+void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset) {
   for (int i = 0; i < dim; i++) {
     for (int j = 0; j < dim; j++) {
       int X = (i+offset)%dim;
