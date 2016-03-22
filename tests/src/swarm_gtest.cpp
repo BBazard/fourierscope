@@ -153,6 +153,51 @@ class fftw_complex_units : public virtual swarm_suite {
   }
 };
 
+class fftw_soft_units : public virtual swarm_suite {
+ protected:
+  fftw_complex *thumbnail;
+  fftw_complex *itf;
+  fftw_complex *tf;
+
+  fftw_plan forward;
+  fftw_plan backward;
+
+  virtual void SetUp() {
+    swarm_suite::SetUp();
+    thumbnail = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
+                                             sizeof(fftw_complex));
+    itf = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
+                                             sizeof(fftw_complex));
+    tf = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
+                                             sizeof(fftw_complex));
+
+    forward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, itf, tf,
+                                FFTW_FORWARD, FFTW_ESTIMATE);
+    backward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, tf, itf,
+                                FFTW_BACKWARD, FFTW_ESTIMATE);
+
+    for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
+      (thumbnail[i])[0] = 0;
+      (thumbnail[i])[1] = 0;
+      (itf[i])[0] = 0;
+      (itf[i])[1] = 0;
+      (tf[i])[0] = 0;
+      (tf[i])[1] = 0;
+    }
+  }
+
+  virtual void TearDown() {
+    fftw_destroy_plan(forward);
+    fftw_destroy_plan(backward);
+
+    fftw_free(tf);
+    fftw_free(itf);
+    fftw_free(thumbnail);
+    fftw_cleanup();
+    swarm_suite::TearDown();
+  }
+};
+
 /**
  *  @brief io_units class
  *
@@ -191,12 +236,12 @@ class io_units : public virtual swarm_suite {
 };
 
 /**
- *  @brief fftw_and_io_units class
+ *  @brief complex_and_io_units class
  *
  *  Inherits both io_units and fftw_complex_units classes
  *
  */
-class fftw_and_io_units : public io_units, public fftw_complex_units {
+class complex_and_io_units : public io_units, public fftw_complex_units {
   virtual void SetUp() {
     fftw_complex_units::SetUp();
     io_units::SetUp();
@@ -209,13 +254,51 @@ class fftw_and_io_units : public io_units, public fftw_complex_units {
 };
 
 /**
+ *  @brief soft_and_io_units class
+ *
+ *  Inherits both io_units and fftw_complex_units classes
+ *
+ */
+class soft_and_io_units : public io_units, public fftw_soft_units {
+ protected:
+  const char* input = "images/small.tiff";
+  const char* output = "build/update_spectrum.tiff";
+
+  virtual void SetUp() {
+    fftw_soft_units::SetUp();
+    io_units::SetUp();
+    tiff_tomatrix(input, io_small, thumbnailDim, thumbnailDim);
+    for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
+      (thumbnail[i])[0] = io_small[i];
+    }
+  }
+
+  virtual void TearDown() {
+    io_units::TearDown();
+    fftw_soft_units::TearDown();
+  }
+};
+
+
+TEST_F(soft_and_io_units, update_spectrum) {
+  update_spectrum(thumbnail, thumbnailDim, radius, forward, backward,
+                  itf, tf);
+  for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
+    get_modarg(tf[i], tf[i]);
+    io_small[i] = (tf[i])[0];
+  }
+
+  tiff_frommatrix(output, io_small, thumbnailDim, thumbnailDim);
+}
+
+/**
  *  @brief swarming
  *
  *  Take a image and create multiple thumbnails
  *  from this image
  *
  */
-TEST_F(fftw_and_io_units, swarm_test) {
+TEST_F(complex_and_io_units, swarm) {
   ASSERT_EQ(1, (jorga_x*delta_x+thumbnailDim < toSplitDim));
   ASSERT_EQ(1, (jorga_y*delta_y+thumbnailDim < toSplitDim));
 
