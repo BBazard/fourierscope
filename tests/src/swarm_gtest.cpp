@@ -234,8 +234,8 @@ TEST_F(fftw_and_io_units, swarm_test) {
   int mid = toSplitDim/2 + toSplitDim%2;
   char name[14] = "build/xx.tiff";
 
-  for (int i = -jorga_x; i < jorga_x; i++)
-    for (int j = -jorga_y; j < jorga_y; j++) {
+  for (int i = -jorga_x; i <= jorga_x; i++)
+    for (int j = -jorga_y; j <= jorga_y; j++) {
       int offX = mid + i*delta_x;
       int offY = mid + j*delta_y;
 
