@@ -11,9 +11,9 @@
 
 /* image centrale D(0,0) -> TF -> Disk D(0,0,r) -> TFI -> */
 /* ei^{\phi}*Image départ -> TF -> actualisation du spectre dans D(0,0,R) */
-void update_spetrum(fftw_complex *thumb, int th_dim, int radius,
-                    fftw_plan forward, fftw_plan backward, fftw_complex *itf,
-                    fftw_complex *tf) {
+void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
+                     fftw_plan forward, fftw_plan backward, fftw_complex *itf,
+                     fftw_complex *tf) {
   matrix_operation(thumb, itf, th_dim, identity, NULL);
   fftw_execute(forward);
 

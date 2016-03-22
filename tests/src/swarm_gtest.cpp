@@ -7,8 +7,7 @@
  *
  */
 
-#include "include/matrix.h"
-#include "include/tiffio.h"
+#include "include/swarm.h"
 #include "gtest/gtest.h"
 
 /**

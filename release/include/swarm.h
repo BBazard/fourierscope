@@ -10,9 +10,11 @@
 #define RELEASE_INCLUDE_SWARM_H_
 
 #include "include/matrix.h"
+#include "include/tiffio.h"
 
-void update_spetrum(fftw_complex *thumb, int th_dim, fftw_plan forward,
-                    fftw_plan backward, fftw_complex *tf, fftw_complex *itf);
+void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
+                     fftw_plan forward, fftw_plan backward, fftw_complex *itf,
+                     fftw_complex *tf);
 int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
           int radius, fftw_complex *out);
 
