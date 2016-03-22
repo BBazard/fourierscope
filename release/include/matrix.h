@@ -43,4 +43,6 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out);
 
+void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset);
+
 #endif /* RELEASE_INCLUDE_MATRIX_H_ */

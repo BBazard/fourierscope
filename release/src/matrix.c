@@ -331,3 +331,44 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
     }
   }
 }
+
+/**
+ *  @brief Recenter the matrix
+ *  @param[in] in The matrix to modify
+ *  @param[out] out The resulting matrix
+ *  @param[in] dim The dimension of both matrices
+ *  @param[in] offset The offset between the old the new center \
+ *                    the offset is the same in X and Y
+ *
+ *  Examples assuming offset = dim/2
+ *
+ *  If dimension even
+ *  0 1 X 3     5 X X X
+ *  2 X X X ->  X X 4 X
+ *  X X 5 X ->  X 3 O 1
+ *  4 X X X     X X 2 X
+ * 
+ *  If dimension is odd
+ *  0 1 X X 3     5 X X X X
+ *  2 X X X X     X X 4 X X
+ *  X X X X X ->  X 3 0 1 X
+ *  X X X 5 X     X X 2 X X
+ *  4 X X X X     X X X X X
+ * 
+ *  Applying for +offset and then -offset give the original matrix
+ *
+ *  "in" and "out" matrices must be different instances, namely
+ *  the algorithm is not-in-place
+ * 
+ */
+void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset)
+  for (int i = 0; i < dim; i++) {
+    for (int j = 0; j < dim; j++) {
+      int X = (i+offset)%dim;
+      int Y = (j+offset)%dim;
+      (out[X*dim+Y])[0] = (in[i*dim+j])[0];
+      (out[X*dim+Y])[1] = (in[i*dim+j])[1];
+    }
+  }
+}
+
