@@ -246,3 +246,18 @@ TEST_F(matrix_suite, cut_disk_with_offset_test) {
   ASSERT_EQ(1, cut_disk_with_offset(a, b, dim, radius, centerX, centerY));
 }
 
+TEST_F(matrix_suite, cut_disk_new) {
+  EXPECT_EQ(0, cut_disk_with_offset(a, b, dim, 4, 0, 0));
+
+  for (int i = 0; i < dim; i++) {
+    for (int j = 0; j < dim; j++)
+      printf("%3.f", (a[i*dim+j])[0]);
+    printf("\n");
+  }
+  printf("\n");
+    for (int i = 0; i < dim; i++) {
+    for (int j = 0; j < dim; j++)
+      printf("%3.f", (b[i*dim+j])[0]);
+    printf("\n");
+  }
+}

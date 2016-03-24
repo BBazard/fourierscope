@@ -34,7 +34,7 @@ double div_dim(double d, void **args) {
  *  @param[in,out] mat The matrix to initialize
  *  @param[in] value The value with which to initialize the matrix
  *
- *  This function initializes a matrix with 0 in complexity O(n^{2})
+ *  This function initializes a matrix with a value in complexity O(n^{2})
  *
  */
 void matrix_init(int dim, fftw_complex *mat, double value) {
@@ -228,7 +228,7 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
  *
  */
 int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
-  int mid = dim/2+dim%2;
+  int mid = 0;
   return cut_disk_with_offset(in, out, dim, radius, mid, mid);
 }
 
@@ -272,7 +272,7 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
   if (abs(offY) > off_max)
     off_max = abs(offY);
 
-  radius_max -= off_max;
+  /* radius_max -= off_max; */
 
   if (dim <= 0 || radius <= 0 ||
       radius > radius_max) {
@@ -310,24 +310,26 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out) {
   if (radius >= 0) {
-    (out[x*dim+y])[0] = (in[x*dim+y])[0];
-    (out[x*dim+y])[1] = (in[x*dim+y])[1];
+    (out[((x+dim)%dim)*dim+((y+dim)%dim)])[0] =
+      (in[((x+dim)%dim)*dim+((y+dim)%dim)])[0];
+    (out[((x+dim)%dim)*dim+((y+dim)%dim)])[1] =
+      (in[((x+dim)%dim)*dim+((y+dim)%dim)])[1];
 
-    if (mat[(x+1)*dim+y] < radius) {
-      mat[(x+1)*dim+y] = radius;
-      von_neumann(x+1, y, radius-1, mat, dim, in, out);
+    if (mat[((x+1+dim)%dim)*dim+((y+dim)%dim)] < radius) {
+      mat[((x+1+dim)%dim)*dim+((y+dim)%dim)] = radius;
+      von_neumann(((x+1+dim)%dim), ((y+dim)%dim), radius-1, mat, dim, in, out);
     }
-    if (mat[(x-1)*dim+y] < radius) {
-      mat[(x-1)*dim+y] = radius;
-      von_neumann(x-1, y, radius-1, mat, dim, in, out);
+    if (mat[((x-1+dim)%dim)*dim+((y+dim)%dim)] < radius) {
+      mat[((x-1+dim)%dim)*dim+((y+dim)%dim)] = radius;
+      von_neumann(((x-1+dim)%dim), ((y+dim)%dim), radius-1, mat, dim, in, out);
     }
-    if (mat[x*dim+y+1] < radius) {
-      mat[x*dim+y+1] = radius;
-      von_neumann(x, y+1, radius-1, mat, dim, in, out);
+    if (mat[((x+dim)%dim)*dim+((y+1+dim)%dim)] < radius) {
+      mat[((x+dim)%dim)*dim+((y+1+dim)%dim)] = radius;
+      von_neumann(((x+dim)%dim), ((y+1+dim)%dim), radius-1, mat, dim, in, out);
     }
-    if (mat[x*dim+y-1] < radius) {
-      mat[x*dim+y-1] = radius;
-      von_neumann(x, y-1, radius-1, mat, dim, in, out);
+    if (mat[((x+dim)%dim)*dim+((y-1+dim)%dim)] < radius) {
+      mat[((x+dim)%dim)*dim+((y-1+dim)%dim)] = radius;
+      von_neumann(((x+dim)%dim), ((y-1+dim)%dim), radius-1, mat, dim, in, out);
     }
   }
 }
