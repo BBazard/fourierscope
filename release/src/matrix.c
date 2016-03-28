@@ -34,9 +34,12 @@ double div_dim(double d, void **args) {
  *  @param[in] ind The index to change
  *  @param[out] int The value of the new index
  *
+ *  Given any integer, return a value between 0 and dim-1
+ *
  */
 int cyclic(int dim, int ind) {
-  return (ind+dim)%dim;
+  int ret = ind%dim;
+  return ret < 0 ? ret+dim : ret;
 
 
 /**
