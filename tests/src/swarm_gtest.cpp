@@ -318,8 +318,8 @@ TEST_F(complex_and_io_units, swarm) {
 
   for (int i = -jorga_x; i <= jorga_x; i++)
     for (int j = -jorga_y; j <= jorga_y; j++) {
-      int offX = mid + i*delta_x;
-      int offY = mid + j*delta_y;
+      int offX = i*delta_x;
+      int offY = j*delta_y;
 
       /* extract the thumbnail */
       /** @bug mid is not in mid but in left-high corner */
