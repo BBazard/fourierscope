@@ -221,8 +221,8 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
   } else {
     for (int i = 0; i < smallDim; i++) {
       for (int j = 0; j < smallDim; j++) {
-        int X = matrix_cyclic(i+offX,bigDim);
-        int Y = matrix_cyclic(j+offY,bigDim);
+        int X = matrix_cyclic(i+offX, bigDim);
+        int Y = matrix_cyclic(j+offY, bigDim);
 
         (small[i*smallDim+j])[0] = (big[X*bigDim+Y])[0];
         (small[i*smallDim+j])[1] = (big[X*bigDim+Y])[1];
@@ -294,26 +294,30 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
   if (radius < 0)
     return;
 
-  (out[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[0] =
-    (in[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[0];
-  (out[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[1] =
-    (in[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[1];
+  (out[matrix_cyclic(x, dim)*dim+matrix_cyclic(y, dim)])[0] =
+    (in[matrix_cyclic(x, dim)*dim+matrix_cyclic(y, dim)])[0];
+  (out[matrix_cyclic(x, dim)*dim+matrix_cyclic(y, dim)])[1] =
+    (in[matrix_cyclic(x, dim)*dim+matrix_cyclic(y, dim)])[1];
 
-  if (mat[matrix_cyclic(x+1,dim)*dim+matrix_cyclic(y,dim)] < radius) {
-    mat[matrix_cyclic(x+1,dim)*dim+matrix_cyclic(y,dim)] = radius;
-    von_neumann(matrix_cyclic(x+1,dim), matrix_cyclic(y,dim), radius-1, mat, dim, in, out);
+  if (mat[matrix_cyclic(x+1, dim)*dim+matrix_cyclic(y, dim)] < radius) {
+    mat[matrix_cyclic(x+1, dim)*dim+matrix_cyclic(y, dim)] = radius;
+    von_neumann(matrix_cyclic(x+1, dim), matrix_cyclic(y, dim), radius-1, mat,
+                dim, in, out);
   }
-  if (mat[matrix_cyclic(x-1,dim)*dim+matrix_cyclic(y,dim)] < radius) {
-    mat[matrix_cyclic(x-1,dim)*dim+matrix_cyclic(y,dim)] = radius;
-    von_neumann(matrix_cyclic(x-1,dim), matrix_cyclic(y,dim), radius-1, mat, dim, in, out);
+  if (mat[matrix_cyclic(x-1, dim)*dim+matrix_cyclic(y, dim)] < radius) {
+    mat[matrix_cyclic(x-1, dim)*dim+matrix_cyclic(y, dim)] = radius;
+    von_neumann(matrix_cyclic(x-1, dim), matrix_cyclic(y, dim), radius-1, mat,
+                dim, in, out);
   }
-  if (mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y+1,dim)] < radius) {
-    mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y+1,dim)] = radius;
-    von_neumann(matrix_cyclic(x,dim), matrix_cyclic(y+1,dim), radius-1, mat, dim, in, out);
+  if (mat[matrix_cyclic(x, dim)*dim+matrix_cyclic(y+1, dim)] < radius) {
+    mat[matrix_cyclic(x, dim)*dim+matrix_cyclic(y+1, dim)] = radius;
+    von_neumann(matrix_cyclic(x, dim), matrix_cyclic(y+1, dim), radius-1, mat,
+                dim, in, out);
   }
-  if (mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y-1,dim)] < radius) {
-    mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y-1,dim)] = radius;
-    von_neumann(matrix_cyclic(x,dim), matrix_cyclic(y-1,dim), radius-1, mat, dim, in, out);
+  if (mat[matrix_cyclic(x, dim)*dim+matrix_cyclic(y-1, dim)] < radius) {
+    mat[matrix_cyclic(x, dim)*dim+matrix_cyclic(y-1, dim)] = radius;
+    von_neumann(matrix_cyclic(x, dim), matrix_cyclic(y-1, dim), radius-1, mat,
+                dim, in, out);
   }
 }
 
