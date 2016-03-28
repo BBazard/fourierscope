@@ -18,6 +18,8 @@
 
 static const double PI = acos(-1.0);
 
+
+int matrix_cyclic(int ind, int dim);
 void matrix_init(int dim, fftw_complex *mat, double value);
 void matrix_random(int dim, fftw_complex *mat, int max_rand);
 void matrix_print(int dim, fftw_complex *mat);

@@ -310,7 +310,12 @@ TEST_F(complex_and_io_units, swarm) {
   fftw_execute(forward);
   matrix_operation(toSplit, toSplit, toSplitDim, div_dim, args);
 
-  matrix_realpart(toSplitDim, toSplit, io_big);
+  for (int i = 0; i < toSplitDim*toSplitDim; i++) {
+    fftw_complex tmp;
+    get_modarg(toSplit[i], tmp);
+    io_big[i] = tmp[0];
+  }
+
   tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
 
   char name[14] = "build/xx.tiff";

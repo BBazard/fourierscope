@@ -78,7 +78,10 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   /* Spiral loop*/
   for (int p = 1; p < 2*jorga_x+1; p++) {
     for (int a = 0; a < p; i-=s, a++) {
-      printf("%d, %d\n", i, j);
+      /** @todo matrix ind */
+      /* update_spectrum(thumbnails[??], th_dim, radius, forward, backward, */
+      /*                 itf, tf); */
+      /** @todo add spectrum to matrix */
     }
     for (int a = 0; a < p; j+=s, a++) {
       printf("%d, %d\n", i, j);

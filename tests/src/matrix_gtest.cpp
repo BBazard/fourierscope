@@ -202,9 +202,26 @@ TEST_F(matrix_suite, matrix_realpart_test) {
   }
 }
 
+/**
+ *  @brief matrix_cyclic function test
+ *
+ *  Test with different values: 
+ *  * 0 < ind < dim
+ *  * -dim < ind < 0
+ *  * dim < ind
+ *  * ind < -dim
+ *
+ */
+TEST_F(matrix_suite, matrix_cyclic) {
+  EXPECT_EQ(10, matrix_cyclic(10, 100));
+  EXPECT_EQ(10, matrix_cyclic(-90, 100));
+  EXPECT_EQ(10, matrix_cyclic(110, 100));
+  EXPECT_EQ(10, matrix_cyclic(-190, 100));
+}
+
 TEST_F(matrix_suite, show_copy_disk) {
   EXPECT_EQ(0, copy_disk(a, b, dim, 4));
-
+  
   for (int i = 0; i < dim; i++) {
     for (int j = 0; j < dim; j++)
       printf("%3.f", (a[i*dim+j])[0]);
