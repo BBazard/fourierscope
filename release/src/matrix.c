@@ -266,30 +266,7 @@ int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
  */
 int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
                          int radius, int centerX, int centerY) {
-  int mid = dim/2+dim%2;
-  int offX = centerX-mid;
-  int offY = centerY-mid;
-
-  int radius_max = (dim-1)/2;  // without offset
-  // when the dimension is even
-  // a negative offset is mitigated by one
-  // for exemple with dim = 4 the "mid" is bottom-right
-  // even with a negative offset of one, the maximum radius is still 0
-  if (dim%2 == 0) {
-    // as offX is only use to test if the disk fit
-    // offX++ only reduce abs(offX)
-    if (offX < 0)
-      offX++;
-    if (offY < 0)
-      offY++;
-  }
-  int off_max = 0;
-  if (abs(offX) > off_max)
-    off_max = abs(offX);
-  if (abs(offY) > off_max)
-    off_max = abs(offY);
-
-  /* radius_max -= off_max; */
+  int radius_max = (dim-1)/2;
 
   if (dim <= 0 || radius <= 0 ||
       radius > radius_max) {
