@@ -313,7 +313,6 @@ TEST_F(complex_and_io_units, swarm) {
   matrix_realpart(toSplitDim, toSplit, io_big);
   tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
 
-  int mid = toSplitDim/2 + toSplitDim%2;
   char name[14] = "build/xx.tiff";
 
   for (int i = -jorga_x; i <= jorga_x; i++)
