@@ -1,0 +1,54 @@
+\documentclass{beamer}
+
+\usepackage{pgfpages}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[francais]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\mode<presentation> {
+\usetheme{Copenhagen}
+\usecolortheme{beaver}
+
+\setbeamertemplate{navigation symbols}{}
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+
+%\setbeameroption{show notes on second screen=right}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title[Fourier Scope]{Fourier Scope}
+\author{A Lescouet, B Bazard}
+\institute[T\'el\'ecom SudParis]{
+  T\'el\'ecom Sudparis\\
+}
+\date{\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frame}
+  \titlepage%
+\end{frame}
+
+\begin{frame}%[allowframebreaks]%
+  \frametitle{Overview}
+  \tableofcontents
+\end{frame}
+
+\section{Results}
+
+\begin{frame}
+  \frametitle{Results}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{test}%
+  \end{center}
+\end{frame}
+
+\end{document}
