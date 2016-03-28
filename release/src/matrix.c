@@ -29,6 +29,17 @@ double div_dim(double d, void **args) {
 }
 
 /**
+ *  @brief Return an equivalent modulo dim
+ *  @param[in] dim The dimension of the matrix
+ *  @param[in] ind The index to change
+ *  @param[out] int The value of the new index
+ *
+ */
+int cyclic(int dim, int ind) {
+  return (ind+dim)%dim;
+
+
+/**
  *  @brief Initialize a fftw_complex matrix
  *  @param[in] dim The matrix dimension
  *  @param[in,out] mat The matrix to initialize
@@ -310,26 +321,26 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out) {
   if (radius >= 0) {
-    (out[((x+dim)%dim)*dim+((y+dim)%dim)])[0] =
-      (in[((x+dim)%dim)*dim+((y+dim)%dim)])[0];
-    (out[((x+dim)%dim)*dim+((y+dim)%dim)])[1] =
-      (in[((x+dim)%dim)*dim+((y+dim)%dim)])[1];
+    (out[cyclic(x)*dim+cyclic(y)])[0] =
+      (in[cyclic(x)*dim+cyclic(y)])[0];
+    (out[cyclic(x)*dim+cyclic(y)])[1] =
+      (in[cyclic(x)*dim+cyclic(y)])[1];
 
-    if (mat[((x+1+dim)%dim)*dim+((y+dim)%dim)] < radius) {
-      mat[((x+1+dim)%dim)*dim+((y+dim)%dim)] = radius;
-      von_neumann(((x+1+dim)%dim), ((y+dim)%dim), radius-1, mat, dim, in, out);
+    if (mat[cyclic(x+1)*dim+cyclic(y)] < radius) {
+      mat[cyclic(x+1)*dim+cyclic(y)] = radius;
+      von_neumann(cyclic(x+1), cyclic(y), radius-1, mat, dim, in, out);
     }
-    if (mat[((x-1+dim)%dim)*dim+((y+dim)%dim)] < radius) {
-      mat[((x-1+dim)%dim)*dim+((y+dim)%dim)] = radius;
-      von_neumann(((x-1+dim)%dim), ((y+dim)%dim), radius-1, mat, dim, in, out);
+    if (mat[cyclic(x-1)*dim+cyclic(y)] < radius) {
+      mat[cyclic(x-1)*dim+cyclic(y)] = radius;
+      von_neumann(cyclic(x-1), cyclic(y), radius-1, mat, dim, in, out);
     }
-    if (mat[((x+dim)%dim)*dim+((y+1+dim)%dim)] < radius) {
-      mat[((x+dim)%dim)*dim+((y+1+dim)%dim)] = radius;
-      von_neumann(((x+dim)%dim), ((y+1+dim)%dim), radius-1, mat, dim, in, out);
+    if (mat[cyclic(x)*dim+cyclic(y+1)] < radius) {
+      mat[cyclic(x)*dim+cyclic(y+1)] = radius;
+      von_neumann(cyclic(x), cyclic(y+1), radius-1, mat, dim, in, out);
     }
-    if (mat[((x+dim)%dim)*dim+((y-1+dim)%dim)] < radius) {
-      mat[((x+dim)%dim)*dim+((y-1+dim)%dim)] = radius;
-      von_neumann(((x+dim)%dim), ((y-1+dim)%dim), radius-1, mat, dim, in, out);
+    if (mat[cyclic(x)*dim+cyclic(y-1)] < radius) {
+      mat[cyclic(x)*dim+cyclic(y-1)] = radius;
+      von_neumann(cyclic(x), cyclic(y-1), radius-1, mat, dim, in, out);
     }
   }
 }
