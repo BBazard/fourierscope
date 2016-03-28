@@ -213,13 +213,19 @@ double matrix_min(int diml, int dimw, double *matrix) {
  */
 int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
                    fftw_complex* big, int offX, int offY) {
-  if (smallDim + offX > bigDim || smallDim + offY > bigDim) {
+  if (smallDim > bigDim) {
     return 1;
   } else {
     for (int i = 0; i < smallDim; i++) {
       for (int j = 0; j < smallDim; j++) {
-        (small[i*smallDim+j])[0] = (big[(i+offX)*bigDim+(j+offY)])[0];
-        (small[i*smallDim+j])[1] = (big[(i+offX)*bigDim+(j+offY)])[1];
+        int X1 = cyclic(i);
+        int Y1 = cyclic(j);
+
+        int X2 = cyclic(i+offX);
+        int Y2 = cyclic(j+offY);
+
+        (small[X1*smallDim+Y1])[0] = (big[X2*bigDim+Y2])[0];
+        (small[X1*smallDim+Y1])[1] = (big[X2*bigDim+Y2])[1];
       }
     }
     return 0;
