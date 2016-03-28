@@ -331,7 +331,7 @@ TEST_F(complex_and_io_units, swarm) {
         ((thumbnail_buf[1])[k])[1] = 0;
       }
 
-      ASSERT_EQ(0, cut_disk(thumbnail_buf[0], thumbnail_buf[1],
+      ASSERT_EQ(0, copy_disk(thumbnail_buf[0], thumbnail_buf[1],
                             thumbnailDim, radius));
 
       /* invert fourier transform */

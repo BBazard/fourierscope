@@ -57,7 +57,7 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
   for (int it=0; it < exec_limit; it++) {
     fftw_execute(forward);
 
-    cut_disk(tf, disk, dim, radius);
+    copy_disk(tf, disk, dim, radius);
 
     fftw_execute(backward);
     matrix_operation(itf, in, dim, div_dim, args);

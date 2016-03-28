@@ -233,39 +233,27 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
 }
 
 /**
- *  @brief Set all the matrix cells outside of a centered disk to 0
+ *  @brief Copy a disk from one matrix to another
  *  @param[in] in The fftw_complex 2d matrix used as input
  *  @param[out] out The fftw_complex 2d matrix used as output
- *  @param[in] dim The dimension of the matrix (assumed square)
+ *  @param[in] dim The dimension of both matrix (assumed square)
  *  @param[in] radius The radius of the disk
- *  @return 1 If the radius of the circle cannot fit in the matrix
+ *  @return 1 If the radius is not adapted
  *  @return 0 Otherwise
  *
- *  This is just a wrapper of cut_disk_with_offset
+ *  This function computes a disk in the input matrix using taxicab geometry
+ *  And copy this disk from in to out
+ *  The center of the circle has the coordinates [0;0]
+ *  and stretch like this:
+ *
+ *  0 1 X X 1
+ *  1 X X X X
+ *  X X X X X
+ *  X X X X X
+ *  1 X X X X
  *
  */
-int cut_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
-  int mid = 0;
-  return cut_disk_with_offset(in, out, dim, radius, mid, mid);
-}
-
-/**
- *  @brief Set all the matrix cells outside of a disk to 0
- *  @param[in] in The fftw_complex 2d matrix used as input
- *  @param[out] out The fftw_complex 2d matrix used as output
- *  @param[in] dim The dimension of the matrix (assumed square)
- *  @param[in] radius The radius of the disk
- *  @param[in] centerX The X coordinate of the center of the disk
- *  @param[in] centerX The Y coordinate of the center of the disk
- *  @return 1 If the radius of the circle cannot fit in the matrix
- *  @return 0 Otherwise
- *
- *  This function computes a disk in the input matrix using taxicab geometry.
- *  The center of the circle has the coordinates centerX;centerY
- *
- */
-int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
-                         int radius, int centerX, int centerY) {
+int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
   int radius_max = (dim-1)/2;
 
   if (dim <= 0 || radius <= 0 ||
@@ -278,8 +266,8 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
     for (int i = 0; i < dim * dim; i++)
       ref[i] = -1;
 
-    ref[centerX*dim+centerY] = radius;
-    von_neumann(centerX, centerY, radius-1, ref, dim, in, out);
+    ref[0] = radius;
+    von_neumann(0, 0, radius-1, ref, dim, in, out);
     free(ref);
     return 0;
   }
@@ -303,28 +291,29 @@ int cut_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
  */
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out) {
-  if (radius >= 0) {
-    (out[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[0] =
-      (in[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[0];
-    (out[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[1] =
-      (in[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[1];
+  if (radius < 0)
+    return;
 
-    if (mat[matrix_cyclic(x+1,dim)*dim+matrix_cyclic(y,dim)] < radius) {
-      mat[matrix_cyclic(x+1,dim)*dim+matrix_cyclic(y,dim)] = radius;
-      von_neumann(matrix_cyclic(x+1,dim), matrix_cyclic(y,dim), radius-1, mat, dim, in, out);
-    }
-    if (mat[matrix_cyclic(x-1,dim)*dim+matrix_cyclic(y,dim)] < radius) {
-      mat[matrix_cyclic(x-1,dim)*dim+matrix_cyclic(y,dim)] = radius;
-      von_neumann(matrix_cyclic(x-1,dim), matrix_cyclic(y,dim), radius-1, mat, dim, in, out);
-    }
-    if (mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y+1,dim)] < radius) {
-      mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y+1,dim)] = radius;
-      von_neumann(matrix_cyclic(x,dim), matrix_cyclic(y+1,dim), radius-1, mat, dim, in, out);
-    }
-    if (mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y-1,dim)] < radius) {
-      mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y-1,dim)] = radius;
-      von_neumann(matrix_cyclic(x,dim), matrix_cyclic(y-1,dim), radius-1, mat, dim, in, out);
-    }
+  (out[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[0] =
+    (in[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[0];
+  (out[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[1] =
+    (in[matrix_cyclic(x,dim)*dim+matrix_cyclic(y,dim)])[1];
+
+  if (mat[matrix_cyclic(x+1,dim)*dim+matrix_cyclic(y,dim)] < radius) {
+    mat[matrix_cyclic(x+1,dim)*dim+matrix_cyclic(y,dim)] = radius;
+    von_neumann(matrix_cyclic(x+1,dim), matrix_cyclic(y,dim), radius-1, mat, dim, in, out);
+  }
+  if (mat[matrix_cyclic(x-1,dim)*dim+matrix_cyclic(y,dim)] < radius) {
+    mat[matrix_cyclic(x-1,dim)*dim+matrix_cyclic(y,dim)] = radius;
+    von_neumann(matrix_cyclic(x-1,dim), matrix_cyclic(y,dim), radius-1, mat, dim, in, out);
+  }
+  if (mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y+1,dim)] < radius) {
+    mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y+1,dim)] = radius;
+    von_neumann(matrix_cyclic(x,dim), matrix_cyclic(y+1,dim), radius-1, mat, dim, in, out);
+  }
+  if (mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y-1,dim)] < radius) {
+    mat[matrix_cyclic(x,dim)*dim+matrix_cyclic(y-1,dim)] = radius;
+    von_neumann(matrix_cyclic(x,dim), matrix_cyclic(y-1,dim), radius-1, mat, dim, in, out);
   }
 }
 

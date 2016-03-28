@@ -22,7 +22,7 @@ void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
     (itf[i])[1] = 0;
   }
 
-  cut_disk(tf, itf, th_dim, radius);
+  copy_disk(tf, itf, th_dim, radius);
 
   /** @todo optimize fftw_plans */
   matrix_operation(itf, tf, th_dim, identity, NULL);
