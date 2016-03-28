@@ -40,7 +40,7 @@ double div_dim(double d, void **args) {
 int cyclic(int dim, int ind) {
   int ret = ind%dim;
   return ret < 0 ? ret+dim : ret;
-
+}
 
 /**
  *  @brief Initialize a fftw_complex matrix
