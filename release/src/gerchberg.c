@@ -15,7 +15,7 @@
  *  @param[in] dim The dimension of the matrix
  *  @param[in] input The matrix on which to apply the algorithm
  *  @param[out] output The matrix in which to store the result
- *  @param[in] exec_limit The number of iteration to execute
+ *  @param[in] exec_limit The number of iterations to execute
  *  @param[in] radius The radius of the circle used to limit the spectrum
  *
  *  This funtion implements the Gerchberg-Saxton algorithm, and will store the

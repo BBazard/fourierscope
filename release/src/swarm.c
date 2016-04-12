@@ -40,12 +40,12 @@ void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
 
 #if 0
 /**
- *  @brief Unite multiples small images in a big one
+ *  @brief Unite multiple small images in a big one
  *  @param[in] thumbnails All the thumbnails in one big matrix
  *  @param[in] th_dim The dimension of each thumbnail
  *  @param[in] out_dim The dimension of the final image
  *  @param[in] delta The distance between two thumbnail centers
- *  @param[out] out The image retrieved after algorithm is comple
+ *  @param[out] out The retrieved image after the algorithm is done
  *
  *  @return 1 If memory allocation failed
  *  @return 0 0therwise
