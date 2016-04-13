@@ -38,20 +38,97 @@ void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
   fftw_execute(forward);
 }
 
-#if 0
+/**
+ *  @brief Decrease a int in absolute
+ *  @todo use this function to refactor move_one
+ *
+ *  The sign stay the same and the absolute value
+ *  decrease by one
+ */
+int abs_decrease(int a) {
+  if (a > 0)
+    return a-1;
+
+  else if (a < 0)
+    return a+1;
+
+  else
+    return 0;
+}
+
+/**
+ *  @brief move the index use for thumbnails
+ *
+ *  index_x and index_y are increased of decreased of
+ *  one in the direction of direction_x and direction_y.
+ *  direction_x and direction_y have their absolute
+ *  value decreased by one.
+ *  One and only one direction must be null.
+ *
+ */
+int move_one(int* index_x, int* index_y, int* direction_x, int* direction_y) {
+  int error = 0;
+
+  if (*direction_x == 0) {
+    if (*direction_y > 0) {
+      (*index_y)++;
+      (*direction_y)--;
+    } else if (*direction_y < 0) {
+      (*index_y)--;
+      (*direction_y)++;
+    } else {
+      error = 1;
+    }
+  } else if (*direction_y == 0) {
+    if (*direction_x > 0) {
+      (*index_x)++;
+      (*direction_x)--;
+    } else if (*direction_x < 0) {
+      (*index_x)--;
+      (*direction_x)++;
+    } else {
+      error = 1;
+    }
+  } else {
+    error = 1;
+  }
+
+  return error;
+}
+
+/*
+ *  @brief update leds in a row
+ *  @todo use this function to refactor swarm
+ *
+ *  max(abs(X), abs(Y) leds are exploited
+ *
+ */
+int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
+                fftw_complex *tf, fftw_plan forward, fftw_plan backward,
+                int th_dim, int radius,
+                int side, int pos_x, int pos_y, int X, int Y) {
+  while (X != 0 || Y != 0) {
+    update_spectrum(thumbnails[pos_x*side+pos_y],
+                    th_dim, radius, forward, backward, itf, tf);
+    move_one(&pos_x, &pos_y, &X, &Y);
+  }
+}
+
 /**
  *  @brief Unite multiple small images in a big one
  *  @param[in] thumbnails All the thumbnails in one big matrix
  *  @param[in] th_dim The dimension of each thumbnail
  *  @param[in] out_dim The dimension of the final image
  *  @param[in] delta The distance between two thumbnail centers
+ *  @param[in] radius The radius of the extracted circle
+ *  @param[in] jorga The dimension of thumbnails is (2*jorga+1)^2
  *  @param[out] out The retrieved image after the algorithm is done
  *
  *  @return 1 If memory allocation failed
  *  @return 0 0therwise
  */
 int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
-          int radius, fftw_complex *out) {
+          int radius, int jorga, fftw_complex *out) {
   fftw_complex *itf;
   fftw_complex *tf;
   fftw_plan forward;
@@ -75,22 +152,106 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   backward = fftw_plan_dft_2d(th_dim, th_dim, tf, itf,
                               FFTW_BACKWARD, FFTW_ESTIMATE);
 
-  /* Spiral loop*/
-  for (int p = 1; p < 2*jorga_x+1; p++) {
-    for (int a = 0; a < p; i-=s, a++) {
-      /** @todo matrix ind */
-      /* update_spectrum(thumbnails[??], th_dim, radius, forward, backward, */
-      /*                 itf, tf); */
-      /** @todo add spectrum to matrix */
+  /*
+   * Spiral loop
+   *
+   * Side is an odd number (2*jorga+1)
+   *
+   * In one "lap" all the thumbnails are exploited
+   * In one "streak" all the leds in one side (not a full side) are exploited
+   * In one "whorl" all the leds in half a square are exploited
+   *
+   * One whorl is 4 streak
+   * One lap is (side-1)/2  whorls plus one special streak
+   *
+   *
+   */
+
+  /* the coordinates of the thumbnail in the center
+   * are [mid;mid] */
+  const int mid = jorga+1;
+
+  /* the side of thumbnails */
+  const int side = 2*jorga+1;
+
+  const int lap_nbr = 2;
+
+  for (int lap = 0; lap < lap_nbr; lap++) {
+    /* the difference between the position before and after a streak */
+    int X = 0;
+    int Y = 0;
+
+    /* the number of leds exploited (update_spectrum) in the same streak  */
+    int intensity = 0;
+
+    /* index in thumbnails */
+    int pos_x = mid;
+    int pos_y = mid;
+
+    /*
+     * one whorl correspond of a move going from one corner
+     * to the same but farther from the center by going in spiral
+     * example : from [-2,2] to [-3,3]
+     *
+     * a whorl correspond to four streaks
+     *
+     */
+    for (int whorl = 1; whorl <= jorga; whorl++) {
+      intensity = 2*whorl-1;
+
+      /* down */
+      X = 0;
+      Y = -intensity;
+      while (X != 0 || Y != 0) {
+        update_spectrum(thumbnails[pos_x*side+pos_y],
+            th_dim, radius, forward, backward, itf, tf);
+        move_one(&pos_x, &pos_y, &X, &Y);
+      }
+
+      /* right */
+      X = +intensity;
+      Y = 0;
+      while (X != 0 || Y != 0) {
+        update_spectrum(thumbnails[pos_x*side+pos_y],
+            th_dim, radius, forward, backward, itf, tf);
+        move_one(&pos_x, &pos_y, &X, &Y);
+      }
+
+      intensity = 2*whorl;
+
+      /* up */
+      X = 0;
+      Y = intensity;
+      while (X != 0 || Y != 0) {
+        update_spectrum(thumbnails[pos_x*side+pos_y],
+            th_dim, radius, forward, backward, itf, tf);
+        move_one(&pos_x, &pos_y, &X, &Y);
+      }
+
+      /* left */
+      X = -intensity;
+      Y = 0;
+      while (X != 0 || Y != 0) {
+        update_spectrum(thumbnails[pos_x*side+pos_y],
+            th_dim, radius, forward, backward, itf, tf);
+        move_one(&pos_x, &pos_y, &X, &Y);
+      }
     }
-    for (int a = 0; a < p; j+=s, a++) {
-      printf("%d, %d\n", i, j);
+
+    /* we just need to finish the spiral */
+
+    /* down */
+    X = 0;
+    Y = -side;
+    while (X != 0 || Y != 0) {
+      update_spectrum(thumbnails[pos_x*side+pos_y],
+          th_dim, radius, forward, backward, itf, tf);
+      move_one(&pos_x, &pos_y, &X, &Y);
     }
-    s *= -1;
+    /* the spiral lap is done at this point */
   }
-  for (int a = 0; a < 2*jorga_x+1; i-=s, a++) {
-    printf("%d, %d\n", i, j);
-  }
+
+  /* @bug the big matrix out is never updated */
+
   return 0;
 }
-#endif
