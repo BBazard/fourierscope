@@ -98,7 +98,6 @@ int move_one(int* index_x, int* index_y, int* direction_x, int* direction_y) {
 
 /*
  *  @brief update leds in a row
- *  @todo use this function to refactor swarm
  *
  *  max(abs(X), abs(Y) leds are exploited
  *
@@ -110,6 +109,7 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
   while (X != 0 || Y != 0) {
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, radius, forward, backward, itf, tf);
+    /* update out with tf */
     move_one(&pos_x, &pos_y, &X, &Y);
   }
 }
@@ -202,40 +202,28 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
       /* down */
       X = 0;
       Y = -intensity;
-      while (X != 0 || Y != 0) {
-        update_spectrum(thumbnails[pos_x*side+pos_y],
-            th_dim, radius, forward, backward, itf, tf);
-        move_one(&pos_x, &pos_y, &X, &Y);
-      }
+      move_streak(thumbnails, itf, tf, forward, backward,
+                  th_dim, radius, side, pos_x, pos_y, X, Y);
 
       /* right */
       X = +intensity;
       Y = 0;
-      while (X != 0 || Y != 0) {
-        update_spectrum(thumbnails[pos_x*side+pos_y],
-            th_dim, radius, forward, backward, itf, tf);
-        move_one(&pos_x, &pos_y, &X, &Y);
-      }
+      move_streak(thumbnails, itf, tf, forward, backward,
+                  th_dim, radius, side, pos_x, pos_y, X, Y);
 
       intensity = 2*whorl;
 
       /* up */
       X = 0;
       Y = intensity;
-      while (X != 0 || Y != 0) {
-        update_spectrum(thumbnails[pos_x*side+pos_y],
-            th_dim, radius, forward, backward, itf, tf);
-        move_one(&pos_x, &pos_y, &X, &Y);
-      }
+      move_streak(thumbnails, itf, tf, forward, backward,
+                  th_dim, radius, side, pos_x, pos_y, X, Y);
 
       /* left */
       X = -intensity;
       Y = 0;
-      while (X != 0 || Y != 0) {
-        update_spectrum(thumbnails[pos_x*side+pos_y],
-            th_dim, radius, forward, backward, itf, tf);
-        move_one(&pos_x, &pos_y, &X, &Y);
-      }
+      move_streak(thumbnails, itf, tf, forward, backward,
+                  th_dim, radius, side, pos_x, pos_y, X, Y);
     }
 
     /* we just need to finish the spiral */
@@ -243,11 +231,8 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
     /* down */
     X = 0;
     Y = -side;
-    while (X != 0 || Y != 0) {
-      update_spectrum(thumbnails[pos_x*side+pos_y],
-          th_dim, radius, forward, backward, itf, tf);
-      move_one(&pos_x, &pos_y, &X, &Y);
-    }
+      move_streak(thumbnails, itf, tf, forward, backward,
+                  th_dim, radius, side, pos_x, pos_y, X, Y);
     /* the spiral lap is done at this point */
   }
 
