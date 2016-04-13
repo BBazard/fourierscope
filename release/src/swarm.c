@@ -9,8 +9,28 @@
 
 #include "include/swarm.h"
 
-/* image centrale D(0,0) -> TF -> Disk D(0,0,r) -> TFI -> */
-/* ei^{\phi}*Image départ -> TF -> actualisation du spectre dans D(0,0,R) */
+/**
+ *  @brief Computes the some operations for one thumbnail
+ *  @param[in] thumb The treated thumbnail
+ *  @param[in] th_dim The dimension of the thumbnail
+ *  @param[in] radius The radius of the disk
+ *  @param[in] forward The plan used for fourier transforms
+ *  @param[in] backward The plan used for inverse transforms
+ *  @param[in,out] itf The source for FT and destination for IFT
+ *  @param[in,out] tf The source for IFT and destination for FT
+ *
+ *  This function does the following:
+ *
+ *  a = TF(thumb)
+ *  b = Disk(a,radius)
+ *  c = ITF(b)
+ *  d = mod(thumb)*ei^arg(c)
+ *  e = TF(d)
+ *
+ *  e is actually stored in tf parameter and is available for use
+ *  in the calling function
+ *
+ */
 void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
                      fftw_plan forward, fftw_plan backward, fftw_complex *itf,
                      fftw_complex *tf) {
