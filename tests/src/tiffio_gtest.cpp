@@ -122,8 +122,8 @@ TEST_F(existing_input_units, tiff_tomatrix) {
 TEST_F(existing_input_units, tiff_frommatrix) {
   tiff_tomatrix(input, matrix, diml, dimw);
 
-  for (int i=0; i < diml; i++)
-    for (int j=0; j < dimw/2; j++)
+  for (int i=0; i < (int) diml; i++)
+    for (int j=0; j < (int) dimw/2; j++)
       matrix[i*dimw+j] = 120;
 
   tiff_frommatrix(output, matrix, diml, dimw);

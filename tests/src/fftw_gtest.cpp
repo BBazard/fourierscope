@@ -85,8 +85,8 @@ class square_input_units : public fftw_suite {
     backward = fftw_plan_dft_2d(diml, dimw, comp_mat, comp_mat2,
                                 FFTW_BACKWARD, FFTW_ESTIMATE);
 
-    for (int i = 0; i < diml; i++)
-      for (int j = 0; j < dimw; j++) {
+    for (int i = 0; i < (int) diml; i++)
+      for (int j = 0; j < (int) dimw; j++) {
         (comp_mat[i*dimw+j])[0] = 0;
         (comp_mat[i*dimw+j])[1] = 0;
         (comp_mat2[i*dimw+j])[0] = 0;
@@ -109,12 +109,12 @@ class square_input_units : public fftw_suite {
 TEST_F(square_input_units, fftw_execute) {
   ASSERT_EQ(0, tiff_tomatrix(input, matrix, diml, dimw));
 
-  for (int i = 0; i < diml; i++)
-    for (int j = 0; j < dimw; j++)
+  for (int i = 0; i < (int) diml; i++)
+    for (int j = 0; j < (int) dimw; j++)
       (comp_mat[i*dimw+j])[0] = matrix[i*dimw+j];
 
-  for (int i = 0; i < diml; i++)
-    for (int j = 0; j < dimw; j++) {
+  for (int i = 0; i < (int) diml; i++)
+    for (int j = 0; j < (int) dimw; j++) {
       get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
     }
@@ -124,8 +124,8 @@ TEST_F(square_input_units, fftw_execute) {
   fftw_execute(forward);
   matrix_operation(comp_mat2, comp_mat, dimw, div_dim, args);
 
-  for (int i = 0; i < diml; i++)
-    for (int j = 0; j < dimw; j++) {
+  for (int i = 0; i < (int) diml; i++)
+    for (int j = 0; j < (int) dimw; j++) {
       get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
     }
@@ -134,8 +134,8 @@ TEST_F(square_input_units, fftw_execute) {
   fftw_execute(backward);
   matrix_operation(comp_mat2, comp_mat, dimw, identity, NULL);
 
-  for (int i = 0; i < diml; i++) {
-    for (int j = 0; j < dimw; j++) {
+  for (int i = 0; i < (int) diml; i++) {
+    for (int j = 0; j < (int) dimw; j++) {
       get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
       // printf("%f\n", matrix[i*dimw+j]);
