@@ -16,8 +16,7 @@
 
 #include <fftw3.h>
 
-static const double PI = acos(-1.0);
-
+#define PI = acos(-1.0);
 
 int matrix_cyclic(int ind, int dim);
 void matrix_init(int dim, fftw_complex *mat, double value);

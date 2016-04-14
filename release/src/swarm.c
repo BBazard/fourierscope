@@ -126,12 +126,14 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
                 fftw_complex *tf, fftw_plan forward, fftw_plan backward,
                 int th_dim, int radius,
                 int side, int pos_x, int pos_y, int X, int Y) {
+  int error = 0;
   while (X != 0 || Y != 0) {
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, radius, forward, backward, itf, tf);
     /* update out with tf */
-    move_one(&pos_x, &pos_y, &X, &Y);
+    error = move_one(&pos_x, &pos_y, &X, &Y);
   }
+  return error;
 }
 
 /**

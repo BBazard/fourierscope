@@ -9,6 +9,8 @@
 
 #include "include/matrix.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 /**
  *  @brief The identity function used in matrix_operation
  *
@@ -16,6 +18,7 @@
  *
  */
 double identity(double d, void **args) {return d;}
+#pragma GCC diagnostic pop
 
 /**
  *  @brief A function to divide by dim used in matrix_operation

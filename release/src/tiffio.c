@@ -69,9 +69,6 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
   tdata_t buf;
   unsigned char *data;
 
-  uint16 bits;
-  uint16 sample;
-
   TIFF* tiff = TIFFOpen(name, "r");
   if (tiff) {
     buf = _TIFFmalloc(TIFFScanlineSize(tiff));
@@ -85,7 +82,7 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
         return 1;
       }
       memcpy(data, buf, dimw*sizeof(char));
-      for (int i=0; i < dimw; i++)
+      for (int i=0; i < (int) dimw; i++)
         matrix[row*dimw+i] = (double) data[i];
     }
 
@@ -131,7 +128,7 @@ int tiff_frommatrix(const char *name, double *matrix,
     double min = matrix_min(diml, dimw, matrix);
 
     for (uint32 row=0; row < diml; row++) {
-      for (int i=0; i < dimw; i++) {
+      for (int i=0; i < (int) dimw; i++) {
         data[i] = tiff_fullscale(min, max, matrix[row*dimw+i]);
       }
       memcpy(buf, data, dimw*sizeof(char));
