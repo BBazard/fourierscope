@@ -9,6 +9,15 @@
 
 #include "include/matrix.h"
 
+/*
+ * This pragma is needed for GCC not to display a [-Wunused-parameter]
+ * warning in the next function. The unused parameter is obviously
+ * args, but we have to declare the function this way to avoid
+ * type conflict when using it in matrix_operation function
+ * which takes a double (*fun)(double, void**) as one of its
+ * parameters.
+ *
+ */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 /**
