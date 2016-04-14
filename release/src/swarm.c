@@ -59,86 +59,57 @@ void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
 }
 
 /**
- *  @brief Decrease a int in absolute
- *  @todo use this function to refactor move_one
- *
- *  The sign stay the same and the absolute value
- *  decrease by one
- */
-int abs_decrease(int a) {
-  if (a > 0)
-    return a-1;
-
-  else if (a < 0)
-    return a+1;
-
-  else
-    return 0;
-}
-
-/**
- *  @brief move the index use for thumbnails
+ *  @brief move the index used for thumbnails
  *
  *  index_x and index_y are increased of decreased of
- *  one in the direction of direction_x and direction_y.
- *  direction_x and direction_y have their absolute
- *  value decreased by one.
- *  One and only one direction must be null.
+ *  one according to direction.
  *
  */
-int move_one(int* index_x, int* index_y, int* direction_x, int* direction_y) {
-  int error = 0;
-
-  if (*direction_x == 0) {
-    if (*direction_y > 0) {
-      (*index_y)++;
-      (*direction_y)--;
-    } else if (*direction_y < 0) {
-      (*index_y)--;
-      (*direction_y)++;
-    } else {
-      error = 1;
+int move_one(int* index_x, int* index_y, int direction) {
+  switch (direction) {
+    case DOWN:
+      index_y--;
+      break;
+    case LEFT:
+      index_x--;
+      break;
+    case UP:
+      index_y++;
+      break;
+    case RIGHT:
+      index_x++;
+      break;
+    default:
+      return 1;
     }
-  } else if (*direction_y == 0) {
-    if (*direction_x > 0) {
-      (*index_x)++;
-      (*direction_x)--;
-    } else if (*direction_x < 0) {
-      (*index_x)--;
-      (*direction_x)++;
-    } else {
-      error = 1;
-    }
-  } else {
-    error = 1;
-  }
-
-  return error;
+  return 0;
 }
 
 /*
- *  @brief update leds in a row
+ *  @brief Update the leds between two corners in a row
+ *  @return 1 if move_one error
+ *  @return 2 if radius too big
  *
- *  max(abs(X), abs(Y) leds are exploited
- *  return 2 if radius too big
- *  return 1 if move_one error
- *
+ *  the leds in the corner should be updated by another function
  */
 int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
                 fftw_complex *tf, fftw_complex *out,
                 fftw_plan forward, fftw_plan backward,
-                int th_dim, int radius, int delta,
-                int side, int pos_x, int pos_y, int X, int Y) {
+                int th_dim, int radius, int delta, int side,
+                int pos_x, int pos_y, int side_leds,
+                int direction) {
   int error = 0;
-  while (X != 0 || Y != 0) {
+  int mid = (side-1)/2 + 1;  // = jorga+1
+  /* the center of the disk in out */
+  int centerX, centerY;
+  for (int remaining = side_leds; remaining != 0; remaining--) {
+    error = move_one(&pos_x, &pos_y, direction);
+    centerX = (pos_x-mid)*delta;
+    centerY = (pos_y-mid)*delta;
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, radius, forward, backward, itf, tf);
-    int mid = (side-1)/2 + 1;  // = jorga+1
-    int centerX = (pos_x-mid)*delta;
-    int centerY = (pos_y-mid)*delta;
     if (copy_disk_with_offset(tf, out, th_dim, radius, centerX, centerY))
       error = 2;
-    error = move_one(&pos_x, &pos_y, &X, &Y);
   }
   return error;
 }
@@ -158,8 +129,14 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
  */
 int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
           int radius, int jorga, fftw_complex *out) {
-  /** @todo check this formula */
+  /** @todo check these formula */
+  /* check if out is big enough */
   if (jorga*delta + th_dim/2 < out_dim/2)
+    return 1;
+  /* check if the circle are correctly entangled */
+  if (delta > 2*radius)
+    return 1;
+  if (delta < 1.4*radius)
     return 1;
 
   fftw_complex *itf;
@@ -181,22 +158,20 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
                               FFTW_BACKWARD, FFTW_ESTIMATE);
 
   /*
-   * Spiral loop
+   *  Spiral loop
    *
-   * Side is an odd number (2*jorga+1)
+   *  Side is an odd number (2*jorga+1)
    *
-   * In one "lap" all the thumbnails are exploited
-   * In one "streak" all the leds in one side (not a full side) are exploited
-   * In one "whorl" all the leds in half a square are exploited
+   *  In one "lap" all the thumbnails are exploited
+   *  In one "streak" all the leds in one side (not a full side) are exploited
+   *  In one "whorl" all the leds in half a square are exploited
    *
-   * One whorl is 4 streak
-   * One lap is (side-1)/2  whorls plus one special streak
-   *
-   *
+   *  One whorl is 4 streak
+   *  One lap is (side-1)/2  whorls plus one special streak
    */
 
   /* the coordinates of the thumbnail in the center
-   * are [mid;mid] */
+   * of thumbnails are [mid;mid] */
   const int mid = jorga+1;
 
   /* the side of thumbnails */
@@ -205,16 +180,25 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   const int lap_nbr = 2;
 
   for (int lap = 0; lap < lap_nbr; lap++) {
-    /* the difference between the position before and after a streak */
-    int X = 0;
-    int Y = 0;
+    /* the direction of the next led */
+    int direction = DOWN;
 
-    /* the number of leds exploited (update_spectrum) in the same streak  */
-    int intensity = 0;
+    /* 
+     * the number of leds exploited (update_spectrum) in the same streak  
+     * exluding the leds in the corner
+     *
+     * for example: for the first move of the lap, side_leds is 0 cause
+     * we have two successive leds that are in a corner
+     */
+    int side_leds = 0;
 
     /* index in thumbnails */
     int pos_x = mid;
     int pos_y = mid;
+
+    /* special: no adjacent circle */
+    update_spectrum(thumbnails[pos_x*side+pos_y],
+                    th_dim, radius, forward, backward, itf, tf);
 
     /*
      * one whorl correspond of a move going from one corner
@@ -222,49 +206,45 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
      * example : from [-2,2] to [-3,3]
      *
      * a whorl correspond to four streaks
-     *
      */
     for (int whorl = 1; whorl <= jorga; whorl++) {
-      intensity = 2*whorl-1;
-
-      /* down */
-      X = 0;
-      Y = -intensity;
+      /* side leds */
       move_streak(thumbnails, itf, tf, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
+                  th_dim, radius, delta, side, pos_x, pos_y,
+                  side_leds, direction);
 
-      /* right */
-      X = +intensity;
-      Y = 0;
+      /* special: corner led */
+      update_spectrum(thumbnails[pos_x*side+pos_y],
+                      th_dim, radius, forward, backward, itf, tf);
+
+      /* direction change: clockwise route */
+      direction = (direction+1)%4;
+
+      /* side leds */
       move_streak(thumbnails, itf, tf, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
+                  th_dim, radius, delta, side, pos_x, pos_y,
+                  side_leds, direction);
 
-      intensity = 2*whorl;
+      /* special: corner led */
+      update_spectrum(thumbnails[pos_x*side+pos_y],
+                      th_dim, radius, forward, backward, itf, tf);
 
-      /* up */
-      X = 0;
-      Y = intensity;
-      move_streak(thumbnails, itf, tf, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
-
-      /* left */
-      X = -intensity;
-      Y = 0;
-      move_streak(thumbnails, itf, tf, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
+      direction = (direction+1)%4;
+      side_leds++;
     }
 
+    /* at this point side_leds = side */
     /* we just need to finish the spiral */
 
-    /* down */
-    X = 0;
-    Y = -side;
-      move_streak(thumbnails, itf, tf, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
+    move_streak(thumbnails, itf, tf, out, forward, backward,
+                th_dim, radius, delta, side, pos_x, pos_y,
+                side_leds, direction);
+
+    /* there is no corner led here */
     /* the spiral lap is done at this point */
   }
 
-  /* @bug the big matrix out is never updated */
+  /** @todo free itf tf forward backward ?? */
 
   return 0;
 }
