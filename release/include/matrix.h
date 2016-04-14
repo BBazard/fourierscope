@@ -38,6 +38,8 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
 double identity(double d, void **args);
 double div_dim(double d, void **args);
 
+int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
+                         int radius, int centerX, int centerY);
 int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius);
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out);

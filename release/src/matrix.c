@@ -236,47 +236,6 @@ int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
 }
 
 /**
- *  @brief Copy a disk from one matrix to another
- *  @param[in] in The fftw_complex 2d matrix used as input
- *  @param[out] out The fftw_complex 2d matrix used as output
- *  @param[in] dim The dimension of both matrix (assumed square)
- *  @param[in] radius The radius of the disk
- *  @return 1 If the radius is not adapted
- *  @return 0 Otherwise
- *
- *  This function computes a disk in the input matrix using taxicab geometry
- *  And copy this disk from in to out
- *  The center of the circle has the coordinates [0;0]
- *  and stretch like this:
- *
- *  0 1 X X 1
- *  1 X X X X
- *  X X X X X
- *  X X X X X
- *  1 X X X X
- *
- */
-int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
-  int radius_max = (dim-1)/2;
-
-  if (dim <= 0 || radius <= 0 ||
-      radius > radius_max) {
-    return 1;
-  } else {
-    int *ref;
-    ref = (int*) malloc(dim * dim * sizeof(int));
-
-    for (int i = 0; i < dim * dim; i++)
-      ref[i] = -1;
-
-    ref[0] = radius;
-    von_neumann(0, 0, radius-1, ref, dim, in, out);
-    free(ref);
-    return 0;
-  }
-}
-
-/**
  *  @brief Compute the von_neumann
  *  @param[in] x The line on which the function is applied
  *  @param[in] y The column on which the function is applied
@@ -322,6 +281,56 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
     von_neumann(matrix_cyclic(x, dim), matrix_cyclic(y-1, dim), radius-1, mat,
                 dim, in, out);
   }
+}
+
+/**
+ *  @brief Copy a disk from one matrix to another
+ *  @param[in] in The fftw_complex 2d matrix used as input
+ *  @param[out] out The fftw_complex 2d matrix used as output
+ *  @param[in] dim The dimension of both matrix (assumed square)
+ *  @param[in] radius The radius of the disk
+ *  @return 1 If the radius is not adapted
+ *  @return 0 Otherwise
+ *
+ *  This function computes a disk in the input matrix using taxicab geometry
+ *  And copy this disk from in to out
+ *  The center of the circle has the coordinates [centerX;centerY]
+ *  and stretch like this:
+ *
+ *  0 1 X X 1
+ *  1 X X X X
+ *  X X X X X
+ *  X X X X X
+ *  1 X X X X
+ *
+ */
+int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
+                         int radius, int centerX, int centerY) {
+  int radius_max = (dim-1)/2;
+
+  if (dim <= 0 || radius <= 0 ||
+      radius > radius_max) {
+    return 1;
+  } else {
+    int *ref;
+    ref = (int*) malloc(dim * dim * sizeof(int));
+
+    for (int i = 0; i < dim * dim; i++)
+      ref[i] = -1;
+
+    ref[centerX*dim+centerY] = radius;
+    von_neumann(centerX, centerY, radius-1, ref, dim, in, out);
+    free(ref);
+    return 0;
+  }
+}
+
+/**
+ *  @brief wrapper for copy_disk_with_offset
+ *
+ */
+int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
+  return copy_disk_with_offset(in, out, dim, radius, 0, 0);
 }
 
 /**
