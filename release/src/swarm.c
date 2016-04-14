@@ -120,17 +120,24 @@ int move_one(int* index_x, int* index_y, int* direction_x, int* direction_y) {
  *  @brief update leds in a row
  *
  *  max(abs(X), abs(Y) leds are exploited
+ *  return 2 if radius too big
+ *  return 1 if move_one error
  *
  */
 int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
-                fftw_complex *tf, fftw_plan forward, fftw_plan backward,
-                int th_dim, int radius,
+                fftw_complex *tf, fftw_complex *out,
+                fftw_plan forward, fftw_plan backward,
+                int th_dim, int radius, int delta,
                 int side, int pos_x, int pos_y, int X, int Y) {
   int error = 0;
   while (X != 0 || Y != 0) {
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, radius, forward, backward, itf, tf);
-    /* update out with tf */
+    int mid = (side-1)/2 + 1;  // = jorga+1
+    int centerX = (pos_x-mid)*delta;
+    int centerY = (pos_y-mid)*delta;
+    if (copy_disk_with_offset(tf, out, th_dim, radius, centerX, centerY))
+      error = 2;
     error = move_one(&pos_x, &pos_y, &X, &Y);
   }
   return error;
@@ -146,20 +153,19 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
  *  @param[in] jorga The dimension of thumbnails is (2*jorga+1)^2
  *  @param[out] out The retrieved image after the algorithm is done
  *
- *  @return 1 If memory allocation failed
+ *  @return 1 If memory allocation failed or incompatible parameters
  *  @return 0 0therwise
  */
 int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
           int radius, int jorga, fftw_complex *out) {
+  /** @todo check this formula */
+  if (jorga*delta + th_dim/2 < out_dim/2)
+    return 1;
+
   fftw_complex *itf;
   fftw_complex *tf;
   fftw_plan forward;
   fftw_plan backward;
-
-  int i = 0;
-  int j = 0;
-  int s = 1;
-  int jorga_x = 2;
 
   if ( (itf = (fftw_complex *) malloc(th_dim*th_dim*
                                       sizeof(fftw_complex))) == NULL )
@@ -224,28 +230,28 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
       /* down */
       X = 0;
       Y = -intensity;
-      move_streak(thumbnails, itf, tf, forward, backward,
-                  th_dim, radius, side, pos_x, pos_y, X, Y);
+      move_streak(thumbnails, itf, tf, out, forward, backward,
+                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
 
       /* right */
       X = +intensity;
       Y = 0;
-      move_streak(thumbnails, itf, tf, forward, backward,
-                  th_dim, radius, side, pos_x, pos_y, X, Y);
+      move_streak(thumbnails, itf, tf, out, forward, backward,
+                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
 
       intensity = 2*whorl;
 
       /* up */
       X = 0;
       Y = intensity;
-      move_streak(thumbnails, itf, tf, forward, backward,
-                  th_dim, radius, side, pos_x, pos_y, X, Y);
+      move_streak(thumbnails, itf, tf, out, forward, backward,
+                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
 
       /* left */
       X = -intensity;
       Y = 0;
-      move_streak(thumbnails, itf, tf, forward, backward,
-                  th_dim, radius, side, pos_x, pos_y, X, Y);
+      move_streak(thumbnails, itf, tf, out, forward, backward,
+                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
     }
 
     /* we just need to finish the spiral */
@@ -253,8 +259,8 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
     /* down */
     X = 0;
     Y = -side;
-      move_streak(thumbnails, itf, tf, forward, backward,
-                  th_dim, radius, side, pos_x, pos_y, X, Y);
+      move_streak(thumbnails, itf, tf, out, forward, backward,
+                  th_dim, radius, delta, side, pos_x, pos_y, X, Y);
     /* the spiral lap is done at this point */
   }
 
