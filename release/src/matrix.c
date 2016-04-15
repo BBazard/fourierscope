@@ -369,7 +369,7 @@ int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
  *
  *  "in" and "out" matrices must be different instances, namely
  *  the algorithm is not-in-place
- * 
+ *  @bug Does not rotate the sub-matrix
  */
 void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset) {
   for (int i = 0; i < dim; i++) {
