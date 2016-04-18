@@ -342,9 +342,12 @@ TEST_F(complex_and_io_units, swarm) {
       /* invert fourier transform */
       fftw_execute(backward);
 
+      args[0] = &thumbnailDim;
+
+      /* @todo div_dim or identity ? */
       matrix_operation(thumbnail_buf[0],
                        thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)],
-                       thumbnailDim, identity, args);
+                       thumbnailDim, div_dim, args);
 
       /* get module */
       for (int k = 0; k < thumbnailDim * thumbnailDim; k++)
