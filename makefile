@@ -73,6 +73,8 @@ $(OUT)/%.o: $(RELEASEDIR)/src/%.c
 doc:
 	mkdir -p $(LOGDIR)
 	printf "\033[0;34m"
+	printf "Generating doc/images tikz images\n"
+	make LOGDIR=$(LOGDIR) -C $(DOCDIR)/images
 	printf "Generating Documentation\n"
 	doxygen $(DOCDIR)/config/doxygen.cfg
 	cat $(LOGDIR)/docwarnings
@@ -113,6 +115,8 @@ mrproper: clean
 	printf "\033[0m"
 	-rm -r $(BINDIR) 2> /dev/null
 	printf "\033[0;33m"
+	printf "Cleaning doc/images directory\n"
+	make LOGDIR=$(LOGDIR) -C $(DOCDIR)/images $@
 	printf "Cleaning doc directory\n"
 	printf "\033[0m"
 	-rm -r $(DOCDIR)/{html,latex} 2> /dev/null
