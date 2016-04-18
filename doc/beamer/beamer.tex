@@ -38,16 +38,66 @@
 \end{frame}
 
 \begin{frame}%[allowframebreaks]%
-  \frametitle{Overview}
+  \frametitle{Contents}
   \tableofcontents
 \end{frame}
+
+\section{Project overview}
+
+\begin{frame}
+  \frametitle{Dependencies}
+  This project uses several libraries:
+  \begin{itemize}
+  \item \textbf{libtiff} for inputs and outputs in tiff format
+  \item \textbf{libfftw3} for Fourier Transform computation
+  \item \textbf{libgtest} for testing (not mandatory)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The goal}
+  This project aims to provide a efficient library to combine several
+  high-quality images taken with a microscope into an ultra high quality
+  image. %TODO: add an example with before and after
+\end{frame}
+
+\section{The algorithm}
+
+\begin{frame}
+  \frametitle{Overview}
+  \begin{enumerate}
+  \item Uses multiples images as input (tiff format)
+  \item Computes the Fourier Transform of all theses
+  \item Combines them in the frequency domain into a big one
+  \item Computes the Inverse Fourier Transform to get the final results
+  \item Output the image in tiff format
+  \end{enumerate}
+\end{frame}
+
+%\begin{frame}
+%  \frametitle{}
+%\end{frame}
 
 \section{Results}
 
 \begin{frame}
-  \frametitle{Results}
+  \frametitle{Input}
   \begin{center}
-    \includegraphics[width=0.8\textwidth]{test}%
+    \includegraphics[width=1\textwidth]{images/input}%
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Input v2}
+  \begin{center}
+    \includegraphics[width=1\textwidth]{images/input2}%
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Output}
+  \begin{center}
+    \includegraphics[width=0.65\textwidth]{images/output}%
   \end{center}
 \end{frame}
 
