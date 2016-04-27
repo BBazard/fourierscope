@@ -1,5 +1,5 @@
 SRCDIR:=$(CURDIR)/src
-OUTDIR:=$(CURDIR)/output
+OUTDIR:=$(CURDIR)/build
 LOGDIR=$(OUTDIR)
 
 SRC:=$(wildcard $(SRCDIR)/*.tex)
