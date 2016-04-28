@@ -63,9 +63,9 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
     matrix_operation(itf, in, dim, div_dim, args);
 
     for (int i=0; i < dim*dim; i++) {
-      get_modarg(in[i], modarg[i]);
+      alg2exp(in[i], modarg[i]);
       (modarg[i])[0] = (input[i])[0];
-      get_algebraic(modarg[i], in[i]);
+      exp2alg(modarg[i], in[i]);
     }
   }
   matrix_operation(in, output, dim, identity, NULL);

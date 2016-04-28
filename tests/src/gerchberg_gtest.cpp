@@ -112,7 +112,7 @@ TEST_F(gerchberg_suite, gerchberg_test) {
   matrix_init(dim, input, 0);
 
   for (int i=0; i < dim*dim; i++)
-    get_modarg(output[i], input[i]);
+    alg2exp(output[i], input[i]);
 
   matrix_realpart(dim, input, mod);
 

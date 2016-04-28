@@ -123,63 +123,63 @@ TEST_F(matrix_suite, matrix_operation_test_with_args) {
 }
 
 /**
- *  @brief get_modarg function test
+ *  @brief alg2exp function test
  *
- *  Test if the get_modarg applied on a complex equal to 0
+ *  Test if the alg2exp applied on a complex equal to 0
  *  get 0 for both mod and arg
  *
  */
-TEST_F(matrix_suite, get_modarg_test_zero) {
+TEST_F(matrix_suite, alg2exp_test_zero) {
   c[0] = 0;
   c[1] = 0;
 
-  get_modarg(c, d);
+  alg2exp(c, d);
   ASSERT_DOUBLE_EQ(0, d[0]);
   ASSERT_DOUBLE_EQ(0, d[1]);
 }
 
 /**
- *  @brief get_modarg function test
+ *  @brief alg2exp function test
  *
- *  Test the get_modarg function with a hard-coded value
+ *  Test the alg2exp function with a hard-coded value
  *
  */
-TEST_F(matrix_suite, get_modarg_test_values) {
+TEST_F(matrix_suite, alg2exp_test_values) {
   c[0] = 3;
   c[1] = 5;
 
-  get_modarg(c, d);
+  alg2exp(c, d);
   EXPECT_DOUBLE_EQ(sqrt(34), d[0]);
   EXPECT_DOUBLE_EQ((M_PI/2.)-atan(3.0/5.0), d[1]);
 }
 
 /**
- *  @brief get_algebraic function test
+ *  @brief exp2alg function test
  *
  *  Test if a complex with mod and arg both equal to 0
  *  get an algebraic form equal to 0
  *
  */
-TEST_F(matrix_suite, get_algebraic_test_zero) {
+TEST_F(matrix_suite, exp2alg_test_zero) {
   c[0] = 0;
   c[1] = 0;
 
-  get_algebraic(c, d);
+  exp2alg(c, d);
   ASSERT_DOUBLE_EQ(0, d[0]);
   ASSERT_DOUBLE_EQ(0, d[1]);
 }
 
 /**
- *  @brief get_algebraic function test
+ *  @brief exp2alg function test
  *
- *  Test the get_algebraic function with a hard-coded value
+ *  Test the exp2alg function with a hard-coded value
  *
  */
-TEST_F(matrix_suite, get_algebraic_test_values) {
+TEST_F(matrix_suite, exp2alg_test_values) {
   c[0] = sqrt(34);
   c[1] = (M_PI/2.)-atan(3.0/5.0);
 
-  get_algebraic(c, d);
+  exp2alg(c, d);
   EXPECT_DOUBLE_EQ(3, d[0]);
   EXPECT_DOUBLE_EQ(5, d[1]);
 }

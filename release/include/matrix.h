@@ -37,8 +37,8 @@ void matrix_random(int dim, fftw_complex *mat, int max_rand);
 void matrix_print(int dim, fftw_complex *mat);
 void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
                       double (*fun)(double, void**), void **args);
-void get_modarg(fftw_complex in, fftw_complex out);
-void get_algebraic(fftw_complex in, fftw_complex out);
+void alg2exp(fftw_complex in, fftw_complex out);
+void exp2alg(fftw_complex in, fftw_complex out);
 
 void matrix_realpart(int dim, fftw_complex *in, double *out);
 

@@ -115,7 +115,7 @@ TEST_F(square_input_units, fftw_execute) {
 
   for (int i = 0; i < (int) diml; i++)
     for (int j = 0; j < (int) dimw; j++) {
-      get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
+      alg2exp(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
     }
 
@@ -126,7 +126,7 @@ TEST_F(square_input_units, fftw_execute) {
 
   for (int i = 0; i < (int) diml; i++)
     for (int j = 0; j < (int) dimw; j++) {
-      get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
+      alg2exp(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
     }
   ASSERT_EQ(0, tiff_frommatrix(ft, matrix, diml, dimw));
@@ -136,7 +136,7 @@ TEST_F(square_input_units, fftw_execute) {
 
   for (int i = 0; i < (int) diml; i++) {
     for (int j = 0; j < (int) dimw; j++) {
-      get_modarg(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
+      alg2exp(comp_mat[i*dimw+j], comp_mat2[i*dimw+j]);
       matrix[i*dimw+j] = (comp_mat2[i*dimw+j])[0];
       // printf("%f\n", matrix[i*dimw+j]);
     }

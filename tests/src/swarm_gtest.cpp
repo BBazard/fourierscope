@@ -284,7 +284,7 @@ TEST_F(soft_and_io_units, update_spectrum) {
   update_spectrum(thumbnail, thumbnailDim, radius, forward, backward,
                   itf, tf);
   for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-    get_modarg(tf[i], tf[i]);
+    alg2exp(tf[i], tf[i]);
     io_small[i] = (tf[i])[0];
   }
 
@@ -312,7 +312,7 @@ TEST_F(complex_and_io_units, swarm) {
 
   for (int i = 0; i < toSplitDim*toSplitDim; i++) {
     fftw_complex tmp;
-    get_modarg(toSplit[i], tmp);
+    alg2exp(toSplit[i], tmp);
     io_big[i] = tmp[0];
   }
 
@@ -352,7 +352,7 @@ TEST_F(complex_and_io_units, swarm) {
       /* get module */
       for (int k = 0; k < thumbnailDim * thumbnailDim; k++)
         /** @bug good type but not good place*/
-        get_modarg((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k],
+        alg2exp((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k],
                    (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k]);
       name[6] = (i + jorga_x) + '0';
       name[7] = (j + jorga_y) + '0';

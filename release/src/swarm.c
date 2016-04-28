@@ -49,10 +49,10 @@ void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
   fftw_execute(backward);
 
   for (int i = 0; i < th_dim*th_dim; i++) {
-    get_modarg(thumb[i], tf[i]);
-    get_modarg(itf[i], itf[i]);
+    alg2exp(thumb[i], tf[i]);
+    alg2exp(itf[i], itf[i]);
     (itf[i])[0] = (tf[i])[0];
-    get_algebraic(itf[i], itf[i]);
+    exp2alg(itf[i], itf[i]);
   }
 
   fftw_execute(forward);

@@ -134,9 +134,9 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
 }
 
 /**
- *  @brief Get module and argument from algebraic form
- *  @param[in] in The algebraic complex
- *  @param[out] out The module and argument
+ *  @brief Convert a complex from an algebraic to an exponential form
+ *  @param[in] in The complex in algebraic form (real imaginary)
+ *  @param[out] out The complex in exponential form (module argument)
  *
  *  This function takes an algebraic complex number a+ib,
  *  stored in the in parameter,
@@ -145,7 +145,7 @@ void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
  *  in and out parameters can be the same memory address.
  *
  */
-void get_modarg(fftw_complex in, fftw_complex out) {
+void alg2exp(fftw_complex in, fftw_complex out) {
   fftw_complex tmp;
   tmp[0] = sqrt(in[0]*in[0] + in[1]*in[1]);
   if (tmp[0] == 0) {
@@ -158,9 +158,9 @@ void get_modarg(fftw_complex in, fftw_complex out) {
 }
 
 /**
- *  @brief Get algebraic form from argument and module
- *  @param[in] in The module and argument
- *  @param[out] out The algebraic form
+ *  @brief Convert a complex from an exponential to an algebraic form
+ *  @param[in] out The complex in exponential form (module argument)
+ *  @param[out] in The complex in algebraic form (real imaginary)
  *
  *  This function computes the algebraic form of a complex
  *  given its module and argument.
@@ -168,7 +168,7 @@ void get_modarg(fftw_complex in, fftw_complex out) {
  *  in and out parameters can be the same memory address.
  *
  */
-void get_algebraic(fftw_complex in, fftw_complex out) {
+void exp2alg(fftw_complex in, fftw_complex out) {
   fftw_complex tmp;
   tmp[0] = in[0]*cos(in[1]);
   tmp[1] = in[0]*sin(in[1]);
@@ -183,7 +183,7 @@ void get_algebraic(fftw_complex in, fftw_complex out) {
  *  @param[out] real_matrix The real double matrix that results
  *
  *  Get the real part of a fftw_complex into a double matrix.
- *  This can also be used with get_modarg to get a matrix of module.
+ *  This can also be used with alg2exp to get a matrix of module.
  *
  */
 void matrix_realpart(int dim, fftw_complex *complex_matrix,
