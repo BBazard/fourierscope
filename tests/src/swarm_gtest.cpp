@@ -156,8 +156,8 @@ class fftw_complex_units : public virtual swarm_suite {
 class fftw_soft_units : public virtual swarm_suite {
  protected:
   fftw_complex *thumbnail;
-  fftw_complex *itf;
-  fftw_complex *tf;
+  fftw_complex *time;
+  fftw_complex *freq;
 
   fftw_plan forward;
   fftw_plan backward;
@@ -166,23 +166,23 @@ class fftw_soft_units : public virtual swarm_suite {
     swarm_suite::SetUp();
     thumbnail = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
                                              sizeof(fftw_complex));
-    itf = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
+    time = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
                                              sizeof(fftw_complex));
-    tf = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
+    freq = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
                                              sizeof(fftw_complex));
 
-    forward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, itf, tf,
+    forward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, time, freq,
                                 FFTW_FORWARD, FFTW_ESTIMATE);
-    backward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, tf, itf,
+    backward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, freq, time,
                                 FFTW_BACKWARD, FFTW_ESTIMATE);
 
     for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
       (thumbnail[i])[0] = 0;
       (thumbnail[i])[1] = 0;
-      (itf[i])[0] = 0;
-      (itf[i])[1] = 0;
-      (tf[i])[0] = 0;
-      (tf[i])[1] = 0;
+      (time[i])[0] = 0;
+      (time[i])[1] = 0;
+      (freq[i])[0] = 0;
+      (freq[i])[1] = 0;
     }
   }
 
@@ -190,8 +190,8 @@ class fftw_soft_units : public virtual swarm_suite {
     fftw_destroy_plan(forward);
     fftw_destroy_plan(backward);
 
-    fftw_free(tf);
-    fftw_free(itf);
+    fftw_free(freq);
+    fftw_free(time);
     fftw_free(thumbnail);
     fftw_cleanup();
     swarm_suite::TearDown();
@@ -282,10 +282,10 @@ class soft_and_io_units : public io_units, public fftw_soft_units {
 
 TEST_F(soft_and_io_units, update_spectrum) {
   update_spectrum(thumbnail, thumbnailDim, radius, forward, backward,
-                  itf, tf);
+                  time, freq);
   for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-    alg2exp(tf[i], tf[i]);
-    io_small[i] = (tf[i])[0];
+    alg2exp(freq[i], freq[i]);
+    io_small[i] = (freq[i])[0];
   }
 
   tiff_frommatrix(output, io_small, thumbnailDim, thumbnailDim);

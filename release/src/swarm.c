@@ -16,8 +16,8 @@
  *  @param[in] radius The radius of the disk
  *  @param[in] forward The plan used for fourier transforms
  *  @param[in] backward The plan used for inverse transforms
- *  @param[in,out] itf The source for FT and destination for IFT
- *  @param[in,out] tf The source for IFT and destination for FT
+ *  @param[in,out] time The source for FT and destination for IFT
+ *  @param[in,out] freq The source for IFT and destination for FT
  *
  *  This function does the following:
  *
@@ -27,32 +27,32 @@
  *  d = mod(thumb)*ei^arg(c)
  *  e = TF(d)
  *
- *  e is actually stored in tf parameter and is available for use
+ *  e is actually stored in freq parameter and is available for use
  *  in the calling function
  *
  */
 void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
-                     fftw_plan forward, fftw_plan backward, fftw_complex *itf,
-                     fftw_complex *tf) {
-  matrix_operation(thumb, itf, th_dim, identity, NULL);
+                     fftw_plan forward, fftw_plan backward, fftw_complex *time,
+                     fftw_complex *freq) {
+  matrix_operation(thumb, time, th_dim, identity, NULL);
   fftw_execute(forward);
 
   for (int i = 0; i < th_dim*th_dim; i++) {
-    (itf[i])[0] = 0;
-    (itf[i])[1] = 0;
+    (time[i])[0] = 0;
+    (time[i])[1] = 0;
   }
 
-  copy_disk(tf, itf, th_dim, radius);
+  copy_disk(freq, time, th_dim, radius);
 
   /** @todo optimize fftw_plans */
-  matrix_operation(itf, tf, th_dim, identity, NULL);
+  matrix_operation(time, freq, th_dim, identity, NULL);
   fftw_execute(backward);
 
   for (int i = 0; i < th_dim*th_dim; i++) {
-    alg2exp(thumb[i], tf[i]);
-    alg2exp(itf[i], itf[i]);
-    (itf[i])[0] = (tf[i])[0];
-    exp2alg(itf[i], itf[i]);
+    alg2exp(thumb[i], freq[i]);
+    alg2exp(time[i],time[i]);
+    (time[i])[0] = (freq[i])[0];
+    exp2alg(time[i], time[i]);
   }
 
   fftw_execute(forward);
@@ -92,8 +92,8 @@ int move_one(int* index_x, int* index_y, int direction) {
  *
  *  the leds in the corner should be updated by another function
  */
-int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
-                fftw_complex *tf, fftw_complex *out,
+int move_streak(fftw_complex **thumbnails, fftw_complex *time,
+                fftw_complex *freq, fftw_complex *out,
                 fftw_plan forward, fftw_plan backward,
                 int th_dim, int radius, int delta, int side,
                 int pos_x, int pos_y, int side_leds,
@@ -107,8 +107,8 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *itf,
     centerX = (pos_x-mid)*delta;
     centerY = (pos_y-mid)*delta;
     update_spectrum(thumbnails[pos_x*side+pos_y],
-                    th_dim, radius, forward, backward, itf, tf);
-    if (copy_disk_with_offset(tf, out, th_dim, radius, centerX, centerY))
+                    th_dim, radius, forward, backward, time, freq);
+    if (copy_disk_with_offset(freq, out, th_dim, radius, centerX, centerY))
       error = 2;
   }
   return error;
@@ -139,22 +139,22 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
   if (delta < 1.4*radius)
     return 1;
 
-  fftw_complex *itf;
-  fftw_complex *tf;
+  fftw_complex *time;
+  fftw_complex *freq;
   fftw_plan forward;
   fftw_plan backward;
 
-  if ( (itf = (fftw_complex *) malloc(th_dim*th_dim*
+  if ( (time = (fftw_complex *) malloc(th_dim*th_dim*
                                       sizeof(fftw_complex))) == NULL )
     return 1;
 
-  if ( (tf = (fftw_complex *) malloc(th_dim*th_dim*
+  if ( (freq = (fftw_complex *) malloc(th_dim*th_dim*
                                      sizeof(fftw_complex))) == NULL )
     return 1;
 
-  forward = fftw_plan_dft_2d(th_dim, th_dim, itf, tf,
+  forward = fftw_plan_dft_2d(th_dim, th_dim, time, freq,
                               FFTW_FORWARD, FFTW_ESTIMATE);
-  backward = fftw_plan_dft_2d(th_dim, th_dim, tf, itf,
+  backward = fftw_plan_dft_2d(th_dim, th_dim, freq, time,
                               FFTW_BACKWARD, FFTW_ESTIMATE);
 
   /*
@@ -198,7 +198,7 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
 
     /* special: no adjacent circle */
     update_spectrum(thumbnails[pos_x*side+pos_y],
-                    th_dim, radius, forward, backward, itf, tf);
+                    th_dim, radius, forward, backward, time, freq);
 
     /*
      * one whorl correspond of a move going from one corner
@@ -209,25 +209,25 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
      */
     for (int whorl = 1; whorl <= jorga; whorl++) {
       /* side leds */
-      move_streak(thumbnails, itf, tf, out, forward, backward,
+      move_streak(thumbnails, time, freq, out, forward, backward,
                   th_dim, radius, delta, side, pos_x, pos_y,
                   side_leds, direction);
 
       /* special: corner led */
       update_spectrum(thumbnails[pos_x*side+pos_y],
-                      th_dim, radius, forward, backward, itf, tf);
+                      th_dim, radius, forward, backward, time, freq);
 
       /* direction change: clockwise route */
       direction = (direction+1)%4;
 
       /* side leds */
-      move_streak(thumbnails, itf, tf, out, forward, backward,
+      move_streak(thumbnails, time, freq, out, forward, backward,
                   th_dim, radius, delta, side, pos_x, pos_y,
                   side_leds, direction);
 
       /* special: corner led */
       update_spectrum(thumbnails[pos_x*side+pos_y],
-                      th_dim, radius, forward, backward, itf, tf);
+                      th_dim, radius, forward, backward, time, freq);
 
       direction = (direction+1)%4;
       side_leds++;
@@ -236,7 +236,7 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
     /* at this point side_leds = side */
     /* we just need to finish the spiral */
 
-    move_streak(thumbnails, itf, tf, out, forward, backward,
+    move_streak(thumbnails, time, freq, out, forward, backward,
                 th_dim, radius, delta, side, pos_x, pos_y,
                 side_leds, direction);
 
@@ -244,7 +244,7 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
     /* the spiral lap is done at this point */
   }
 
-  /** @todo free itf tf forward backward ?? */
+  /** @todo free time freq forward backward ?? */
 
   return 0;
 }

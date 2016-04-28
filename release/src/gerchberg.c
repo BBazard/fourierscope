@@ -29,9 +29,9 @@
 void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
                int exec_limit, int radius) {
   fftw_complex *in;
-  fftw_complex *tf;
+  fftw_complex *freq;
   fftw_complex *disk;
-  fftw_complex *itf;
+  fftw_complex *time;
   fftw_complex *modarg;
 
   void **args = (void**) malloc(2*sizeof(void*));
@@ -39,28 +39,28 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
   args[1] = NULL;
 
   in = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
-  tf = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
+  freq = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
   disk = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
-  itf = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
+  time = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
   modarg = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
 
-  fftw_plan forward = fftw_plan_dft_2d(dim, dim, in, tf,
+  fftw_plan forward = fftw_plan_dft_2d(dim, dim, in, freq,
                                        FFTW_FORWARD, FFTW_ESTIMATE);
-  fftw_plan backward = fftw_plan_dft_2d(dim, dim, disk, itf,
+  fftw_plan backward = fftw_plan_dft_2d(dim, dim, disk, time,
                                         FFTW_BACKWARD, FFTW_ESTIMATE);
 
   matrix_operation(input, in, dim, identity, NULL);
-  matrix_init(dim, tf, 0);
+  matrix_init(dim, freq, 0);
   matrix_init(dim, disk, 0);
-  matrix_init(dim, itf, 0);
+  matrix_init(dim, time, 0);
 
   for (int it=0; it < exec_limit; it++) {
     fftw_execute(forward);
 
-    copy_disk(tf, disk, dim, radius);
+    copy_disk(freq, disk, dim, radius);
 
     fftw_execute(backward);
-    matrix_operation(itf, in, dim, div_dim, args);
+    matrix_operation(time, in, dim, div_dim, args);
 
     for (int i=0; i < dim*dim; i++) {
       alg2exp(in[i], modarg[i]);
@@ -74,9 +74,9 @@ void gerchberg(int dim, fftw_complex *input, fftw_complex *output,
   fftw_destroy_plan(backward);
 
   fftw_free(in);
-  fftw_free(tf);
+  fftw_free(freq);
   fftw_free(disk);
-  fftw_free(itf);
+  fftw_free(time);
   fftw_free(modarg);
   free(args);
 }
