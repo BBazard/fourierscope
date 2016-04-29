@@ -27,7 +27,8 @@
  *
  *  where b = Disk((out[x][y]),radius)
  *
- *  The matrix extracted from out is located in freq
+ *  The matrix extracted from out must be located in the freq
+ *  fftw_complex * matrix corresponding to the plans
  *  e is actually stored in freq parameter and is available for use
  *  in the calling function
  *
