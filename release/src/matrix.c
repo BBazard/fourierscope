@@ -293,6 +293,112 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
 }
 
 /**
+ *  @brief Copy a cell and call itself on the adjacent cells
+ *  @param[in,out] ref The reference matrix used to remember the previous states
+ *  @param[in] refX The coordinate in ref
+ *  @param[in] refY The coordinate in ref
+ *  @see copy_disk_ultimate
+ *
+ *  This function is a recursive function spanning from the center
+ *  of a disk to its border by decreasing the
+ *  radius by one each time it is called.
+ *
+ *  In fact it copies the part which is in the disk to the output matrix.
+ *
+ *  There is a folding of the disk in the in and out matrices.
+ *
+ */
+void von_neumann_ultimate(fftw_complex* in, fftw_complex* out,
+                          int dimIn, int dimOut,
+                          int inX, int inY, int outX, int outY,
+                          int *ref, int refX, int refY, int radius) {
+  if (radius <= 0)
+    return;
+
+  int out_X = matrix_cyclic(outX+refX, dimOut);
+  int out_Y = matrix_cyclic(outY+refY, dimOut);
+  int in_X = matrix_cyclic(inX+refX, dimIn);
+  int in_Y = matrix_cyclic(inY+refY, dimIn);
+
+  (out[out_X*dimOut+out_Y])[0] = (in[in_X*dimIn+in_Y])[0];
+  (out[out_X*dimOut+out_Y])[1] = (in[in_X*dimIn+in_Y])[1];
+
+  if (ref[(refX+1)*(2*radius + 1) + (refY)] < radius)
+    von_neumann_ultimate(in, out, dimIn, dimOut,
+                         inX, inY, outX, outY, ref, refX+1, refY, radius-1);
+  if (ref[(refX-1)*(2*radius + 1) + (refY)] < radius)
+    von_neumann_ultimate(in, out, dimIn, dimOut,
+                         inX, inY, outX, outY, ref, refX-1, refY, radius-1);
+  if (ref[(refX)*(2*radius + 1) + (refY+1)] < radius)
+    von_neumann_ultimate(in, out, dimIn, dimOut,
+                         inX, inY, outX, outY, ref, refX, refY+1, radius-1);
+  if (ref[(refX)*(2*radius + 1) + (refY-1)] < radius)
+    von_neumann_ultimate(in, out, dimIn, dimOut,
+                         inX, inY, outX, outY, ref, refX, refY-1, radius-1);
+}
+
+/**
+ *  @brief Copy a disk from one matrix to another
+ *  @param[in] in The fftw_complex 2d matrix used as input
+ *  @param[out] out The fftw_complex 2d matrix used as output
+ *  @param[in] dimIn The dimension of in (square matrix)
+ *  @param[in] dimOut The dimension of out (square matrix)
+ *  @param[in] inX Coordinate of the center of the disk in in
+ *  @param[in] inY Coordinate of the center of the disk in in
+ *  @param[in] outX Coordinate of the center of the disk in out
+ *  @param[in] outY Coordinate of the center of the disk in out
+ *  @param[in] radius The radius of the disk
+ *  @return 1 If the radius is not adapted
+ *  @return 0 Otherwise
+ *
+ *  This function computes a disk in the input matrix using
+ *  taxicab geometry and copy this disk from in to out.
+ *  The center of the circle has the coordinates
+ *  [inX;inY] in the matrix in and 
+ *  [outX;outY] in the matrix out.
+ *  It folds like this:
+ *
+ *  0 1 X X 1
+ *  1 X X X X
+ *  X X X X X
+ *  X X X X X
+ *  1 X X X X
+ *
+ */
+int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
+                       int dimIn, int dimOut,
+                       int inX, int inY, int outX, int outY,
+                       int radius) {
+  /* maybe useless */
+  inX = inX % dimIn;
+  inY = inY % dimIn;
+  outX = outX % dimOut;
+  outY = outY % dimOut;
+
+  int minDim = (dimIn <= dimOut) ? dimIn : dimOut;
+  int radius_max = (minDim-1)/2;
+
+  if (minDim <= 0 || radius <= 0 ||
+      radius > radius_max) {
+    return 1;
+  } else {
+    int *ref = (int*) malloc((2*radius + 1) * sizeof(int));
+
+    for (int i = 0; i < 2*radius + 1; i++)
+      ref[i] = -1;
+
+    int refX = radius;
+    int refY = radius;
+    ref[refX*(2*radius + 1) + refY] = radius;
+
+    von_neumann_ultimate(in, out, dimIn, dimOut,
+                         inX, inY, outX, outY, ref, refX, refY, radius);
+    free(ref);
+    return 0;
+  }
+}
+
+/**
  *  @brief Copy a disk from one matrix to another
  *  @param[in] in The fftw_complex 2d matrix used as input
  *  @param[out] out The fftw_complex 2d matrix used as output
