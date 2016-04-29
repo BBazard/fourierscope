@@ -155,7 +155,7 @@ class fftw_complex_units : public virtual swarm_suite {
 
 class fftw_soft_units : public virtual swarm_suite {
  protected:
-  fftw_complex *thumbnail;
+  double *thumbnail;
   fftw_complex *time;
   fftw_complex *freq;
 
@@ -164,7 +164,7 @@ class fftw_soft_units : public virtual swarm_suite {
 
   virtual void SetUp() {
     swarm_suite::SetUp();
-    thumbnail = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
+    thumbnail = (double *) fftw_malloc(thumbnailDim * thumbnailDim *
                                              sizeof(fftw_complex));
     time = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
                                              sizeof(fftw_complex));
@@ -177,8 +177,7 @@ class fftw_soft_units : public virtual swarm_suite {
                                 FFTW_BACKWARD, FFTW_ESTIMATE);
 
     for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-      (thumbnail[i])[0] = 0;
-      (thumbnail[i])[1] = 0;
+      thumbnail[i] = 0;
       (time[i])[0] = 0;
       (time[i])[1] = 0;
       (freq[i])[0] = 0;
@@ -269,7 +268,7 @@ class soft_and_io_units : public io_units, public fftw_soft_units {
     io_units::SetUp();
     tiff_tomatrix(input, io_small, thumbnailDim, thumbnailDim);
     for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-      (thumbnail[i])[0] = io_small[i];
+      thumbnail[i] = io_small[i];
     }
   }
 
@@ -281,8 +280,8 @@ class soft_and_io_units : public io_units, public fftw_soft_units {
 
 
 TEST_F(soft_and_io_units, update_spectrum) {
-  update_spectrum(thumbnail, thumbnailDim, radius, forward, backward,
-                  time, freq);
+  update_spectrum(thumbnail, thumbnailDim, forward, backward,
+                  time);
   for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
     alg2exp(freq[i], freq[i]);
     io_small[i] = (freq[i])[0];

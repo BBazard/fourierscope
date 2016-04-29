@@ -21,37 +21,25 @@
  *
  *  This function does the following:
  *
- *  a = TF(thumb)
- *  b = Disk(a,radius)
  *  c = ITF(b)
  *  d = mod(thumb)*ei^arg(c)
  *  e = TF(d)
  *
+ *  where b = Disk((out[x][y]),radius)
+ *
+ *  The matrix extracted from out is located in freq
  *  e is actually stored in freq parameter and is available for use
  *  in the calling function
  *
  */
-void update_spectrum(fftw_complex *thumb, int th_dim, int radius,
-                     fftw_plan forward, fftw_plan backward, fftw_complex *time,
-                     fftw_complex *freq) {
-  matrix_operation(thumb, time, th_dim, identity, NULL);
-  fftw_execute(forward);
-
-  for (int i = 0; i < th_dim*th_dim; i++) {
-    (time[i])[0] = 0;
-    (time[i])[1] = 0;
-  }
-
-  copy_disk(freq, time, th_dim, radius);
-
+void update_spectrum(double *thumb, int th_dim, fftw_plan forward,
+                     fftw_plan backward, fftw_complex *time) {
   /** @todo optimize fftw_plans */
-  matrix_operation(time, freq, th_dim, identity, NULL);
   fftw_execute(backward);
 
   for (int i = 0; i < th_dim*th_dim; i++) {
-    alg2exp(thumb[i], freq[i]);
-    alg2exp(time[i],time[i]);
-    (time[i])[0] = (freq[i])[0];
+    alg2exp(time[i], time[i]);
+    (time[i])[0] = thumb[i];
     exp2alg(time[i], time[i]);
   }
 
@@ -92,7 +80,7 @@ int move_one(int* index_x, int* index_y, int direction) {
  *
  *  the leds in the corner should be updated by another function
  */
-int move_streak(fftw_complex **thumbnails, fftw_complex *time,
+int move_streak(double **thumbnails, fftw_complex *time,
                 fftw_complex *freq, fftw_complex *out,
                 fftw_plan forward, fftw_plan backward,
                 int th_dim, int radius, int delta, int side,
@@ -107,7 +95,7 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *time,
     centerX = (pos_x-mid)*delta;
     centerY = (pos_y-mid)*delta;
     update_spectrum(thumbnails[pos_x*side+pos_y],
-                    th_dim, radius, forward, backward, time, freq);
+                    th_dim, forward, backward, time);
     if (copy_disk_with_offset(freq, out, th_dim, radius, centerX, centerY))
       error = 2;
   }
@@ -127,7 +115,7 @@ int move_streak(fftw_complex **thumbnails, fftw_complex *time,
  *  @return 1 If memory allocation failed or incompatible parameters
  *  @return 0 0therwise
  */
-int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
+int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
           int radius, int jorga, fftw_complex *out) {
   /** @todo check these formula */
   /* check if out is big enough */
@@ -198,7 +186,7 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
 
     /* special: no adjacent circle */
     update_spectrum(thumbnails[pos_x*side+pos_y],
-                    th_dim, radius, forward, backward, time, freq);
+                    th_dim, forward, backward, time);
 
     /*
      * one whorl correspond of a move going from one corner
@@ -215,7 +203,7 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
 
       /* special: corner led */
       update_spectrum(thumbnails[pos_x*side+pos_y],
-                      th_dim, radius, forward, backward, time, freq);
+                      th_dim, forward, backward, time);
 
       /* direction change: clockwise route */
       direction = (direction+1)%4;
@@ -227,7 +215,7 @@ int swarm(fftw_complex **thumbnails, int th_dim, int out_dim, int delta,
 
       /* special: corner led */
       update_spectrum(thumbnails[pos_x*side+pos_y],
-                      th_dim, radius, forward, backward, time, freq);
+                      th_dim, forward, backward, time);
 
       direction = (direction+1)%4;
       side_leds++;
