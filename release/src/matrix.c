@@ -421,23 +421,7 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
  */
 int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
                          int radius, int centerX, int centerY) {
-  int radius_max = (dim-1)/2;
-
-  if (dim <= 0 || radius <= 0 ||
-      radius > radius_max) {
-    return 1;
-  } else {
-    int *ref;
-    ref = (int*) malloc(dim * dim * sizeof(int));
-
-    for (int i = 0; i < dim * dim; i++)
-      ref[i] = -1;
-
-    ref[centerX*dim+centerY] = radius;
-    von_neumann(centerX, centerY, radius-1, ref, dim, in, out);
-    free(ref);
-    return 0;
-  }
+  return copy_disk_ultimate(in, out, dim, dim, centerX, centerY, centerX, centerY, radius);
 }
 
 /**
