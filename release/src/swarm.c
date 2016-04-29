@@ -122,7 +122,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
   /* check if out is big enough */
   if (jorga*delta + th_dim/2 < out_dim/2)
     return 1;
-  /* check if the circle are correctly entangled */
+  /* check if the circles are correctly entangled */
   if (delta > 2*radius)
     return 1;
   if (delta < 1.4*radius)
