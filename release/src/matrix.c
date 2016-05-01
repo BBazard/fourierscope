@@ -318,6 +318,11 @@ void von_neumann_ultimate(fftw_complex* in, fftw_complex* out,
 
   int dimRef = 2*radius_max + 1;
 
+  /* if the cell is already copied */
+  if (!(ref[(refX)*dimRef + (refY)] < radius+1))
+    return;
+
+  /* if the cell is not in the disk */
   if (refX < 0 || refY < 0 || refX >= dimRef || refY >= dimRef)
     return;
 
@@ -373,12 +378,6 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
                        int dimIn, int dimOut,
                        int inX, int inY, int outX, int outY,
                        int radius) {
-  /* maybe useless */
-  inX = inX % dimIn;
-  inY = inY % dimIn;
-  outX = outX % dimOut;
-  outY = outY % dimOut;
-
   int minDim = (dimIn <= dimOut) ? dimIn : dimOut;
   int radius_max = (minDim-1)/2;
 
@@ -388,7 +387,7 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
   } else {
     int *ref = (int*) malloc((2*radius + 1)*(2*radius + 1)  * sizeof(int));
 
-    for (int i = 0; i < 2*radius + 1; i++)
+    for (int i = 0; i < (2*radius + 1)*(2*radius + 1); i++)
       ref[i] = -1;
 
     int refX = radius;
