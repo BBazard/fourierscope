@@ -316,9 +316,7 @@ TEST_F(complex_and_io_units, swarm) {
   }
 
   tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
-
-  char name[14] = "build/xx.tiff";
-
+  char *name = (char*) malloc(sizeof(char)*strlen("build/xxxxxyyyyy.tiff"));
   for (int i = -jorga_x; i <= jorga_x; i++)
     for (int j = -jorga_y; j <= jorga_y; j++) {
       int offX = i*delta_x;
@@ -353,11 +351,55 @@ TEST_F(complex_and_io_units, swarm) {
         /** @bug good type but not good place*/
         alg2exp((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k],
                    (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k]);
-      name[6] = (i + jorga_x) + '0';
-      name[7] = (j + jorga_y) + '0';
       matrix_realpart(thumbnailDim,
                       thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)],
                       io_small);
-      tiff_frommatrix(name, io_small, thumbnailDim, thumbnailDim);
+      tiff_frommatrix(tiff_getname((i+jorga_x), (j+jorga_y), name), io_small,
+                      thumbnailDim, thumbnailDim);
     }
+}
+
+class swarm_unit : public swarm_suite {
+ protected:
+  double **thumbnails;
+  fftw_complex *out;
+
+  virtual void SetUp() {
+    swarm_suite::SetUp();
+    char *name = (char*) malloc(sizeof(char)*
+                                (strlen("build/xxxxxyyyyy.tiff")+1));
+    thumbnails = (double**) malloc((2*jorga_x+1)*(2*jorga_y+1)
+                                   * sizeof(double*));
+    for (int i = 0; i < 2*jorga_x+1; i++)
+      for (int j = 0; j < 2*jorga_y+1; j++) {
+        thumbnails[i] = (double*) malloc(thumbnailDim * thumbnailDim
+                                        * sizeof(double));
+
+        tiff_tomatrix(tiff_getname(i, j, name), thumbnails[i],
+                        thumbnailDim, thumbnailDim);
+      }
+    out = (fftw_complex*) malloc(toSplitDim * toSplitDim *sizeof(fftw_complex));
+    for (int i = 0; i < toSplitDim * toSplitDim; i++)
+      (out[i])[0] = (out[i])[1] = 0;
+    free(name);
+  }
+
+  virtual void TearDown() {
+    double* out_io = (double*) malloc(toSplitDim*toSplitDim*sizeof(double));
+    for (int i = 0; i < toSplitDim * toSplitDim; i++) {
+      alg2exp(out[i], out[i]);
+      out_io[i] = (out[i])[0];
+    }
+    free(out);
+    tiff_frommatrix("build/swarm.tiff", out_io, toSplitDim, toSplitDim);
+    free(out_io);
+
+    /** @bug Free memory */
+
+    swarm_suite::TearDown();
+  }
+};
+
+TEST_F(swarm_unit, swarm) {
+  swarm(thumbnails, thumbnailDim, toSplitDim, delta_x, radius, jorga_x, out);
 }
