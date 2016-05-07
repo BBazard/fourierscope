@@ -22,5 +22,6 @@ int tiff_maxnormalized(double max, double tosample);
 
 int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw);
 int tiff_frommatrix(const char *name, double *matrix, uint32 diml, uint32 dimw);
+char* tiff_getname(int x, int y, char* name);
 
 #endif /* RELEASE_INCLUDE_TIFFIO_H_ */

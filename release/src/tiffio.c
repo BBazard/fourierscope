@@ -150,3 +150,12 @@ int tiff_frommatrix(const char *name, double *matrix,
     return 1;
   }
 }
+
+char* tiff_getname(int x, int y, char* name) {
+  int size = strlen("build/xxxxxyyyyy.tiff");
+  if (x < 0 || y < 0 || x >= 100000 || y >= 100000)
+    snprintf(name, size, "build/bad_argmen.tiff");
+  else
+    snprintf(name, size, "build/%.5d%.5d.tiff", x, y);
+  return name;
+}
