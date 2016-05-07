@@ -259,7 +259,11 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     /* the spiral lap is done at this point */
   }
 
-  /** @todo free time freq forward backward ?? */
+  fftw_destroy_plan(forward);
+  fftw_destroy_plan(backward);
+
+  fftw_free(time);
+  fftw_free(freq);
 
   return 0;
 }
