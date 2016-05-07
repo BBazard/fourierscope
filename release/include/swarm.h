@@ -21,7 +21,7 @@ int move_one(int* index_x, int* index_y, int direction);
 int move_streak(double **thumbnails, fftw_complex *time,
                 fftw_complex *freq, fftw_complex *out,
                 fftw_plan forward, fftw_plan backward,
-                int th_dim, int radius, int delta, int side,
+                int th_dim, int out_dim, int radius, int delta, int side,
                 int pos_x, int pos_y, int side_leds,
                 int direction);
 int swarm(double **thumbnails, int th_dim, int out_dim, int delta,

@@ -84,7 +84,7 @@ int move_one(int* index_x, int* index_y, int direction) {
 int move_streak(double **thumbnails, fftw_complex *time,
                 fftw_complex *freq, fftw_complex *out,
                 fftw_plan forward, fftw_plan backward,
-                int th_dim, int radius, int delta, int side,
+                int th_dim, int out_dim, int radius, int delta, int side,
                 int pos_x, int pos_y, int side_leds,
                 int direction) {
   int error = 0;
@@ -95,9 +95,13 @@ int move_streak(double **thumbnails, fftw_complex *time,
     error = move_one(&pos_x, &pos_y, direction);
     centerX = (pos_x-mid)*delta;
     centerY = (pos_y-mid)*delta;
+    if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                           0, 0, centerX, centerY, radius))
+      error = 2;
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, forward, backward, time);
-    if (copy_disk_with_offset(freq, out, th_dim, radius, centerX, centerY))
+    if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                           centerX, centerY, 0, 0, radius))
       error = 2;
   }
   return error;
@@ -185,9 +189,11 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     int pos_x = mid;
     int pos_y = mid;
 
+    copy_disk_ultimate(out, freq, out_dim, th_dim, 0, 0, 0, 0, radius);
     /* special: no adjacent circle */
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, forward, backward, time);
+    copy_disk_ultimate(freq, out, th_dim, out_dim, 0, 0, 0, 0, radius);
 
     /*
      * one whorl correspond of a move going from one corner
@@ -199,24 +205,51 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     for (int whorl = 1; whorl <= jorga; whorl++) {
       /* side leds */
       move_streak(thumbnails, time, freq, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y,
+                  th_dim, out_dim, radius, delta, side, pos_x, pos_y,
                   side_leds, direction);
 
+      /* @bug error management */
+      int error;
+      int centerX, centerY;
+
       /* special: corner led */
+      centerX = (pos_x-mid)*delta;
+      centerY = (pos_y-mid)*delta;
+      if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                             0, 0, centerX, centerY, radius))
+        error = 2;
       update_spectrum(thumbnails[pos_x*side+pos_y],
                       th_dim, forward, backward, time);
+      if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                             centerX, centerY, 0, 0, radius))
+        error = 2;
 
       /* direction change: clockwise route */
       direction = (direction+1)%4;
 
       /* side leds */
-      move_streak(thumbnails, time, freq, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y,
-                  side_leds, direction);
-
-      /* special: corner led */
+      centerX = (pos_x-mid)*delta;
+      centerY = (pos_y-mid)*delta;
+      if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                             0, 0, centerX, centerY, radius))
+        error = 2;
       update_spectrum(thumbnails[pos_x*side+pos_y],
                       th_dim, forward, backward, time);
+      if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                             centerX, centerY, 0, 0, radius))
+        error = 2;
+
+      /* special: corner led */
+      centerX = (pos_x-mid)*delta;
+      centerY = (pos_y-mid)*delta;
+      if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                             0, 0, centerX, centerY, radius))
+        error = 2;
+      update_spectrum(thumbnails[pos_x*side+pos_y],
+                      th_dim, forward, backward, time);
+      if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                             centerX, centerY, 0, 0, radius))
+        error = 2;
 
       direction = (direction+1)%4;
       side_leds++;
@@ -226,7 +259,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     /* we just need to finish the spiral */
 
     move_streak(thumbnails, time, freq, out, forward, backward,
-                th_dim, radius, delta, side, pos_x, pos_y,
+                th_dim, out_dim, radius, delta, side, pos_x, pos_y,
                 side_leds, direction);
 
     /* there is no corner led here */
