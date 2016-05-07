@@ -228,16 +228,9 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       direction = (direction+1)%4;
 
       /* side leds */
-      centerX = (pos_x-mid)*delta;
-      centerY = (pos_y-mid)*delta;
-      if (copy_disk_ultimate(out, freq, out_dim, th_dim,
-                             0, 0, centerX, centerY, radius))
-        error = 2;
-      update_spectrum(thumbnails[pos_x*side+pos_y],
-                      th_dim, forward, backward, time);
-      if (copy_disk_ultimate(freq, out, th_dim, out_dim,
-                             centerX, centerY, 0, 0, radius))
-        error = 2;
+      move_streak(thumbnails, time, freq, out, forward, backward,
+                  th_dim, radius, delta, side, pos_x, pos_y,
+                  side_leds, direction);
 
       /* special: corner led */
       centerX = (pos_x-mid)*delta;
