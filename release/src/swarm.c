@@ -229,7 +229,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
       /* side leds */
       move_streak(thumbnails, time, freq, out, forward, backward,
-                  th_dim, radius, delta, side, pos_x, pos_y,
+                  th_dim, out_dim, radius, delta, side, pos_x, pos_y,
                   side_leds, direction);
 
       /* special: corner led */
