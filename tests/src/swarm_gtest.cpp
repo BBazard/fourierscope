@@ -316,7 +316,7 @@ TEST_F(complex_and_io_units, swarm) {
   }
 
   tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
-  char *name = (char*) malloc(sizeof(char)*(strlen("build/xxxxxyyyyy.tiff"+1)));
+  char *name = (char*) malloc(sizeof(char)*(strlen("build/xxxxxyyyyy.tiff")+1));
   for (int i = -jorga_x; i <= jorga_x; i++)
     for (int j = -jorga_y; j <= jorga_y; j++) {
       int offX = i*delta_x;
