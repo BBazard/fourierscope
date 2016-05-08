@@ -124,13 +124,13 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
           int radius, int jorga, fftw_complex *out) {
   /** @todo check these formula */
   /* check if out is big enough */
-  if (jorga*delta + th_dim/2 < out_dim/2)
+  if (jorga*delta + th_dim/2 > out_dim/2)
     return 1;
   /* check if the circles are correctly entangled */
   if (delta > 2*radius)
-    return 1;
+    return 2;
   if (delta < 1.4*radius)
-    return 1;
+    return 3;
 
   fftw_complex *time;
   fftw_complex *freq;
