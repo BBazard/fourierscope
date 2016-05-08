@@ -372,10 +372,10 @@ class swarm_unit : public swarm_suite {
                                    * sizeof(double*));
     for (int i = 0; i < 2*jorga_x+1; i++)
       for (int j = 0; j < 2*jorga_y+1; j++) {
-        thumbnails[i] = (double*) malloc(thumbnailDim * thumbnailDim
-                                        * sizeof(double));
+        thumbnails[i*(2*jorga_x+1)+j] = (double*) malloc(sizeof(double) *
+                                        thumbnailDim * thumbnailDim);
 
-        tiff_tomatrix(tiff_getname(i, j, name), thumbnails[i],
+        tiff_tomatrix(tiff_getname(i, j, name), thumbnails[i*(2*jorga_x+1)+j],
                         thumbnailDim, thumbnailDim);
       }
     out = (fftw_complex*) malloc(toSplitDim * toSplitDim *sizeof(fftw_complex));
@@ -394,12 +394,17 @@ class swarm_unit : public swarm_suite {
     tiff_frommatrix("build/swarm.tiff", out_io, toSplitDim, toSplitDim);
     free(out_io);
 
-    /** @bug Free memory */
+    for (int i = 0; i < 2*jorga_x+1; i++)
+      for (int j = 0; j < 2*jorga_y+1; j++)
+        free(thumbnails[i*(2*jorga_x+1)+j]);
+
+    free(thumbnails);
 
     swarm_suite::TearDown();
   }
 };
 
 TEST_F(swarm_unit, swarm) {
-  EXPECT_EQ(0, swarm(thumbnails, thumbnailDim, toSplitDim, delta_x, radius, jorga_x, out));
+  EXPECT_EQ(0, swarm(thumbnails, thumbnailDim, toSplitDim,
+                     delta_x, radius, jorga_x, out));
 }
