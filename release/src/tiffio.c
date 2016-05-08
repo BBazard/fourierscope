@@ -152,7 +152,7 @@ int tiff_frommatrix(const char *name, double *matrix,
 }
 
 char* tiff_getname(int x, int y, char* name) {
-  int size = strlen("build/xxxxxyyyyy.tiff");
+  int size = strlen("build/xxxxxyyyyy.tiff")+1;
   if (x < 0 || y < 0 || x >= 100000 || y >= 100000)
     snprintf(name, size, "build/bad_argmen.tiff");
   else
