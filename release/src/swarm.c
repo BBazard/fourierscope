@@ -122,6 +122,7 @@ int move_streak(double **thumbnails, fftw_complex *time,
  */
 int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
           int radius, int jorga, fftw_complex *out) {
+  printf("### STARTING SWARM ###\n");
   /** @todo check these formula */
   /* check if out is big enough */
   if (jorga*delta + th_dim/2 > out_dim/2)
@@ -171,8 +172,8 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     /* the direction of the next led */
     int direction = DOWN;
 
-    /* 
-     * the number of leds exploited (update_spectrum) in the same streak  
+    /*
+     * the number of leds exploited (update_spectrum) in the same streak
      * exluding the leds in the corner
      *
      * for example: for the first move of the lap, side_leds is 0 cause
@@ -184,11 +185,60 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     int pos_x = mid;
     int pos_y = mid;
 
+
+    /* !! debug_start !! */
+    char name[60];
+    int step = 0;
+
+    double *out_io0 = (double*) malloc(out_dim*out_dim*sizeof(double));
+    double *th_io0 = (double*) malloc(th_dim*th_dim*sizeof(double));
+    double *out_io1 = (double*) malloc(out_dim*out_dim*sizeof(double));
+    double *th_io1 = (double*) malloc(th_dim*th_dim*sizeof(double));
+    fftw_complex *out_tmp;
+    fftw_complex *th_tmp;
+    out_tmp = (fftw_complex*) fftw_malloc(out_dim*out_dim*
+                                          sizeof(fftw_complex));
+    th_tmp = (fftw_complex*) fftw_malloc(th_dim*th_dim*
+                                         sizeof(fftw_complex));
+
+    for (int i = 0; i < out_dim * out_dim; i++) {
+      alg2exp(out[i],out_tmp[i]);
+      out_io0[i] = (out_tmp[i])[0];
+      out_io1[i] = (out_tmp[i])[1];
+    }
+    snprintf(name, 50, "build/swarm0_%.4d.tiff", step++);
+    tiff_frommatrix(name, out_io0, out_dim, out_dim);
+    snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
+    tiff_frommatrix(name, out_io1, out_dim, out_dim);
+    /* !! debug_end !! */
+
     copy_disk_ultimate(out, freq, out_dim, th_dim, 0, 0, 0, 0, radius);
     /* special: no adjacent circle */
     update_spectrum(thumbnails[pos_x*side+pos_y],
                     th_dim, forward, backward, time);
     copy_disk_ultimate(freq, out, th_dim, out_dim, 0, 0, 0, 0, radius);
+
+    /* !! debug_start !! */
+    for (int i = 0; i < out_dim * out_dim; i++) {
+      alg2exp(out[i],out_tmp[i]);
+      out_io0[i] = (out_tmp[i])[0];
+      out_io1[i] = (out_tmp[i])[1];
+    }
+    snprintf(name, 50, "build/swarm0_%.4d.tiff", step++);
+    tiff_frommatrix(name, out_io0, out_dim, out_dim);
+    snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
+    tiff_frommatrix(name, out_io1, out_dim, out_dim);
+
+    for (int i = 0; i < th_dim * th_dim; i++) {
+      alg2exp(freq[i], th_tmp[i]);
+      th_io0[i] = (th_tmp[i])[0];
+      th_io1[i] = (th_tmp[i])[1];
+    }
+    snprintf(name, 50, "build/freq0_%.4d.tiff", step++);
+    tiff_frommatrix(name, th_io0, th_dim, th_dim);
+    snprintf(name, 50, "build/freq1_%.4d.tiff", step++);
+    tiff_frommatrix(name, th_io1, th_dim, th_dim);
+    /* !! debug_end !! */
 
     /*
      * one whorl correspond of a move going from one corner
@@ -219,6 +269,28 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                              centerX, centerY, 0, 0, radius))
         error = 2;
 
+      /* !! debug_start !! */
+      for (int i = 0; i < out_dim * out_dim; i++) {
+        alg2exp(out[i],out_tmp[i]);
+        out_io0[i] = (out_tmp[i])[0];
+        out_io1[i] = (out_tmp[i])[1];
+      }
+      snprintf(name, 50, "build/swarm0_%.4d.tiff", step++);
+      tiff_frommatrix(name, out_io0, out_dim, out_dim);
+      snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
+      tiff_frommatrix(name, out_io1, out_dim, out_dim);
+
+      for (int i = 0; i < th_dim * th_dim; i++) {
+        alg2exp(freq[i], th_tmp[i]);
+        th_io0[i] = (th_tmp[i])[0];
+        th_io1[i] = (th_tmp[i])[1];
+      }
+      snprintf(name, 50, "build/freq0_%.4d.tiff", step++);
+      tiff_frommatrix(name, th_io0, th_dim, th_dim);
+      snprintf(name, 50, "build/freq1_%.4d.tiff", step++);
+      tiff_frommatrix(name, th_io1, th_dim, th_dim);
+      /* !! debug_end !! */
+
       /* direction change: clockwise route */
       direction = (direction+1)%4;
 
@@ -239,6 +311,28 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                              centerX, centerY, 0, 0, radius))
         error = 2;
 
+      /* !! debug_start !! */
+      for (int i = 0; i < out_dim * out_dim; i++) {
+        alg2exp(out[i],out_tmp[i]);
+        out_io0[i] = (out_tmp[i])[0];
+        out_io1[i] = (out_tmp[i])[1];
+      }
+      snprintf(name, 50, "build/swarm0_%.4d.tiff", step++);
+      tiff_frommatrix(name, out_io0, out_dim, out_dim);
+      snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
+      tiff_frommatrix(name, out_io1, out_dim, out_dim);
+
+      for (int i = 0; i < th_dim * th_dim; i++) {
+        alg2exp(freq[i], th_tmp[i]);
+        th_io0[i] = (th_tmp[i])[0];
+        th_io1[i] = (th_tmp[i])[1];
+      }
+      snprintf(name, 50, "build/freq0_%.4d.tiff", step++);
+      tiff_frommatrix(name, th_io0, th_dim, th_dim);
+      snprintf(name, 50, "build/freq1_%.4d.tiff", step++);
+      tiff_frommatrix(name, th_io1, th_dim, th_dim);
+      /* !! debug_end !! */
+
       direction = (direction+1)%4;
       side_leds++;
     }
@@ -252,6 +346,15 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
     /* there is no corner led here */
     /* the spiral lap is done at this point */
+
+    /* !! debug_start !! */
+    free(out_io0);
+    free(out_io1);
+    free(th_io0);
+    free(th_io1);
+    fftw_free(out_tmp);
+    fftw_free(th_tmp);
+    /* !! debug_end !! */
   }
 
   fftw_destroy_plan(forward);
