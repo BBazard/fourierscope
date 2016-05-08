@@ -401,5 +401,5 @@ class swarm_unit : public swarm_suite {
 };
 
 TEST_F(swarm_unit, swarm) {
-  swarm(thumbnails, thumbnailDim, toSplitDim, delta_x, radius, jorga_x, out);
+  EXPECT_EQ(0, swarm(thumbnails, thumbnailDim, toSplitDim, delta_x, radius, jorga_x, out));
 }
