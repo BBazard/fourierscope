@@ -241,12 +241,17 @@ class io_units : public virtual swarm_suite {
  *
  */
 class complex_and_io_units : public io_units, public fftw_complex_units {
+ protected:
+  char *name = NULL;
+
   virtual void SetUp() {
     fftw_complex_units::SetUp();
     io_units::SetUp();
+    name = (char*) malloc(sizeof(char)*(strlen("build/xxxxxyyyyy.tiff")+1));
   }
 
   virtual void TearDown() {
+    free(name);
     io_units::TearDown();
     fftw_complex_units::TearDown();
   }
@@ -316,7 +321,6 @@ TEST_F(complex_and_io_units, swarm) {
   }
 
   tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
-  char *name = (char*) malloc(sizeof(char)*(strlen("build/xxxxxyyyyy.tiff")+1));
   for (int i = -jorga_x; i <= jorga_x; i++)
     for (int j = -jorga_y; j <= jorga_y; j++) {
       int offX = i*delta_x;
