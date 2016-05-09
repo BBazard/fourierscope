@@ -14,10 +14,10 @@
  *  @brief swarm.c file test suite
  *
  */
-class swarm_suite : public ::testing::Test {
+class swarm_suite : public ::testing::TestWithParam<int> {
  protected:
-  int toSplitDim; /**< The dimension of the toSplit matrix used in the tests */
-  int thumbnailDim; /**< The dimension of the thumbnails created in the tests */
+  int out_dim; /**< The dimension of the output used in the tests */
+  int th_dim; /**< The dimension of the thumbnails created in the tests */
   int radius;
 
   void **args; /**< arguments vector for matrix_operation function */
@@ -39,15 +39,14 @@ class swarm_suite : public ::testing::Test {
    *
    */
   virtual void SetUp() {
-    toSplitDim = 1000;
-    jorga_x = 5;
-    jorga_y = 5;
-    thumbnailDim = 100;
+    out_dim = 1000;
+    jorga_x = jorga_y = GetParam();
+    th_dim = 100;
     radius = 40;
-    delta_x = 30, delta_y = 30;
+    delta_x = 50, delta_y = 50;
 
     args = (void**) malloc(5*sizeof(void*));
-    args[0] = &toSplitDim;
+    args[0] = &out_dim;
     args[1] = NULL;
 
     srand(time(NULL));  // @todo is it fine to do this ?
@@ -81,11 +80,15 @@ class swarm_suite : public ::testing::Test {
  *  This class should be inherited if fftw_complex allocations are needed
  *
  */
-class fftw_complex_units : public virtual swarm_suite {
+class fftw_complex_units : public swarm_suite {
  protected:
-  fftw_complex *toSplit; /**< A fftw_complex matrix to split in thumbnails */
-  fftw_complex **thumbnail; /**< @todo what is a thumbnail */
+  fftw_complex *out; /**< A fftw_complex matrix the size of the output */
+  double **thumbnails; /**< @todo what is a thumbnail */
   fftw_complex *thumbnail_buf[2]; /**< buffers same dimensions as a thumbnail */
+  const char input[60] = "images/square.tiff"; /**< Image input */
+  char *name; /**< Name for output (changing with tiff_getname) */
+
+  double *out_io; /**< For big dim outputs */
 
   /** The fftw_plan in which is executed the fft */
   fftw_plan forward; /**< A fftw_plan for fourier transform */
@@ -99,34 +102,35 @@ class fftw_complex_units : public virtual swarm_suite {
    */
   virtual void SetUp() {
     swarm_suite::SetUp();
-    toSplit = (fftw_complex*) fftw_malloc(toSplitDim * toSplitDim *
+    out = (fftw_complex*) fftw_malloc(out_dim * out_dim *
                                           sizeof(fftw_complex));
-    thumbnail_buf[0] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
+    thumbnail_buf[0] = (fftw_complex*) fftw_malloc(th_dim * th_dim *
                                                    sizeof(fftw_complex));
-    thumbnail_buf[1] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
+    thumbnail_buf[1] = (fftw_complex*) fftw_malloc(th_dim * th_dim *
                                                    sizeof(fftw_complex));
 
-    thumbnail = (fftw_complex**) malloc((2*jorga_x+1)*(2*jorga_y+1)*
-                                        sizeof(fftw_complex*));
+    thumbnails = (double**) malloc((2*jorga_x+1)*(2*jorga_y+1)*
+                                        sizeof(double*));
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
-      thumbnail[i] = (fftw_complex*) fftw_malloc(thumbnailDim * thumbnailDim *
-                                                 sizeof(fftw_complex));
+      thumbnails[i] = (double*) fftw_malloc(th_dim * th_dim *
+                                                 sizeof(double));
 
-    forward = fftw_plan_dft_2d(toSplitDim, toSplitDim, toSplit, toSplit,
+    name = (char*) malloc(sizeof(char)*(strlen("build/xxxxxyyyyy.tiff")+1));
+    out_io = (double*) malloc(out_dim * out_dim * sizeof(double));
+
+    forward = fftw_plan_dft_2d(out_dim, out_dim, out, out,
                                FFTW_FORWARD, FFTW_ESTIMATE);
-    backward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, thumbnail_buf[1],
+    backward = fftw_plan_dft_2d(th_dim, th_dim, thumbnail_buf[1],
                                 thumbnail_buf[0], FFTW_BACKWARD, FFTW_ESTIMATE);
 
-    for (int i=0; i < toSplitDim*toSplitDim; i++) {
-      (toSplit[i])[0] = 0;
-      (toSplit[i])[1] = 0;
+    for (int i=0; i < out_dim*out_dim; i++) {
+      (out[i])[0] = 0;
+      (out[i])[1] = 0;
     }
 
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
-      for (int j = 0; j < thumbnailDim*thumbnailDim ; j++) {
-        ((thumbnail[i])[j])[0] = 0.0;
-        ((thumbnail[i])[j])[1] = 0.0;
-      }
+      for (int j = 0; j < th_dim*th_dim ; j++)
+        ((thumbnails[i])[j]) = 0;
   }
 
   /**
@@ -139,161 +143,80 @@ class fftw_complex_units : public virtual swarm_suite {
     fftw_destroy_plan(forward);
     fftw_destroy_plan(backward);
 
+    free(out_io);
+    free(name);
+    
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
-      fftw_free(thumbnail[i]);
-    free(thumbnail);
+      free(thumbnails[i]);
+    free(thumbnails);
 
     fftw_free(thumbnail_buf[0]);
     fftw_free(thumbnail_buf[1]);
 
-    fftw_free(toSplit);
+    fftw_free(out);
 
     fftw_cleanup();
     swarm_suite::TearDown();
   }
-};
-
-class fftw_soft_units : public virtual swarm_suite {
- protected:
-  double *thumbnail;
-  fftw_complex *time;
-  fftw_complex *freq;
-
-  fftw_plan forward;
-  fftw_plan backward;
-
-  virtual void SetUp() {
-    swarm_suite::SetUp();
-    thumbnail = (double *) fftw_malloc(thumbnailDim * thumbnailDim *
-                                             sizeof(fftw_complex));
-    time = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
-                                             sizeof(fftw_complex));
-    freq = (fftw_complex *) fftw_malloc(thumbnailDim * thumbnailDim *
-                                             sizeof(fftw_complex));
-
-    forward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, time, freq,
-                                FFTW_FORWARD, FFTW_ESTIMATE);
-    backward = fftw_plan_dft_2d(thumbnailDim, thumbnailDim, freq, time,
-                                FFTW_BACKWARD, FFTW_ESTIMATE);
-
-    for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-      thumbnail[i] = 0;
-      (time[i])[0] = 0;
-      (time[i])[1] = 0;
-      (freq[i])[0] = 0;
-      (freq[i])[1] = 0;
-    }
-  }
-
-  virtual void TearDown() {
-    fftw_destroy_plan(forward);
-    fftw_destroy_plan(backward);
-
-    fftw_free(freq);
-    fftw_free(time);
-    fftw_free(thumbnail);
-    fftw_cleanup();
-    swarm_suite::TearDown();
-  }
-};
-
-/**
- *  @brief io_units class
- *
- *  This class should be inherited if there is a need
- *  for images input or output
- *
- */
-class io_units : public virtual swarm_suite {
- protected:
-  const char *input = "images/square.tiff"; /**< Image input */
-
-  double *io_small; /**< For small dim outputs */
-  double *io_big; /**< For big dim outputs */
 
   /**
-   *  @brief io_units SetUp function
-   *
-   *  Allocate memory for both a small and big input/ouput buffers
+   *  @brief Function to generate thumbnails
    *
    */
-  virtual void SetUp() {
-    io_small = (double*) malloc(thumbnailDim * thumbnailDim * sizeof(double));
-    io_big = (double*) malloc(toSplitDim * toSplitDim * sizeof(double));
-  }
+  void thumbs_gen(bool output) {
+    ASSERT_EQ(1, (jorga_x*delta_x+th_dim < out_dim));
+    ASSERT_EQ(1, (jorga_y*delta_y+th_dim < out_dim));
 
-  /**
-   *  @brief io_units TearDown function
-   *
-   *  Free previously allocated memory
-   *
-   */
-  virtual void TearDown() {
-    free(io_small);
-    free(io_big);
-  }
-};
+    ASSERT_EQ(0, tiff_tomatrix(input, out_io, out_dim, out_dim));
+    for (int i = 0; i < out_dim * out_dim; i++)
+      (out[i])[0] = out_io[i];
 
-/**
- *  @brief complex_and_io_units class
- *
- *  Inherits both io_units and fftw_complex_units classes
- *
- */
-class complex_and_io_units : public io_units, public fftw_complex_units {
- protected:
-  char *name = NULL;
+    /* fourier transform out */
+    fftw_execute(forward);
+    matrix_operation(out, out, out_dim, div_dim, args);
 
-  virtual void SetUp() {
-    fftw_complex_units::SetUp();
-    io_units::SetUp();
-    name = (char*) malloc(sizeof(char)*(strlen("build/xxxxxyyyyy.tiff")+1));
-  }
+    for (int i = -jorga_x; i <= jorga_x; i++)
+      for (int j = -jorga_y; j <= jorga_y; j++) {
+        int offX = i*delta_x;
+        int offY = j*delta_y;
 
-  virtual void TearDown() {
-    free(name);
-    io_units::TearDown();
-    fftw_complex_units::TearDown();
-  }
-};
+        /* extract the thumbnail */
+        /** @bug mid is not in mid but in left-high corner */
+        ASSERT_EQ(0, matrix_extract(th_dim, out_dim, thumbnail_buf[0],
+                                    out, offX, offY));
 
-/**
- *  @brief soft_and_io_units class
- *
- *  Inherits both io_units and fftw_complex_units classes
- *
- */
-class soft_and_io_units : public io_units, public fftw_soft_units {
- protected:
-  const char* input = "images/small.tiff";
-  const char* output = "build/update_spectrum.tiff";
+        /* set zero outside the disk (default value) */
+        for (int k = 0; k < th_dim*th_dim; k++) {
+          ((thumbnail_buf[1])[k])[0] = 0;
+          ((thumbnail_buf[1])[k])[1] = 0;
+        }
 
-  virtual void SetUp() {
-    fftw_soft_units::SetUp();
-    io_units::SetUp();
-    tiff_tomatrix(input, io_small, thumbnailDim, thumbnailDim);
-    for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-      thumbnail[i] = io_small[i];
-    }
-  }
+        ASSERT_EQ(0, copy_disk(thumbnail_buf[0], thumbnail_buf[1],
+                               th_dim, radius));
 
-  virtual void TearDown() {
-    io_units::TearDown();
-    fftw_soft_units::TearDown();
+        /* invert fourier transform */
+        fftw_execute(backward);
+
+        args[0] = &th_dim;
+
+        /* @todo div_dim or identity ? */
+        matrix_operation(thumbnail_buf[0], thumbnail_buf[0],
+                         th_dim, div_dim, args);
+
+        /* get module */
+        for (int k = 0; k < th_dim * th_dim; k++)
+          /** @bug good type but not good place*/
+          alg2exp(thumbnail_buf[0][k], thumbnail_buf[0][k]);
+        matrix_realpart(th_dim,
+                        thumbnail_buf[0],
+                        thumbnails[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)]);
+        if (output)
+          tiff_frommatrix(tiff_getname((i+jorga_x), (j+jorga_y), name),
+                          thumbnails[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)],
+                          th_dim, th_dim);
+      }
   }
 };
-
-
-TEST_F(soft_and_io_units, update_spectrum) {
-  update_spectrum(thumbnail, thumbnailDim, forward, backward,
-                  time);
-  for (int i = 0; i < thumbnailDim*thumbnailDim; i++) {
-    alg2exp(freq[i], freq[i]);
-    io_small[i] = (freq[i])[0];
-  }
-
-  tiff_frommatrix(output, io_small, thumbnailDim, thumbnailDim);
-}
 
 /**
  *  @brief swarming
@@ -302,127 +225,46 @@ TEST_F(soft_and_io_units, update_spectrum) {
  *  from this image
  *
  */
-TEST_F(complex_and_io_units, swarm) {
-  ASSERT_EQ(1, (jorga_x*delta_x+thumbnailDim < toSplitDim));
-  ASSERT_EQ(1, (jorga_y*delta_y+thumbnailDim < toSplitDim));
+// TEST_P(fftw_complex_units, DISABLED_swarm_gen) {
+//   fftw_complex_units::thumbs_gen();
+// }
 
-  ASSERT_EQ(0, tiff_tomatrix(input, io_big, toSplitDim, toSplitDim));
-  for (int i = 0; i < toSplitDim * toSplitDim; i++)
-    (toSplit[i])[0] = io_big[i];
+// INSTANTIATE_TEST_CASE_P(swarm_gen_jorga, fftw_complex_units, ::testing::Values(3,4));
 
-  /* fourier transform toSplit */
-  fftw_execute(forward);
-  matrix_operation(toSplit, toSplit, toSplitDim, div_dim, args);
-
-  for (int i = 0; i < toSplitDim*toSplitDim; i++) {
-    fftw_complex tmp;
-    alg2exp(toSplit[i], tmp);
-    io_big[i] = tmp[0];
-  }
-
-  tiff_frommatrix("build/test.tiff", io_big, toSplitDim, toSplitDim);
-  for (int i = -jorga_x; i <= jorga_x; i++)
-    for (int j = -jorga_y; j <= jorga_y; j++) {
-      int offX = i*delta_x;
-      int offY = j*delta_y;
-
-      /* extract the thumbnail */
-      /** @bug mid is not in mid but in left-high corner */
-      ASSERT_EQ(0, matrix_extract(thumbnailDim, toSplitDim, thumbnail_buf[0],
-                                  toSplit, offX, offY));
-
-      /* set zero outside the disk (default value) */
-      for (int k = 0; k < thumbnailDim*thumbnailDim; k++) {
-        ((thumbnail_buf[1])[k])[0] = 0;
-        ((thumbnail_buf[1])[k])[1] = 0;
-      }
-
-      ASSERT_EQ(0, copy_disk(thumbnail_buf[0], thumbnail_buf[1],
-                            thumbnailDim, radius));
-
-      /* invert fourier transform */
-      fftw_execute(backward);
-
-      args[0] = &thumbnailDim;
-
-      /* @todo div_dim or identity ? */
-      matrix_operation(thumbnail_buf[0],
-                       thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)],
-                       thumbnailDim, div_dim, args);
-
-      /* get module */
-      for (int k = 0; k < thumbnailDim * thumbnailDim; k++)
-        /** @bug good type but not good place*/
-        alg2exp((thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k],
-                   (thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)])[k]);
-      matrix_realpart(thumbnailDim,
-                      thumbnail[(i+jorga_x)*(2*jorga_y+1)+(j+jorga_y)],
-                      io_small);
-      tiff_frommatrix(tiff_getname((i+jorga_x), (j+jorga_y), name), io_small,
-                      thumbnailDim, thumbnailDim);
-    }
-}
-
-class swarm_unit : public swarm_suite,
-                   public ::testing::WithParamInterface<int> {
+class swarm_unit : public fftw_complex_units {
  protected:
-  double **thumbnails;
-  fftw_complex *out;
-
+  int name_size;
   virtual void SetUp() {
-    swarm_suite::SetUp();
-    jorga_x = jorga_y = GetParam();
-    char *name = (char*) malloc(sizeof(char)*
-                                (strlen("build/xxxxxyyyyy.tiff")+1));
-    thumbnails = (double**) malloc((2*jorga_x+1)*(2*jorga_y+1)
-                                   * sizeof(double*));
-    for (int i = 0; i < 2*jorga_x+1; i++)
-      for (int j = 0; j < 2*jorga_y+1; j++) {
-        thumbnails[i*(2*jorga_x+1)+j] = (double*) malloc(sizeof(double) *
-                                        thumbnailDim * thumbnailDim);
-
-        tiff_tomatrix(tiff_getname(i, j, name), thumbnails[i*(2*jorga_x+1)+j],
-                        thumbnailDim, thumbnailDim);
-      }
-    out = (fftw_complex*) malloc(toSplitDim * toSplitDim *sizeof(fftw_complex));
-    for (int i = 0; i < toSplitDim * toSplitDim; i++)
-      (out[i])[0] = (out[i])[1] = 0;
+    fftw_complex_units::SetUp();
+    fftw_complex_units::thumbs_gen(false);
+    name_size = strlen("build/swarm_with_jorga_eq_nn.tiff")+1;
     free(name);
+    name = (char*) malloc(sizeof(char)*name_size);
+    backward = fftw_plan_dft_2d(out_dim, out_dim, out, out,
+                                FFTW_BACKWARD, FFTW_ESTIMATE);
+    
+    for (int i = 0; i < out_dim * out_dim; i++)
+      (out[i])[0] = (out[i])[1] = 0;
   }
 
   virtual void TearDown() {
-    double* out_io = (double*) malloc(toSplitDim*toSplitDim*sizeof(double));
-    fftw_plan backward;
-    int size = strlen("build/swarm_with_jorga_eq_n.tiff")+1;
-    char *name = (char*) malloc(sizeof(char)*size);
-    backward = fftw_plan_dft_2d(toSplitDim, toSplitDim, out, out,
-                                FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_execute(backward);
-    matrix_operation(out, out, toSplitDim, div_dim, args);
-    fftw_destroy_plan(backward);
-    for (int i = 0; i < toSplitDim * toSplitDim; i++) {
+    matrix_operation(out, out, out_dim, div_dim, args);
+
+    for (int i = 0; i < out_dim * out_dim; i++) {
       alg2exp(out[i], out[i]);
       out_io[i] = (out[i])[0];
     }
-    free(out);
-    snprintf(name, size, "build/swarm_with_jorga_eq_%.1d.tiff", jorga_x);
-    tiff_frommatrix(name, out_io, toSplitDim, toSplitDim);
-    free(out_io);
-    free(name);
 
-    for (int i = 0; i < 2*jorga_x+1; i++)
-      for (int j = 0; j < 2*jorga_y+1; j++)
-        free(thumbnails[i*(2*jorga_x+1)+j]);
-
-    free(thumbnails);
-
-    swarm_suite::TearDown();
+    snprintf(name, name_size, "build/swarm_with_jorga_eq_%.2d.tiff", jorga_x);
+    tiff_frommatrix(name, out_io, out_dim, out_dim);
+    fftw_complex_units::TearDown();
   }
 };
 
 TEST_P(swarm_unit, swarm) {
-  EXPECT_EQ(0, swarm(thumbnails, thumbnailDim, toSplitDim,
+  EXPECT_EQ(0, swarm(thumbnails, th_dim, out_dim,
                      delta_x, radius, jorga_x, out));
 }
 
-INSTANTIATE_TEST_CASE_P(swarm_jorga, swarm_unit, ::testing::Values(3, 4, 5));
+INSTANTIATE_TEST_CASE_P(swarm_jorga, swarm_unit, ::testing::Values(2, 3, 4, 5, 6, 10, 15));
