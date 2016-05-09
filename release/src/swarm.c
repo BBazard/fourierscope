@@ -261,6 +261,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       int centerX, centerY;
 
       /* special: corner led */
+      move_one(&pos_x, &pos_y, direction);
       centerX = (pos_x-mid)*delta;
       centerY = (pos_y-mid)*delta;
       if (copy_disk_ultimate(out, freq, out_dim, th_dim,
@@ -303,6 +304,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                   side_leds, direction);
 
       /* special: corner led */
+      move_one(&pos_x, &pos_y, direction);
       centerX = (pos_x-mid)*delta;
       centerY = (pos_y-mid)*delta;
       if (copy_disk_ultimate(out, freq, out_dim, th_dim,
