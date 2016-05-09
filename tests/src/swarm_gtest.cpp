@@ -40,11 +40,11 @@ class swarm_suite : public ::testing::Test {
    */
   virtual void SetUp() {
     toSplitDim = 1000;
-    jorga_x = 3;
-    jorga_y = 3;
+    jorga_x = 5;
+    jorga_y = 5;
     thumbnailDim = 100;
     radius = 40;
-    delta_x = 50, delta_y = 50;
+    delta_x = 30, delta_y = 30;
 
     args = (void**) malloc(5*sizeof(void*));
     args[0] = &toSplitDim;
@@ -363,13 +363,15 @@ TEST_F(complex_and_io_units, swarm) {
     }
 }
 
-class swarm_unit : public swarm_suite {
+class swarm_unit : public swarm_suite,
+                   public ::testing::WithParamInterface<int> {
  protected:
   double **thumbnails;
   fftw_complex *out;
 
   virtual void SetUp() {
     swarm_suite::SetUp();
+    jorga_x = jorga_y = GetParam();
     char *name = (char*) malloc(sizeof(char)*
                                 (strlen("build/xxxxxyyyyy.tiff")+1));
     thumbnails = (double**) malloc((2*jorga_x+1)*(2*jorga_y+1)
@@ -391,6 +393,8 @@ class swarm_unit : public swarm_suite {
   virtual void TearDown() {
     double* out_io = (double*) malloc(toSplitDim*toSplitDim*sizeof(double));
     fftw_plan backward;
+    int size = strlen("build/swarm_with_jorga_eq_n.tiff")+1;
+    char *name = (char*) malloc(sizeof(char)*size);
     backward = fftw_plan_dft_2d(toSplitDim, toSplitDim, out, out,
                                 FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_execute(backward);
@@ -401,8 +405,10 @@ class swarm_unit : public swarm_suite {
       out_io[i] = (out[i])[0];
     }
     free(out);
-    tiff_frommatrix("build/swarm.tiff", out_io, toSplitDim, toSplitDim);
+    snprintf(name, size, "build/swarm_with_jorga_eq_%.1d.tiff", jorga_x);
+    tiff_frommatrix(name, out_io, toSplitDim, toSplitDim);
     free(out_io);
+    free(name);
 
     for (int i = 0; i < 2*jorga_x+1; i++)
       for (int j = 0; j < 2*jorga_y+1; j++)
@@ -414,7 +420,9 @@ class swarm_unit : public swarm_suite {
   }
 };
 
-TEST_F(swarm_unit, swarm) {
+TEST_P(swarm_unit, swarm) {
   EXPECT_EQ(0, swarm(thumbnails, thumbnailDim, toSplitDim,
                      delta_x, radius, jorga_x, out));
 }
+
+INSTANTIATE_TEST_CASE_P(swarm_jorga, swarm_unit, ::testing::Values(3, 4, 5));
