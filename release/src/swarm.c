@@ -168,6 +168,10 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
   const int lap_nbr = 2;
 
+  /* !! debug_start !! */
+  int step = 0;
+  /* !! debug_end !! */
+
   for (int lap = 0; lap < lap_nbr; lap++) {
     /* the direction of the next led */
     int direction = DOWN;
@@ -188,7 +192,6 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
     /* !! debug_start !! */
     char name[60];
-    int step = 0;
 
     double *out_io0 = (double*) malloc(out_dim*out_dim*sizeof(double));
     double *th_io0 = (double*) malloc(th_dim*th_dim*sizeof(double));
