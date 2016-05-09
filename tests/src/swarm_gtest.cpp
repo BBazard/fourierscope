@@ -43,8 +43,8 @@ class swarm_suite : public ::testing::Test {
     jorga_x = 3;
     jorga_y = 3;
     thumbnailDim = 100;
-    radius = 10;
-    delta_x = 20, delta_y = 20;
+    radius = 40;
+    delta_x = 50, delta_y = 50;
 
     args = (void**) malloc(5*sizeof(void*));
     args[0] = &toSplitDim;
