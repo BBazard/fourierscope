@@ -22,7 +22,7 @@ int move_streak(double **thumbnails, fftw_complex *time,
                 fftw_complex *freq, fftw_complex *out,
                 fftw_plan forward, fftw_plan backward,
                 int th_dim, int out_dim, int radius, int delta, int side,
-                int pos_x, int pos_y, int side_leds,
+                int *pos_x, int *pos_y, int side_leds,
                 int direction);
 int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
           int radius, int jorga, fftw_complex *out);
