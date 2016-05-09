@@ -95,13 +95,13 @@ int move_streak(double **thumbnails, fftw_complex *time,
     error = move_one(pos_x, pos_y, direction);
     centerX = (*pos_x-mid)*delta;
     centerY = (*pos_y-mid)*delta;
-    if (copy_disk_ultimate(out, freq, out_dim, th_dim, *pos_x*delta,
-                           *pos_y*delta, centerX, centerY, radius))
+    if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                           centerX, centerY, 0, 0, radius))
       error = 2;
     update_spectrum(thumbnails[*pos_x*side+*pos_y],
                     th_dim, forward, backward, time);
-    if (copy_disk_ultimate(freq, out, th_dim, out_dim, centerX, centerY,
-                           *pos_x*delta, *pos_y*delta, radius))
+    if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                           0, 0, centerX, centerY, radius))
       error = 2;
   }
   return error;
@@ -260,13 +260,13 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       /* special: corner led */
       centerX = (pos_x-mid)*delta;
       centerY = (pos_y-mid)*delta;
-      if (copy_disk_ultimate(out, freq, out_dim, th_dim, pos_x*delta,
-                             pos_y*delta, centerX, centerY, radius))
+      if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                             centerX, centerY, 0, 0, radius))
         error = 2;
       update_spectrum(thumbnails[pos_x*side+pos_y],
                       th_dim, forward, backward, time);
-      if (copy_disk_ultimate(freq, out, th_dim, out_dim, centerX, centerY,
-                             pos_x*delta, pos_y*delta, radius))
+      if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                             0, 0, centerX, centerY, radius))
         error = 2;
 
       /* !! debug_start !! */
@@ -302,13 +302,13 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       /* special: corner led */
       centerX = (pos_x-mid)*delta;
       centerY = (pos_y-mid)*delta;
-      if (copy_disk_ultimate(out, freq, out_dim, th_dim, pos_x*delta,
-                             pos_y*delta, centerX, centerY, radius))
+      if (copy_disk_ultimate(out, freq, out_dim, th_dim,
+                             centerX, centerY, 0, 0, radius))
         error = 2;
       update_spectrum(thumbnails[pos_x*side+pos_y],
                       th_dim, forward, backward, time);
-      if (copy_disk_ultimate(freq, out, th_dim, out_dim, centerX, centerY,
-                             pos_x*delta, pos_y*delta, radius))
+      if (copy_disk_ultimate(freq, out, th_dim, out_dim,
+                             0, 0, centerX, centerY, radius))
         error = 2;
 
       /* !! debug_start !! */
