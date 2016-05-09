@@ -390,6 +390,12 @@ class swarm_unit : public swarm_suite {
 
   virtual void TearDown() {
     double* out_io = (double*) malloc(toSplitDim*toSplitDim*sizeof(double));
+    fftw_plan backward;
+    backward = fftw_plan_dft_2d(toSplitDim, toSplitDim, out, out,
+                                FFTW_BACKWARD, FFTW_ESTIMATE);
+    fftw_execute(backward);
+    matrix_operation(out, out, toSplitDim, div_dim, args);
+    fftw_destroy_plan(backward);
     for (int i = 0; i < toSplitDim * toSplitDim; i++) {
       alg2exp(out[i], out[i]);
       out_io[i] = (out[i])[0];
