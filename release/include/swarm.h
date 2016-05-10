@@ -15,7 +15,8 @@
 enum direction {DOWN, LEFT, UP, RIGHT};
 
 void update_spectrum(double *thumb, int th_dim, fftw_plan forward,
-                     fftw_plan backward, fftw_complex *time);
+                     fftw_plan backward, fftw_complex *time,
+                     fftw_complex *freq);
 int abs_decrease(int a);
 int move_one(int* index_x, int* index_y, int direction);
 int move_streak(double **thumbnails, fftw_complex *time,

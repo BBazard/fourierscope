@@ -34,9 +34,11 @@
  *
  */
 void update_spectrum(double *thumb, int th_dim, fftw_plan forward,
-                     fftw_plan backward, fftw_complex *time) {
+                     fftw_plan backward, fftw_complex *time,
+                     fftw_complex *freq) {
   /** @todo optimize fftw_plans */
   fftw_execute(backward);
+  div_dim(time, time, th_dim);
 
   for (int i = 0; i < th_dim*th_dim; i++) {
     alg2exp(time[i], time[i]);
@@ -45,6 +47,7 @@ void update_spectrum(double *thumb, int th_dim, fftw_plan forward,
   }
 
   fftw_execute(forward);
+  div_dim(freq, freq, th_dim);
 }
 
 /**
@@ -99,7 +102,7 @@ int move_streak(double **thumbnails, fftw_complex *time,
                            centerX, centerY, 0, 0, radius))
       error = 2;
     update_spectrum(thumbnails[(*pos_x-1)*side+(*pos_y-1)],
-                    th_dim, forward, backward, time);
+                    th_dim, forward, backward, time, freq);
     if (copy_disk_ultimate(freq, out, th_dim, out_dim,
                            0, 0, centerX, centerY, radius))
       error = 2;
@@ -216,7 +219,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     copy_disk_ultimate(out, freq, out_dim, th_dim, 0, 0, 0, 0, radius);
     /* special: no adjacent circle */
     update_spectrum(thumbnails[(pos_x-1)*side+(pos_y-1)],
-                    th_dim, forward, backward, time);
+                    th_dim, forward, backward, time, freq);
     copy_disk_ultimate(freq, out, th_dim, out_dim, 0, 0, 0, 0, radius);
 
     /* !! debug_start !! */
@@ -266,7 +269,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                              centerX, centerY, 0, 0, radius))
         error = 2;
       update_spectrum(thumbnails[(pos_x-1)*side+(pos_y-1)],
-                      th_dim, forward, backward, time);
+                      th_dim, forward, backward, time, freq);
       if (copy_disk_ultimate(freq, out, th_dim, out_dim,
                              0, 0, centerX, centerY, radius))
         error = 2;
@@ -309,7 +312,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                              centerX, centerY, 0, 0, radius))
         error = 2;
       update_spectrum(thumbnails[(pos_x-1)*side+(pos_y-1)],
-                      th_dim, forward, backward, time);
+                      th_dim, forward, backward, time, freq);
       if (copy_disk_ultimate(freq, out, th_dim, out_dim,
                              0, 0, centerX, centerY, radius))
         error = 2;
