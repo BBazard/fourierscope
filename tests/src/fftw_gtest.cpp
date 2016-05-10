@@ -26,8 +26,6 @@ class fftw_suite : public ::testing::Test {
   uint32 diml; /**< Number of lines in the image */
   uint32 dimw; /**< Number of columns in the image */
 
-  void **args;
-
   /**
    *  @brief setup function for tiffio_suite tests
    *
@@ -38,7 +36,6 @@ class fftw_suite : public ::testing::Test {
   virtual void SetUp() {
     diml = 0;
     dimw = 0;
-    args = (void**) malloc(5*sizeof(void*));
   }
 
   /**
@@ -48,16 +45,7 @@ class fftw_suite : public ::testing::Test {
    *
    */
   virtual void TearDown() {
-    free(args);
   }
-
-  static double div_dim(double d, void **args) {
-    int dimw = *((int*) args[0]);
-    int diml = *((int*) args[1]);
-    return d/(double) (dimw*diml);
-  }
-
-  static double identity(double d, void **args) {return d;}
 };
 
 class square_input_units : public fftw_suite {
@@ -74,8 +62,6 @@ class square_input_units : public fftw_suite {
     fftw_suite::SetUp();
 
     tiff_getsize(input, &diml, &dimw);
-    args[0] = &dimw;
-    args[1] = &diml;
 
     matrix = (double *) malloc(diml * dimw * sizeof(double));
     comp_mat = (fftw_complex *) fftw_malloc(diml*dimw*sizeof(fftw_complex));
@@ -122,7 +108,7 @@ TEST_F(square_input_units, fftw_execute) {
   ASSERT_EQ(0, tiff_frommatrix(before, matrix, diml, dimw));
 
   fftw_execute(forward);
-  matrix_operation(comp_mat2, comp_mat, dimw, div_dim, args);
+  div_dim(comp_mat2, comp_mat, dimw);
 
   for (int i = 0; i < (int) diml; i++)
     for (int j = 0; j < (int) dimw; j++) {
@@ -132,7 +118,7 @@ TEST_F(square_input_units, fftw_execute) {
   ASSERT_EQ(0, tiff_frommatrix(ft, matrix, diml, dimw));
 
   fftw_execute(backward);
-  matrix_operation(comp_mat2, comp_mat, dimw, identity, NULL);
+  div_dim(comp_mat2, comp_mat, dimw);
 
   for (int i = 0; i < (int) diml; i++) {
     for (int j = 0; j < (int) dimw; j++) {

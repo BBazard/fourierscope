@@ -22,8 +22,6 @@ class swarm_suite : public ::testing::
   int th_dim; /**< The dimension of the thumbnails created in the tests */
   int radius;
 
-  void **args; /**< arguments vector for matrix_operation function */
-
   /**
    *  The number of thumbnails from the center to the extremities
    *  in the Fourier domain
@@ -50,10 +48,6 @@ class swarm_suite : public ::testing::
     radius = std::get<2>(GetParam());
     lap_nbr = std::get<3>(GetParam());
 
-    args = (void**) malloc(5*sizeof(void*));
-    args[0] = &out_dim;
-    args[1] = NULL;
-
     srand(time(NULL));  // @todo is it fine to do this ?
   }
 
@@ -64,18 +58,6 @@ class swarm_suite : public ::testing::
    *
    */
   virtual void TearDown() {
-    free(args);
-  }
-
-  /**
-   *  @brief A function to divide by dim used in matrix_operation
-   *
-   *  args[0] MUST contains the pointer to the dimension of the matrix
-   *
-   */
-  static double div_dim(double d, void **args) {
-    int dim = *((int*) args[0]);
-    return d/(double) (dim);
   }
 };
 
@@ -178,7 +160,7 @@ class fftw_complex_units : public swarm_suite {
 
     /* fourier transform out */
     fftw_execute(forward);
-    matrix_operation(out, out, out_dim, div_dim, args);
+    div_dim(out, out, out_dim);
 
     for (int i = -jorga_x; i <= jorga_x; i++)
       for (int j = -jorga_y; j <= jorga_y; j++) {
@@ -201,16 +183,10 @@ class fftw_complex_units : public swarm_suite {
 
         /* invert fourier transform */
         fftw_execute(backward);
-
-        args[0] = &th_dim;
-
-        /* @todo div_dim or identity ? */
-        matrix_operation(thumbnail_buf[0], thumbnail_buf[0],
-                         th_dim, div_dim, args);
+        div_dim(thumbnail_buf[0], thumbnail_buf[0], th_dim);
 
         /* get module */
         for (int k = 0; k < th_dim * th_dim; k++)
-          /** @bug good type but not good place*/
           alg2exp(thumbnail_buf[0][k], thumbnail_buf[0][k]);
         matrix_realpart(th_dim,
                         thumbnail_buf[0],
@@ -258,7 +234,7 @@ class swarm_unit : public fftw_complex_units {
 
   virtual void TearDown() {
     fftw_execute(backward);
-    matrix_operation(out, out, out_dim, div_dim, args);
+    div_dim(out, out, out_dim);
 
     for (int i = 0; i < out_dim * out_dim; i++) {
       alg2exp(out[i], out[i]);
