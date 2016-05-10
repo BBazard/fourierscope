@@ -8,13 +8,15 @@
  */
 
 #include "include/swarm.h"
+#include <tuple>
 #include "gtest/gtest.h"
 
 /**
  *  @brief swarm.c file test suite
  *
  */
-class swarm_suite : public ::testing::TestWithParam<std::tuple<int, int, int, int> > {
+class swarm_suite : public ::testing::
+  TestWithParam<std::tuple<int, int, int, int> > {
  protected:
   int out_dim; /**< The dimension of the output used in the tests */
   int th_dim; /**< The dimension of the thumbnails created in the tests */
@@ -298,7 +300,8 @@ INSTANTIATE_TEST_CASE_P(origin, swarm_unit,
  *
  */
 INSTANTIATE_TEST_CASE_P(jorga, swarm_unit,
-                        ::testing::Combine(::testing::Values(2, 3, 4, 5, 6, 10, 15),
+                        ::testing::Combine(::testing::Values(2, 3, 4, 5,
+                                                             6, 10, 15),
                                            ::testing::Values(50),
                                            ::testing::Values(40),
                                            ::testing::Values(2)));
@@ -319,7 +322,8 @@ INSTANTIATE_TEST_CASE_P(delta, swarm_unit,
 INSTANTIATE_TEST_CASE_P(radius, swarm_unit,
                         ::testing::Combine(::testing::Values(3),
                                            ::testing::Values(50),
-                                           ::testing::Values(30, 35, 40, 45, 50),
+                                           ::testing::Values(30, 35, 40,
+                                                             45, 50),
                                            ::testing::Values(2)));
 
 /*
@@ -336,7 +340,9 @@ INSTANTIATE_TEST_CASE_P(lap_nbr, swarm_unit,
  *
  */
 INSTANTIATE_TEST_CASE_P(full, swarm_unit,
-                        ::testing::Combine(::testing::Values(2, 3, 4, 5, 6, 10, 15),
+                        ::testing::Combine(::testing::Values(2, 3, 4, 5,
+                                                             6, 10, 15),
                                            ::testing::Values(30, 40, 50, 60),
-                                           ::testing::Values(30, 35, 40, 45, 50),
+                                           ::testing::Values(30, 35, 40,
+                                                             45, 50),
                                            ::testing::Values(2, 5, 10)));
