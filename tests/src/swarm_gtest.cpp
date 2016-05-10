@@ -113,6 +113,7 @@ class fftw_complex_units : public swarm_suite {
     for (int i=0; i < out_dim*out_dim; i++) {
       (out[i])[0] = 0;
       (out[i])[1] = 0;
+      out_io[i] = 0;
     }
 
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)

@@ -136,13 +136,16 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
   fftw_plan forward;
   fftw_plan backward;
 
-  if ( (time = (fftw_complex *) malloc(th_dim*th_dim*
+  if ( (time = (fftw_complex *) fftw_malloc(th_dim*th_dim*
                                       sizeof(fftw_complex))) == NULL )
     return 1;
 
-  if ( (freq = (fftw_complex *) malloc(th_dim*th_dim*
+  if ( (freq = (fftw_complex *) fftw_malloc(th_dim*th_dim*
                                      sizeof(fftw_complex))) == NULL )
     return 1;
+
+  for (int i = 0; i < th_dim*th_dim; i++)
+    time[i][0] = time[i][1] = freq[i][0] = freq[i][1] = 0;
 
   forward = fftw_plan_dft_2d(th_dim, th_dim, time, freq,
                               FFTW_FORWARD, FFTW_ESTIMATE);
