@@ -33,7 +33,7 @@ double identity(double d, void **args) {return d;}
  *  @brief A function to copy a fftw_complex matrix
  *
  */
-void matrix_copy(fftw_complex *in, fftw_complex *out) {
+void matrix_copy(fftw_complex *in, fftw_complex *out, int dim) {
   for (int i = 0; i < dim*dim; i++) {
     out[i][0] = in[i][0];
     out[i][1] = in[i][1];
