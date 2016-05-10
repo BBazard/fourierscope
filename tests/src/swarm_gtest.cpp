@@ -14,7 +14,7 @@
  *  @brief swarm.c file test suite
  *
  */
-class swarm_suite : public ::testing::TestWithParam<int> {
+class swarm_suite : public ::testing::TestWithParam<std::tuple<int, int, int, int> > {
  protected:
   int out_dim; /**< The dimension of the output used in the tests */
   int th_dim; /**< The dimension of the thumbnails created in the tests */
@@ -31,6 +31,8 @@ class swarm_suite : public ::testing::TestWithParam<int> {
   /** The distance in pixel between deux thumbnails */
   int delta_x, delta_y;
 
+  int lap_nbr;
+
   /**
    *  @brief setup function for swarm_suite tests
    *
@@ -40,10 +42,11 @@ class swarm_suite : public ::testing::TestWithParam<int> {
    */
   virtual void SetUp() {
     out_dim = 1000;
-    jorga_x = jorga_y = GetParam();
+    jorga_x = jorga_y = std::get<0>(GetParam());
     th_dim = 100;
-    radius = 40;
-    delta_x = 50, delta_y = 50;
+    delta_x = delta_y = std::get<1>(GetParam());
+    radius = std::get<2>(GetParam());
+    lap_nbr = std::get<3>(GetParam());
 
     args = (void**) malloc(5*sizeof(void*));
     args[0] = &out_dim;
@@ -145,7 +148,7 @@ class fftw_complex_units : public swarm_suite {
 
     free(out_io);
     free(name);
-    
+
     for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
       free(thumbnails[i]);
     free(thumbnails);
@@ -225,11 +228,15 @@ class fftw_complex_units : public swarm_suite {
  *  from this image
  *
  */
-// TEST_P(fftw_complex_units, DISABLED_swarm_gen) {
-//   fftw_complex_units::thumbs_gen();
-// }
+TEST_P(fftw_complex_units, DISABLED_swarm_gen) {
+  fftw_complex_units::thumbs_gen(true);
+}
 
-// INSTANTIATE_TEST_CASE_P(swarm_gen_jorga, fftw_complex_units, ::testing::Values(3,4));
+INSTANTIATE_TEST_CASE_P(swarm_gen, fftw_complex_units,
+                        ::testing::Combine(::testing::Values(3),
+                                           ::testing::Values(50),
+                                           ::testing::Values(40),
+                                           ::testing::Values(2)));
 
 class swarm_unit : public fftw_complex_units {
  protected:
@@ -242,7 +249,7 @@ class swarm_unit : public fftw_complex_units {
     name = (char*) malloc(sizeof(char)*name_size);
     backward = fftw_plan_dft_2d(out_dim, out_dim, out, out,
                                 FFTW_BACKWARD, FFTW_ESTIMATE);
-    
+
     for (int i = 0; i < out_dim * out_dim; i++)
       (out[i])[0] = (out[i])[1] = 0;
   }
@@ -256,7 +263,9 @@ class swarm_unit : public fftw_complex_units {
       out_io[i] = (out[i])[0];
     }
 
-    snprintf(name, name_size, "build/swarm_with_jorga_eq_%.2d.tiff", jorga_x);
+    snprintf(name, name_size,
+             "build/swarm_with_j%.2d_d%.2d_r%.2d.tiff",
+             jorga_x, delta_x, radius);
     tiff_frommatrix(name, out_io, out_dim, out_dim);
     fftw_complex_units::TearDown();
   }
@@ -264,7 +273,70 @@ class swarm_unit : public fftw_complex_units {
 
 TEST_P(swarm_unit, swarm) {
   EXPECT_EQ(0, swarm(thumbnails, th_dim, out_dim,
-                     delta_x, radius, jorga_x, out));
+                     delta_x, lap_nbr, radius, jorga_x, out));
 }
 
-INSTANTIATE_TEST_CASE_P(swarm_jorga, swarm_unit, ::testing::Values(2, 3, 4, 5, 6, 10, 15));
+/*
+ * Following are the different tests cases for swarm.
+ * Some of them are redundant.
+ * In particular, don't execute all the tests plus full, because
+ * full includes all the others.
+ *
+ */
+
+/*
+ * Base parameters (Original parameters @todo change these)
+ *
+ */
+INSTANTIATE_TEST_CASE_P(origin, swarm_unit,
+                        ::testing::Combine(::testing::Values(3),
+                                           ::testing::Values(50),
+                                           ::testing::Values(40),
+                                           ::testing::Values(2)));
+/*
+ * Jorga variation on base parameters
+ *
+ */
+INSTANTIATE_TEST_CASE_P(jorga, swarm_unit,
+                        ::testing::Combine(::testing::Values(2, 3, 4, 5, 6, 10, 15),
+                                           ::testing::Values(50),
+                                           ::testing::Values(40),
+                                           ::testing::Values(2)));
+/*
+ * Delta variation on base parameters
+ *
+ */
+INSTANTIATE_TEST_CASE_P(delta, swarm_unit,
+                        ::testing::Combine(::testing::Values(3),
+                                           ::testing::Values(30, 40, 50, 60),
+                                           ::testing::Values(40),
+                                           ::testing::Values(2)));
+
+/*
+ * Radius variation on base parameters
+ *
+ */
+INSTANTIATE_TEST_CASE_P(radius, swarm_unit,
+                        ::testing::Combine(::testing::Values(3),
+                                           ::testing::Values(50),
+                                           ::testing::Values(30, 35, 40, 45, 50),
+                                           ::testing::Values(2)));
+
+/*
+ * Lap_nbr variation on base parameters
+ *
+ */
+INSTANTIATE_TEST_CASE_P(lap_nbr, swarm_unit,
+                        ::testing::Combine(::testing::Values(3),
+                                           ::testing::Values(50),
+                                           ::testing::Values(40),
+                                           ::testing::Values(2, 5, 10)));
+/*
+ * Full variation.
+ *
+ */
+INSTANTIATE_TEST_CASE_P(full, swarm_unit,
+                        ::testing::Combine(::testing::Values(2, 3, 4, 5, 6, 10, 15),
+                                           ::testing::Values(30, 40, 50, 60),
+                                           ::testing::Values(30, 35, 40, 45, 50),
+                                           ::testing::Values(2, 5, 10)));
