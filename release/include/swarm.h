@@ -25,6 +25,6 @@ int move_streak(double **thumbnails, fftw_complex *time,
                 int *pos_x, int *pos_y, int side_leds,
                 int direction);
 int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
-          int radius, int jorga, fftw_complex *out);
+          const int lap_nbr, int radius, int jorga, fftw_complex *out);
 
 #endif /* RELEASE_INCLUDE_SWARM_H_ */

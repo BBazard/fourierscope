@@ -16,8 +16,8 @@
  *  @param[in] radius The radius of the disk
  *  @param[in] forward The plan used for fourier transforms
  *  @param[in] backward The plan used for inverse transforms
- *  @param[in,out] time The source for FT and destination for IFT
- *  @param[in,out] freq The source for IFT and destination for FT
+ *  @param[in, out] time The source for FT and destination for IFT
+ *  @param[in, out] freq The source for IFT and destination for FT
  *
  *  This function does the following:
  *
@@ -25,7 +25,7 @@
  *  d = mod(thumb)*ei^arg(c)
  *  e = TF(d)
  *
- *  where b = Disk((out[x][y]),radius)
+ *  where b = Disk((out[x][y]), radius)
  *
  *  The matrix extracted from out must be located in the freq
  *  fftw_complex * matrix corresponding to the plans
@@ -113,6 +113,7 @@ int move_streak(double **thumbnails, fftw_complex *time,
  *  @param[in] th_dim The dimension of each thumbnail
  *  @param[in] out_dim The dimension of the final image
  *  @param[in] delta The distance between two thumbnail centers
+ *  @param[in] lap_nbr The number of lap done
  *  @param[in] radius The radius of the extracted circle
  *  @param[in] jorga The dimension of thumbnails is (2*jorga+1)^2
  *  @param[out] out The retrieved image after the algorithm is done
@@ -121,8 +122,7 @@ int move_streak(double **thumbnails, fftw_complex *time,
  *  @return 0 0therwise
  */
 int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
-          int radius, int jorga, fftw_complex *out) {
-  printf("### STARTING SWARM ###\n");
+          const int lap_nbr, int radius, int jorga, fftw_complex *out) {
   /** @todo check these formula */
   /* check if out is big enough */
   if (jorga*delta + th_dim/2 > out_dim/2)
@@ -166,8 +166,6 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
   /* the side of thumbnails */
   const int side = 2*jorga+1;
 
-  const int lap_nbr = 2;
-
   /* !! debug_start !! */
   int step = 0;
   /* !! debug_end !! */
@@ -205,7 +203,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                                          sizeof(fftw_complex));
 
     for (int i = 0; i < out_dim * out_dim; i++) {
-      alg2exp(out[i],out_tmp[i]);
+      alg2exp(out[i], out_tmp[i]);
       out_io0[i] = (out_tmp[i])[0];
       out_io1[i] = (out_tmp[i])[1];
     }
@@ -223,7 +221,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
     /* !! debug_start !! */
     for (int i = 0; i < out_dim * out_dim; i++) {
-      alg2exp(out[i],out_tmp[i]);
+      alg2exp(out[i], out_tmp[i]);
       out_io0[i] = (out_tmp[i])[0];
       out_io1[i] = (out_tmp[i])[1];
     }
@@ -246,7 +244,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     /*
      * one whorl correspond of a move going from one corner
      * to the same but farther from the center by going in spiral
-     * example : from [-2,2] to [-3,3]
+     * example : from [-2, 2] to [-3, 3]
      *
      * a whorl correspond to four streaks
      */
@@ -275,7 +273,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
       /* !! debug_start !! */
       for (int i = 0; i < out_dim * out_dim; i++) {
-        alg2exp(out[i],out_tmp[i]);
+        alg2exp(out[i], out_tmp[i]);
         out_io0[i] = (out_tmp[i])[0];
         out_io1[i] = (out_tmp[i])[1];
       }
@@ -318,7 +316,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
 
       /* !! debug_start !! */
       for (int i = 0; i < out_dim * out_dim; i++) {
-        alg2exp(out[i],out_tmp[i]);
+        alg2exp(out[i], out_tmp[i]);
         out_io0[i] = (out_tmp[i])[0];
         out_io1[i] = (out_tmp[i])[1];
       }
@@ -349,7 +347,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                 th_dim, out_dim, radius, delta, side, &pos_x, &pos_y,
                 side_leds, direction);
     for (int i = 0; i < out_dim * out_dim; i++) {
-      alg2exp(out[i],out_tmp[i]);
+      alg2exp(out[i], out_tmp[i]);
       out_io0[i] = (out_tmp[i])[0];
       out_io1[i] = (out_tmp[i])[1];
     }
