@@ -30,14 +30,25 @@ double identity(double d, void **args) {return d;}
 #pragma GCC diagnostic pop
 
 /**
- *  @brief A function to divide by dim used in matrix_operation
- *
- *  args[0] MUST contains the pointer to the dimension of the matrix
+ *  @brief A function to copy a fftw_complex matrix
  *
  */
-double div_dim(double d, void **args) {
-  int dim = *((int*) args[0]);
-  return d/(double) (dim*dim);
+void matrix_copy(fftw_complex *in, fftw_complex *out) {
+  for (int i = 0; i < dim*dim; i++) {
+    out[i][0] = in[i][0];
+    out[i][1] = in[i][1];
+  }
+}
+
+/**
+ *  @brief A function to divide by a fftw_complex by dim
+ *
+ */
+void div_dim(fftw_complex *in, fftw_complex *out, int dim) {
+  for (int i = 0; i < dim*dim; i++) {
+    out[i][0] = in[i][0]/dim;
+    out[i][1] = in[i][1]/dim;
+  }
 }
 
 /**

@@ -18,18 +18,9 @@
 
 #define PI acos(-1.0)
 
-/**
- *  @struct fftw_buffer
- *  @todo doxydoc
- */
-typedef struct {
-  fftw_complex* time; /**< temporal domain */
-  fftw_complex* freq; /**< frequency domain */
-  fftw_plan forward;  /**< from time to freq */
-  fftw_plan backward; /**< from freq to time */
-  int dimr;           /**< the number of rows */
-  int diml;           /**< the number of line */
-} fftw_buffer;
+
+void matrix_copy(fftw_complex *in, fftw_complex *out);
+void div_dim(fftw_complex *in, fftw_complex *out, int dim);
 
 int matrix_cyclic(int ind, int dim);
 void matrix_init(int dim, fftw_complex *mat, double value);
