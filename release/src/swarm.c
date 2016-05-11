@@ -10,7 +10,7 @@
 #include "include/swarm.h"
 
 /**
- *  @brief Computes the some operations for one thumbnail
+ *  @brief Computes some operations for one thumbnail
  *  @param[in] thumb The treated thumbnail
  *  @param[in] th_dim The dimension of the thumbnail
  *  @param[in] forward The plan used for fourier transforms

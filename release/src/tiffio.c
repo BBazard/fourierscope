@@ -52,7 +52,7 @@ int tiff_maxnormalized(double max, double tosample) {
 }
 
 /**
- *  @brief Import a extern tiff file
+ *  @brief Import an extern tiff file
  *  @param[in] name The path to the image to import
  *  @param[out] matrix The matrix where to put the imported image
  *  @param[out] diml The length of the created matrix (line)
@@ -97,7 +97,7 @@ int tiff_tomatrix(const char *name, double *matrix, uint32 diml, uint32 dimw) {
 
 
 /**
- *  @brief Export an matrix into a tiff image
+ *  @brief Export a matrix into a tiff image
  *  @param[in] name The path in which the image is saved
  *  @param[in] matrix The matrix to save
  *  @param[in] diml The number of lines

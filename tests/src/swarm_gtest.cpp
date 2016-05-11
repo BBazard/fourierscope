@@ -203,7 +203,7 @@ class fftw_complex_units : public swarm_suite {
 /**
  *  @brief swarming
  *
- *  Take a image and create multiple thumbnails
+ *  Take an image and create multiple thumbnails
  *  from this image
  *
  */
