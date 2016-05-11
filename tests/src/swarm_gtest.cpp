@@ -58,6 +58,7 @@ class swarm_suite : public ::testing::
    *
    */
   virtual void TearDown() {
+    fftw_cleanup();
   }
 };
 
@@ -143,7 +144,6 @@ class fftw_complex_units : public swarm_suite {
 
     fftw_free(out);
 
-    fftw_cleanup();
     swarm_suite::TearDown();
   }
 

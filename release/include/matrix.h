@@ -19,7 +19,7 @@
 #define PI acos(-1.0)
 
 
-void matrix_copy(fftw_complex *in, fftw_complex *out);
+void matrix_copy(fftw_complex *in, fftw_complex *out, int dim);
 void div_dim(fftw_complex *in, fftw_complex *out, int dim);
 
 int matrix_cyclic(int ind, int dim);
@@ -49,7 +49,11 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
                        int radius);
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out);
-
+void von_neumann_ultimate(fftw_complex* in, fftw_complex* out,
+                          int dimIn, int dimOut,
+                          int inX, int inY, int outX, int outY,
+                          int *ref, int refX, int refY,
+                          int radius, int radius_max);
 void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset);
 
 #endif /* RELEASE_INCLUDE_MATRIX_H_ */

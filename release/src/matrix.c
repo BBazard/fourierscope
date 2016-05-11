@@ -35,7 +35,7 @@ void div_dim(fftw_complex *in, fftw_complex *out, int dim) {
  *  @brief Return an equivalent modulo dim
  *  @param[in] dim The dimension of the matrix
  *  @param[in] ind The index to change
- *  @param[out] int The value of the new index
+ *  @return int The value of the new index
  *
  *  Given any integer, return a value between 0 and dim-1
  *

@@ -13,11 +13,10 @@
  *  @brief Computes the some operations for one thumbnail
  *  @param[in] thumb The treated thumbnail
  *  @param[in] th_dim The dimension of the thumbnail
- *  @param[in] radius The radius of the disk
  *  @param[in] forward The plan used for fourier transforms
  *  @param[in] backward The plan used for inverse transforms
- *  @param[in, out] time The source for FT and destination for IFT
- *  @param[in, out] freq The source for IFT and destination for FT
+ *  @param[in,out] time The source for FT and destination for IFT
+ *  @param[in,out] freq The source for IFT and destination for FT
  *
  *  This function does the following:
  *
