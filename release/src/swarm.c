@@ -97,6 +97,7 @@ int move_streak(double **thumbnails, fftw_complex *time,
     error = move_one(pos_x, pos_y, direction);
     centerX = (*pos_x-mid)*delta;
     centerY = (*pos_y-mid)*delta;
+    matrix_init(th_dim, freq, 0);
     if (copy_disk_ultimate(out, freq, out_dim, th_dim,
                            centerX, centerY, 0, 0, radius))
       error = 2;
@@ -217,6 +218,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
     tiff_frommatrix(name, out_io1, out_dim, out_dim);
     /* !! debug_end !! */
+    matrix_init(th_dim, freq, 0);
 
     copy_disk_ultimate(out, freq, out_dim, th_dim, 0, 0, 0, 0, radius);
     /* special: no adjacent circle */
@@ -267,6 +269,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       move_one(&pos_x, &pos_y, direction);
       centerX = (pos_x-mid)*delta;
       centerY = (pos_y-mid)*delta;
+      matrix_init(th_dim, freq, 0);
       if (copy_disk_ultimate(out, freq, out_dim, th_dim,
                              centerX, centerY, 0, 0, radius))
         error = 2;
@@ -310,6 +313,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       move_one(&pos_x, &pos_y, direction);
       centerX = (pos_x-mid)*delta;
       centerY = (pos_y-mid)*delta;
+      matrix_init(th_dim, freq, 0);
       if (copy_disk_ultimate(out, freq, out_dim, th_dim,
                              centerX, centerY, 0, 0, radius))
         error = 2;

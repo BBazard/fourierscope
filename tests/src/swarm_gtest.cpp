@@ -44,8 +44,8 @@ class swarm_suite : public ::testing::
     out_dim = 1000;
     jorga_x = jorga_y = std::get<0>(GetParam());
     th_dim = 100;
-    delta_x = delta_y = std::get<1>(GetParam());
     radius = std::get<2>(GetParam());
+    delta_x = delta_y = std::get<1>(GetParam()); //0.3*radius
     lap_nbr = std::get<3>(GetParam());
 
     srand(time(NULL));  // @todo is it fine to do this ?
