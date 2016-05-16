@@ -2,10 +2,10 @@ CC := gcc
 LD := $(CC)
 CXX := g++
 LDXX := $(CXX)
-OPTFLAGS := -g -pg
+OPTFLAGS := -g -pg -fopenmp
 CFLAGS += -Wall -Wextra -Wpedantic -std=c11 $(OPTFLAGS)
 CXXFLAGS += -Wall -Wextra -Wpedantic -std=c++11 $(OPTFLAGS)
-LDFLAGS += -ltiff -lfftw3 -lm
+LDFLAGS += -ltiff -lfftw3_omp -lfftw3 -lm
 LINT:=cpplint --extensions=c,h,cpp
 VALGRIND:=valgrind --leak-check=full --show-leak-kinds=all
 
