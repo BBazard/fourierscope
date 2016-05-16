@@ -9,42 +9,33 @@
 
 #include "include/matrix.h"
 
-/*
- * This pragma is needed for GCC not to display a [-Wunused-parameter]
- * warning in the next function. The unused parameter is obviously
- * args, but we have to declare the function this way to avoid
- * type conflict when using it in matrix_operation function
- * which takes a double (*fun)(double, void**) as one of its
- * parameters.
- *
- */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 /**
- *  @brief The identity function used in matrix_operation
- *
- *  Here, args should be equal to the NULL pointer
+ *  @brief A function to copy a fftw_complex matrix
  *
  */
-double identity(double d, void **args) {return d;}
-#pragma GCC diagnostic pop
+void matrix_copy(fftw_complex *in, fftw_complex *out, int dim) {
+  for (int i = 0; i < dim*dim; i++) {
+    out[i][0] = in[i][0];
+    out[i][1] = in[i][1];
+  }
+}
 
 /**
- *  @brief A function to divide by dim used in matrix_operation
- *
- *  args[0] MUST contains the pointer to the dimension of the matrix
+ *  @brief A function to divide by a fftw_complex by dim
  *
  */
-double div_dim(double d, void **args) {
-  int dim = *((int*) args[0]);
-  return d/(double) (dim*dim);
+void div_dim(fftw_complex *in, fftw_complex *out, int dim) {
+  for (int i = 0; i < dim*dim; i++) {
+    out[i][0] = in[i][0]/dim;
+    out[i][1] = in[i][1]/dim;
+  }
 }
 
 /**
  *  @brief Return an equivalent modulo dim
  *  @param[in] dim The dimension of the matrix
  *  @param[in] ind The index to change
- *  @param[out] int The value of the new index
+ *  @return int The value of the new index
  *
  *  Given any integer, return a value between 0 and dim-1
  *
@@ -107,30 +98,6 @@ void matrix_print(int dim, fftw_complex *mat) {
     printf("\n");
   }
   printf("\n");
-}
-
-/**
- *  @brief Apply a basic operation on a matrix
- *  @param[in] from The matrix on which to apply the transformation
- *  @param[out] to The matrix to store the result into
- *  @param[in] dim The dimension of both matrix
- *  @param[in] fun The function to apply to each real and imaginary part
- *  @param[in] args The array of pointers to several parameters
- *
- *  This function apply a basic function on doubles to a matrix,
- *  taking the content of the matrix "from" and storing it
- *  into the matrix "to", not altering the first one.
- *
- *  This function can be used to copy a matrix to another with a function
- *  returning directly its parameter.
- *
- */
-void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
-                      double (*fun)(double, void**), void **args) {
-  for (int i=0; i < dim*dim; i++) {
-    (to[i])[0] = (*fun)((from[i])[0], args);
-    (to[i])[1] = (*fun)((from[i])[1], args);
-  }
 }
 
 /**

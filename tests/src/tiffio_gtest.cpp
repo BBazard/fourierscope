@@ -65,7 +65,7 @@ class existing_input_units : public tiffio_suite {
 
 class non_existing_input_units : public tiffio_suite {
  protected:
-  /** Path of an non-existing tiff image */
+  /** Path of a non-existing tiff image */
   const char *input = "images/false.tiff";
 };
 

@@ -18,25 +18,14 @@
 
 #define PI acos(-1.0)
 
-/**
- *  @struct fftw_buffer
- *  @todo doxydoc
- */
-typedef struct {
-  fftw_complex* time; /**< temporal domain */
-  fftw_complex* freq; /**< frequency domain */
-  fftw_plan forward;  /**< from time to freq */
-  fftw_plan backward; /**< from freq to time */
-  int dimr;           /**< the number of rows */
-  int diml;           /**< the number of line */
-} fftw_buffer;
+
+void matrix_copy(fftw_complex *in, fftw_complex *out, int dim);
+void div_dim(fftw_complex *in, fftw_complex *out, int dim);
 
 int matrix_cyclic(int ind, int dim);
 void matrix_init(int dim, fftw_complex *mat, double value);
 void matrix_random(int dim, fftw_complex *mat, int max_rand);
 void matrix_print(int dim, fftw_complex *mat);
-void matrix_operation(fftw_complex *from, fftw_complex *to, int dim,
-                      double (*fun)(double, void**), void **args);
 void alg2exp(fftw_complex in, fftw_complex out);
 void exp2alg(fftw_complex in, fftw_complex out);
 
@@ -60,7 +49,11 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
                        int radius);
 void von_neumann(int x, int y, int radius, int *mat, int dim,
                  fftw_complex *in, fftw_complex *out);
-
+void von_neumann_ultimate(fftw_complex* in, fftw_complex* out,
+                          int dimIn, int dimOut,
+                          int inX, int inY, int outX, int outY,
+                          int *ref, int refX, int refY,
+                          int radius, int radius_max);
 void matrix_recenter(fftw_complex *in, fftw_complex *out, int dim, int offset);
 
 #endif /* RELEASE_INCLUDE_MATRIX_H_ */
