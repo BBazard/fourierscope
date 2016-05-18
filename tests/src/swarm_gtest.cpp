@@ -58,7 +58,6 @@ class swarm_suite : public ::testing::
    *
    */
   virtual void TearDown() {
-    fftw_cleanup();
   }
 };
 
@@ -90,6 +89,8 @@ class fftw_complex_units : public swarm_suite {
    */
   virtual void SetUp() {
     swarm_suite::SetUp();
+    fftw_init_threads();
+    fftw_plan_with_nthreads(omp_get_max_threads());
     out = (fftw_complex*) fftw_malloc(out_dim * out_dim *
                                           sizeof(fftw_complex));
     thumbnail_buf[0] = (fftw_complex*) fftw_malloc(th_dim * th_dim *
@@ -143,7 +144,7 @@ class fftw_complex_units : public swarm_suite {
     fftw_free(thumbnail_buf[1]);
 
     fftw_free(out);
-
+    fftw_cleanup_threads();
     swarm_suite::TearDown();
   }
 

@@ -15,5 +15,9 @@
  *
  */
 int main(int argc, char **argv) {
+  fftw_init_threads();
+  fftw_plan_with_nthreads(omp_get_max_threads());
+  /* TODO */
+  fftw_cleanup_threads();
   return 0;
 }

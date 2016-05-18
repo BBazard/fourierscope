@@ -11,6 +11,7 @@
 
 #include "include/matrix.h"
 #include "include/tiffio.h"
+#include <omp.h>
 
 enum direction {DOWN, LEFT, UP, RIGHT};
 
