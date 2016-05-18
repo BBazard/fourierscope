@@ -37,9 +37,6 @@ double matrix_min(int diml, int dimw, double *matrix);
 int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
                    fftw_complex* big, int offX, int offY);
 
-double identity(double d, void **args);
-double div_dim(double d, void **args);
-
 int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
                          int radius, int centerX, int centerY);
 int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius);
