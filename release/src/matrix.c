@@ -14,6 +14,7 @@
  *
  */
 void matrix_copy(fftw_complex *in, fftw_complex *out, int dim) {
+#pragma omp parallel for
   for (int i = 0; i < dim*dim; i++) {
     out[i][0] = in[i][0];
     out[i][1] = in[i][1];
@@ -25,10 +26,11 @@ void matrix_copy(fftw_complex *in, fftw_complex *out, int dim) {
  *
  */
 void div_dim(fftw_complex *in, fftw_complex *out, int dim) {
-  for (int i = 0; i < dim*dim; i++) {
-    out[i][0] = in[i][0]/dim;
-    out[i][1] = in[i][1]/dim;
-  }
+#pragma omp parallel for
+    for (int i = 0; i < dim*dim; i++) {
+      out[i][0] = in[i][0]/dim;
+      out[i][1] = in[i][1]/dim;
+    }
 }
 
 /**
@@ -55,6 +57,7 @@ int matrix_cyclic(int ind, int dim) {
  *
  */
 void matrix_init(int dim, fftw_complex *mat, double value) {
+#pragma omp parallel for
   for (int i=0; i < dim*dim; i++) {
     (mat[i])[0] = value;
     (mat[i])[1] = value;

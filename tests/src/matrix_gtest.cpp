@@ -6,14 +6,32 @@
  *
  */
 
+#include <limits.h>
 #include "include/matrix.h"
 #include "gtest/gtest.h"
+#include <inttypes.h>
+#define __STDC_FORMAT_MACROS
 
 /**
  *  @brief matrix.c file test suite
  *
  */
-class matrix_suite : public ::testing::Test {
+class benchmark : public ::testing::Test {
+ private:
+  struct timespec start;
+  struct timespec stop;
+ protected:
+  virtual void SetUp() {
+    clock_gettime(CLOCK_MONOTONIC, &start);
+  }
+  virtual void TearDown() {
+    clock_gettime(CLOCK_MONOTONIC, &stop);
+    uint64_t res = ((uint64_t)stop.tv_sec - (uint64_t)start.tv_sec)*((uint64_t)1000000000) + ((uint64_t)stop.tv_nsec - (uint64_t)start.tv_nsec);
+    printf("time: %" PRIu64 "\n", (res/((uint64_t) 1000)));
+  }
+};
+
+class matrix_suite : public benchmark {
  protected:
   int dim; /**< The dimension of the matrix used in the tests */
 
@@ -32,7 +50,7 @@ class matrix_suite : public ::testing::Test {
    *
    */
   virtual void SetUp() {
-    dim = 10;
+    dim = 10000;
     a = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     b = (fftw_complex*) fftw_malloc(dim * dim * sizeof(fftw_complex));
     mod = (double *) malloc(dim * dim * sizeof(double));
@@ -178,6 +196,12 @@ TEST_F(matrix_suite, show_copy_disk) {
       printf("%3.f", (b[i*dim+j])[0]);
     printf("\n");
   }
+}
+
+TEST_F(matrix_suite, matrix_copy) {
+  benchmark::SetUp();
+  matrix_copy(a, b, dim);
+  benchmark::TearDown();
 }
 
 /**
