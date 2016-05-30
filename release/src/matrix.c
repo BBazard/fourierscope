@@ -8,7 +8,9 @@
  */
 
 #include "include/matrix.h"
+#include "include/benchmark.h"
 
+#undef matrix_copy
 /**
  *  @brief A function to copy a fftw_complex matrix
  *
@@ -19,6 +21,9 @@ void matrix_copy(fftw_complex *in, fftw_complex *out, int dim) {
     out[i][1] = in[i][1];
   }
 }
+
+glob(matrix_copy, _(fftw_complex *in, fftw_complex *out, int dim), in, out, dim)
+#define matrix_copy _matrix_copy
 
 /**
  *  @brief A function to divide by a fftw_complex by dim

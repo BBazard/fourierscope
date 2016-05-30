@@ -208,7 +208,7 @@ class fftw_complex_units : public swarm_suite {
  *  from this image
  *
  */
-TEST_P(fftw_complex_units, DISABLED_swarm_gen) {
+TEST_P(fftw_complex_units, swarm_gen) {
   fftw_complex_units::thumbs_gen(true);
 }
 
