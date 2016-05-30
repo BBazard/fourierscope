@@ -3,7 +3,7 @@ LD := $(CC)
 CXX := g++
 LDXX := $(CXX)
 OPTFLAGS := -g -pg -fopenmp
-CFLAGS += -Wall -Wextra -Wpedantic -std=c11 $(OPTFLAGS)
+CFLAGS += -Wall -Wextra -Wpedantic -std=gnu11 $(OPTFLAGS)
 CXXFLAGS += -Wall -Wextra -Wpedantic -std=c++11 $(OPTFLAGS)
 LDFLAGS += -ltiff -lfftw3_omp -lfftw3 -lm
 LINT:=cpplint --extensions=c,h,cpp
