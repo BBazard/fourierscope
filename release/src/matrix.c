@@ -339,11 +339,13 @@ void von_neumann_ultimate(fftw_complex* in, fftw_complex* out,
  *  [outX;outY] in the matrix out.
  *  It folds like this:
  *
- *  0 1 X X 1
- *  1 X X X X
- *  X X X X X
- *  X X X X X
- *  1 X X X X
+   \verbatim
+   0 1 X X 1
+   1 X X X X
+   X X X X X
+   X X X X X
+   1 X X X X
+   \endverbatim
  *
  */
 int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
@@ -387,11 +389,13 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
  *  The center of the circle has the coordinates [centerX;centerY]
  *  and stretch like this:
  *
- *  0 1 X X 1
- *  1 X X X X
- *  X X X X X
- *  X X X X X
- *  1 X X X X
+   \verbatim
+   0 1 X X 1
+   1 X X X X
+   X X X X X
+   X X X X X
+   1 X X X X
+   \endverbatim
  *
  */
 int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
@@ -419,17 +423,21 @@ int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
  *  Examples assuming offset = dim/2
  *
  *  If dimension even
- *  0 1 X 3     5 X X X
- *  2 X X X ->  X X 4 X
- *  X X 5 X ->  X 3 0 1
- *  4 X X X     X X 2 X
+   \verbatim
+   0 1 X 3     5 X X X
+   2 X X X ->  X X 4 X
+   X X 5 X ->  X 3 0 1
+   4 X X X     X X 2 X
+   \endverbatim
  * 
  *  If dimension is odd
- *  0 1 X X 3     5 X X X X
- *  2 X X X X     X X 4 X X
- *  X X X X X ->  X 3 0 1 X
- *  X X X 5 X     X X 2 X X
- *  4 X X X X     X X X X X
+   \verbatim
+   0 1 X X 3     5 X X X X
+   2 X X X X     X X 4 X X
+   X X X X X ->  X 3 0 1 X
+   X X X 5 X     X X 2 X X
+   4 X X X X     X X X X X
+   \endverbatim
  * 
  *  Applying for +offset and then -offset give the original matrix
  *
