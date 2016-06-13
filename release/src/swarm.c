@@ -172,9 +172,9 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
   /* the side of thumbnails */
   const int side = 2*jorga+1;
 
-  /* !! debug_start !! */
+  #ifdef DEBUG /* !! debug_start !! */
   int step = 0;
-  /* !! debug_end !! */
+  #endif /* !! debug_end !! */
 
   for (int lap = 0; lap < lap_nbr; lap++) {
     /* the direction of the next led */
@@ -194,7 +194,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     int pos_y = mid;
 
 
-    /* !! debug_start !! */
+    #ifdef DEBUG /* !! debug_start !! */
     char name[60];
 
     double *out_io0 = (double*) malloc(out_dim*out_dim*sizeof(double));
@@ -217,7 +217,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     tiff_frommatrix(name, out_io0, out_dim, out_dim);
     snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
     tiff_frommatrix(name, out_io1, out_dim, out_dim);
-    /* !! debug_end !! */
+    #endif /* !! debug_end !! */
     matrix_init(th_dim, freq, 0);
 
     copy_disk_ultimate(out, freq, out_dim, th_dim, 0, 0, 0, 0, radius);
@@ -226,7 +226,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                     th_dim, forward, backward, time, freq);
     copy_disk_ultimate(freq, out, th_dim, out_dim, 0, 0, 0, 0, radius);
 
-    /* !! debug_start !! */
+    #ifdef DEBUG /* !! debug_start !! */
     for (int i = 0; i < out_dim * out_dim; i++) {
       alg2exp(out[i], out_tmp[i]);
       out_io0[i] = (out_tmp[i])[0];
@@ -246,7 +246,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     tiff_frommatrix(name, th_io0, th_dim, th_dim);
     snprintf(name, 50, "build/freq1_%.4d.tiff", step++);
     tiff_frommatrix(name, th_io1, th_dim, th_dim);
-    /* !! debug_end !! */
+    #endif /* !! debug_end !! */
 
     /*
      * one whorl correspond of a move going from one corner
@@ -279,7 +279,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                              0, 0, centerX, centerY, radius))
         error = 2;
 
-      /* !! debug_start !! */
+      #ifdef DEBUG /* !! debug_start !! */
       for (int i = 0; i < out_dim * out_dim; i++) {
         alg2exp(out[i], out_tmp[i]);
         out_io0[i] = (out_tmp[i])[0];
@@ -299,7 +299,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       tiff_frommatrix(name, th_io0, th_dim, th_dim);
       snprintf(name, 50, "build/freq1_%.4d.tiff", step++);
       tiff_frommatrix(name, th_io1, th_dim, th_dim);
-      /* !! debug_end !! */
+      #endif /* !! debug_end !! */
 
       /* direction change: clockwise route */
       direction = (direction+1)%4;
@@ -323,7 +323,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
                              0, 0, centerX, centerY, radius))
         error = 2;
 
-      /* !! debug_start !! */
+      #ifdef DEBUG /* !! debug_start !! */
       for (int i = 0; i < out_dim * out_dim; i++) {
         alg2exp(out[i], out_tmp[i]);
         out_io0[i] = (out_tmp[i])[0];
@@ -343,7 +343,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
       tiff_frommatrix(name, th_io0, th_dim, th_dim);
       snprintf(name, 50, "build/freq1_%.4d.tiff", step++);
       tiff_frommatrix(name, th_io1, th_dim, th_dim);
-      /* !! debug_end !! */
+      #endif /* !! debug_end !! */
 
       direction = (direction+1)%4;
       side_leds++;
@@ -355,6 +355,7 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     move_streak(thumbnails, time, freq, out, forward, backward,
                 th_dim, out_dim, radius, delta, side, &pos_x, &pos_y,
                 side_leds, direction);
+    #ifdef DEBUG /* !! debug_start !! */
     for (int i = 0; i < out_dim * out_dim; i++) {
       alg2exp(out[i], out_tmp[i]);
       out_io0[i] = (out_tmp[i])[0];
@@ -364,18 +365,18 @@ int swarm(double **thumbnails, int th_dim, int out_dim, int delta,
     tiff_frommatrix(name, out_io0, out_dim, out_dim);
     snprintf(name, 50, "build/swarm1_%.4d.tiff", step++);
     tiff_frommatrix(name, out_io1, out_dim, out_dim);
-
+    #endif /* !! debug_end !! */
     /* there is no corner led here */
     /* the spiral lap is done at this point */
 
-    /* !! debug_start !! */
+    #ifdef DEBUG /* !! debug_start !! */
     free(out_io0);
     free(out_io1);
     free(th_io0);
     free(th_io1);
     fftw_free(out_tmp);
     fftw_free(th_tmp);
-    /* !! debug_end !! */
+    #endif /* !! debug_end !! */
   }
 
   fftw_destroy_plan(forward);

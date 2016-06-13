@@ -42,6 +42,9 @@ release: $(OBJS)
 	printf "\033[0m"
 	$(LD) $(CFLAGS) -o $(BINDIR)/$(EXECNAME) $(OBJS) $(LDFLAGS)
 
+debug: CXXFLAGS += -D DEBUG
+debug: tests
+
 tests: LDFLAGS += -lgtest
 tests: $(TESTSOBJS) $(RELEASEOBJS)
 	mkdir -p $(BINDIR)
@@ -80,6 +83,7 @@ doc:
 	doxygen $(DOCDIR)/config/doxygen.cfg
 	cat $(LOGDIR)/docwarnings
 	printf "\033[0m"
+	-ln -s $(DOCDIR)/html/index.html 2> /dev/null
 .PHONY: doc
 
 lint:
@@ -121,4 +125,6 @@ mrproper: clean
 	printf "Cleaning doc directory\n"
 	printf "\033[0m"
 	-rm -r $(DOCDIR)/{html,latex} 2> /dev/null
+	-rm gmon.out
+	-unlink index.html
 .PHONY: mrproper

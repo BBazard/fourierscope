@@ -1,3 +1,7 @@
 This is FourierScope repository
 The goal is to create a distributed tool to help images (mainly from microscope)
 to be treated.
+
+To build the documentation: make doc (in the root directory)
+Then open index.html
+To build the project: see documentation mainpage
