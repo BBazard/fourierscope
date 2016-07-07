@@ -35,8 +35,14 @@ int tiff_getsize(const char *name, uint32 *diml, uint32 *dimw) {
 }
 
 /**
- * @todo doc
+ *  @brief Sample a double into an int
+ *  @param[in] min The minimum of the matrix
+ *  @param[in] max The maximum of the matrix
+ *  @param[in] tosample The value to sample
+ *  @return int An int between 0 and 255 representing the double
  *
+ *  This function take into account the maximum and minimum
+ *  value of the matrix to sample the current number
  *
  */
 int tiff_fullscale(double min, double max, double tosample) {
@@ -44,7 +50,14 @@ int tiff_fullscale(double min, double max, double tosample) {
 }
 
 /**
- *  @todo doc
+ *  @brief Sample a double into an int
+ *  @param[in] max The maximum of the matrix
+ *  @param[in] tosample The value to sample
+ *  @return int An int between 0 and 255 representing the double
+ *
+ *  This function only take the maximum of the matrix into
+ *  account when sampling the current number
+ *  Check \ref tiff_fullscale
  *
  */
 int tiff_maxnormalized(double max, double tosample) {
@@ -124,7 +137,7 @@ int tiff_frommatrix(const char *name, double *matrix,
     TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8);
     TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 1);
 
-    double max = matrix_max(diml, dimw, matrix); /**< @todo change this diml */
+    double max = matrix_max(diml, dimw, matrix);
     double min = matrix_min(diml, dimw, matrix);
 
     for (uint32 row=0; row < diml; row++) {

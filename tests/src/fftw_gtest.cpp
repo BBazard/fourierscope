@@ -2,8 +2,7 @@
 /**
  *  @file
  *
- *  Swarm functions test file
- *  @todo why swarm
+ *  FFTW functions test file
  *
  */
 

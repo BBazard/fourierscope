@@ -3,7 +3,6 @@
  *  @file
  *
  *  Swarm functions test file
- *  @todo why swarm
  *
  */
 
@@ -75,7 +74,7 @@ class swarm_suite : public ::testing::
 class fftw_complex_units : public swarm_suite {
  protected:
   fftw_complex *out; /**< A fftw_complex matrix the size of the output */
-  double **thumbnails; /**< @todo what is a thumbnail */
+  double **thumbnails; /**< A matrix of inputs thumbnails */
   fftw_complex *thumbnail_buf[2]; /**< buffers same dimensions as a thumbnail */
   const char input[60] = "images/square.tiff"; /**< Image input */
   char *name; /**< Name for output (changing with tiff_getname) */

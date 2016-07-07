@@ -163,7 +163,11 @@ void matrix_realpart(int dim, fftw_complex *complex_matrix,
 }
 
 /**
- *  @todo doxydoc
+ *  @brief Get the maximum of a matrix
+ *  @param[in] diml The length of the matrix
+ *  @param[in] dimw The width of the matrix
+ *  @param[in] matrix The matrix to work on
+ *  @return int The maximum of the matrix
  *
  */
 double matrix_max(int diml, int dimw, double *matrix) {
@@ -176,7 +180,11 @@ double matrix_max(int diml, int dimw, double *matrix) {
 }
 
 /**
- *  @todo doxydoc
+ *  @brief Get the minimum of a matrix
+ *  @param[in] diml The length of the matrix
+ *  @param[in] dimw The width of the matrix
+ *  @param[in] matrix The matrix to work on
+ *  @return int The minimum of the matrix
  *
  */
 double matrix_min(int diml, int dimw, double *matrix) {

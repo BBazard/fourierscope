@@ -12,21 +12,16 @@
 /**
  *  @brief Main function
  *
- *  @todo WRITE IT
+ *  @todo WRITE IT (this just for filling the hole)
  *
  */
 int main(int argc, char **argv) {
-  int out_dim; /**< The dimension of the output used in the tests */
-  int th_dim; /**< The dimension of the thumbnails created in the tests */
+  int out_dim;
+  int th_dim;
   int radius;
 
-  /**
-   *  The number of thumbnails from the center to the extremities
-   *  in the Fourier domain
-   */
   int jorga_x, jorga_y;
 
-  /** The distance in pixel between deux thumbnails */
   int delta_x, delta_y;
 
   int lap_nbr;
@@ -37,20 +32,18 @@ int main(int argc, char **argv) {
   radius = 40;
   delta_x = delta_y = 50; //0.3*radius
   lap_nbr = 2;
-  
-  srand(time(NULL));  // @todo is it fine to do this ?
 
-  
-  fftw_complex *out; /**< A fftw_complex matrix the size of the output */
-  double **thumbnails; /**< @todo what is a thumbnail */
-  fftw_complex *thumbnail_buf[2]; /**< buffers same dimensions as a thumbnail */
-  char *name; /**< Name for output (changing with tiff_getname) */
-  
-  double *out_io; /**< For big dim outputs */
+  srand(time(NULL));
 
-  /** The fftw_plan in which is executed the fft */
-  fftw_plan forward; /**< A fftw_plan for fourier transform */
-  fftw_plan backward; /**< A fftw_plan for inverse fourier transform */
+  fftw_complex *out;
+  double **thumbnails;
+  fftw_complex *thumbnail_buf[2];
+  char *name;
+
+  double *out_io;
+
+  fftw_plan forward;
+  fftw_plan backward;
 
   fftw_init_threads();
   fftw_plan_with_nthreads(omp_get_max_threads());
@@ -85,17 +78,17 @@ int main(int argc, char **argv) {
   for (int i = 0; i < (2*jorga_x+1)*(2*jorga_y+1); i++)
     for (int j = 0; j < th_dim*th_dim ; j++)
       ((thumbnails[i])[j]) = 0;
-  
+
   int name_size;
   name_size = strlen("build/swarm_with_jorga_eq_nn.tiff")+1;
   free(name);
   name = (char*) malloc(sizeof(char)*name_size);
   backward = fftw_plan_dft_2d(out_dim, out_dim, out, out,
                               FFTW_BACKWARD, FFTW_ESTIMATE);
-  
+
   for (int i = 0; i < out_dim * out_dim; i++)
     (out[i])[0] = (out[i])[1] = 0;
-  
+
   swarm(thumbnails, th_dim, out_dim,
         delta_x, lap_nbr, radius, jorga_x, out);
 
