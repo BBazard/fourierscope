@@ -43,6 +43,10 @@ class tiffio_suite : public ::testing::Test {
   }
 };
 
+/**
+ *  @brief For tests needing an input
+ *
+ */
 class existing_input_units : public tiffio_suite {
  protected:
   /** Path of an existing tiff image */
@@ -62,7 +66,10 @@ class existing_input_units : public tiffio_suite {
   }
 };
 
-
+/**
+ *  @brief For tests needing a dummy non-existing input
+ *
+ */
 class non_existing_input_units : public tiffio_suite {
  protected:
   /** Path of a non-existing tiff image */

@@ -151,6 +151,25 @@ int tiff_frommatrix(const char *name, double *matrix,
   }
 }
 
+/**
+ *  @brief Generate a name for auto-generated tiff pictures
+ *  @param[in] x The x value (first part of the name)
+ *  @param[in] y The y value (second part of the name)
+ *  @param[out] name The returned name
+ *
+ *  This function returns the name build/xxxxxyyyyy.tiff
+ *  composed as following:
+ *
+ *  * build/ is the directory inside the root where are
+ *  saved pictures.
+ *  * xxxxx is a number ranging from 0 to 99999
+ *  * yyyyy is anoter number with the same range
+ *  * .tiff is the extension of the file
+ *
+ *  /!\ The name parameter MUST have allocated memory
+ *  before calling the function.
+ *
+ */
 char* tiff_getname(int x, int y, char* name) {
   int size = strlen("build/xxxxxyyyyy.tiff")+1;
   if (x < 0 || y < 0 || x >= 100000 || y >= 100000)

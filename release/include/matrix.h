@@ -16,10 +16,15 @@
 
 #include <fftw3.h>
 
+/**
+ *  @brief Define pi constant
+ *
+ */
 #define PI acos(-1.0)
 
-
 void matrix_copy(fftw_complex *in, fftw_complex *out, int dim);
+#define matrix_copy _matrix_copy
+
 void div_dim(fftw_complex *in, fftw_complex *out, int dim);
 
 int matrix_cyclic(int ind, int dim);
@@ -36,9 +41,6 @@ double matrix_min(int diml, int dimw, double *matrix);
 
 int matrix_extract(int smallDim, int bigDim, fftw_complex* small,
                    fftw_complex* big, int offX, int offY);
-
-double identity(double d, void **args);
-double div_dim(double d, void **args);
 
 int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
                          int radius, int centerX, int centerY);

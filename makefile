@@ -2,10 +2,10 @@ CC := gcc
 LD := $(CC)
 CXX := g++
 LDXX := $(CXX)
-OPTFLAGS := -g -pg
-CFLAGS += -Wall -Wextra -Wpedantic -std=c11 $(OPTFLAGS)
+OPTFLAGS := -g -pg -fopenmp
+CFLAGS += -Wall -Wextra -Wpedantic -std=gnu11 $(OPTFLAGS)
 CXXFLAGS += -Wall -Wextra -Wpedantic -std=c++11 $(OPTFLAGS)
-LDFLAGS += -ltiff -lfftw3 -lm
+LDFLAGS += -ltiff -lfftw3_omp -lfftw3 -lm
 LINT:=cpplint --extensions=c,h,cpp
 VALGRIND:=valgrind --leak-check=full --show-leak-kinds=all
 
@@ -41,6 +41,9 @@ release: $(OBJS)
 	printf "Creating $(EXECNAME) binary file in: $(BINDIR)\n"
 	printf "\033[0m"
 	$(LD) $(CFLAGS) -o $(BINDIR)/$(EXECNAME) $(OBJS) $(LDFLAGS)
+
+debug: CXXFLAGS += -D DEBUG
+debug: tests
 
 tests: LDFLAGS += -lgtest
 tests: $(TESTSOBJS) $(RELEASEOBJS)
@@ -80,6 +83,7 @@ doc:
 	doxygen $(DOCDIR)/config/doxygen.cfg
 	cat $(LOGDIR)/docwarnings
 	printf "\033[0m"
+	-ln -s $(DOCDIR)/html/index.html 2> /dev/null
 .PHONY: doc
 
 lint:
@@ -121,4 +125,6 @@ mrproper: clean
 	printf "Cleaning doc directory\n"
 	printf "\033[0m"
 	-rm -r $(DOCDIR)/{html,latex} 2> /dev/null
+	-rm gmon.out
+	-unlink index.html
 .PHONY: mrproper

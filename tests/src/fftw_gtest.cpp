@@ -20,8 +20,8 @@ class fftw_suite : public ::testing::Test {
   double *matrix; /**< The matrix storing the image when using doubles */
   fftw_complex *comp_mat; /**< The matrix storing the complex image */
   fftw_complex *comp_mat2; /**< The matrix storing the complex image */
-  fftw_plan forward;
-  fftw_plan backward;
+  fftw_plan forward; /**< The plan transforming from time to frequency domain */
+  fftw_plan backward; /**< The plan transforming from frequency to time domain */
 
   uint32 diml; /**< Number of lines in the image */
   uint32 dimw; /**< Number of columns in the image */
@@ -48,14 +48,20 @@ class fftw_suite : public ::testing::Test {
   }
 };
 
+/**
+ *  @brief For square input tests
+ *
+ */
 class square_input_units : public fftw_suite {
  protected:
   /** Path of an existing tiff image */
   const char *input = "images/square.tiff";
 
-  /** Existing path for an output */
+  /** Output before any operation */
   const char *before = "build/fftw_before.tiff";
+  /** Output for frequency domain */
   const char *ft = "build/fftw_ft.tiff";
+  /** Output for time domain */
   const char *ift = "build/fftw_ift.tiff";
 
   virtual void SetUp() {
@@ -92,6 +98,13 @@ class square_input_units : public fftw_suite {
   }
 };
 
+/**
+ *  @brief fftw_execute function test
+ *
+ *  Execute one FT, store the result, then execute
+ *  an IFT to get the input and store the result
+ *
+ */
 TEST_F(square_input_units, fftw_execute) {
   ASSERT_EQ(0, tiff_tomatrix(input, matrix, diml, dimw));
 

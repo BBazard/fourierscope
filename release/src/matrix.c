@@ -8,7 +8,9 @@
  */
 
 #include "include/matrix.h"
+#include "include/benchmark.h"
 
+#undef matrix_copy
 /**
  *  @brief A function to copy a fftw_complex matrix
  *
@@ -19,6 +21,9 @@ void matrix_copy(fftw_complex *in, fftw_complex *out, int dim) {
     out[i][1] = in[i][1];
   }
 }
+
+glob(matrix_copy, _(fftw_complex *in, fftw_complex *out, int dim), in, out, dim)
+#define matrix_copy _matrix_copy
 
 /**
  *  @brief A function to divide by a fftw_complex by dim
@@ -261,9 +266,19 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
 
 /**
  *  @brief Copy a cell and call itself on the adjacent cells
+ *  @param[in] in The matrix in which to cut a disk
+ *  @param[out] out The matrix in which is stored the result
+ *  @param[in] dimIn The dimension of the input matrix
+ *  @param[in] dimOut The dimension of the output matrix
+ *  @param[in] inX The x coordinate of the center in the input matrix
+ *  @param[in] inY The y coordinate of the center in the input matrix
+ *  @param[in] outX The x coordinate of the center in the output matrix
+ *  @param[in] outY The y coordinate of the center in the output matrix
  *  @param[in,out] ref The reference matrix used to remember the previous states
  *  @param[in] refX The coordinate in ref
  *  @param[in] refY The coordinate in ref
+ *  @param[in] radius The radius of the circle to cut
+ *  @param[in] radius_max The maximum possible radius
  *  @see copy_disk_ultimate
  *
  *  This function is a recursive function spanning from the center
@@ -334,11 +349,13 @@ void von_neumann_ultimate(fftw_complex* in, fftw_complex* out,
  *  [outX;outY] in the matrix out.
  *  It folds like this:
  *
- *  0 1 X X 1
- *  1 X X X X
- *  X X X X X
- *  X X X X X
- *  1 X X X X
+   \verbatim
+   0 1 X X 1
+   1 X X X X
+   X X X X X
+   X X X X X
+   1 X X X X
+   \endverbatim
  *
  */
 int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
@@ -374,6 +391,8 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
  *  @param[out] out The fftw_complex 2d matrix used as output
  *  @param[in] dim The dimension of both matrix (assumed square)
  *  @param[in] radius The radius of the disk
+ *  @param[in] centerX The x coordinate of the disk center
+ *  @param[in] centerY The y coordinate of the disk center
  *  @return 1 If the radius is not adapted
  *  @return 0 Otherwise
  *
@@ -382,11 +401,13 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
  *  The center of the circle has the coordinates [centerX;centerY]
  *  and stretch like this:
  *
- *  0 1 X X 1
- *  1 X X X X
- *  X X X X X
- *  X X X X X
- *  1 X X X X
+   \verbatim
+   0 1 X X 1
+   1 X X X X
+   X X X X X
+   X X X X X
+   1 X X X X
+   \endverbatim
  *
  */
 int copy_disk_with_offset(fftw_complex* in, fftw_complex* out, int dim,
@@ -414,17 +435,21 @@ int copy_disk(fftw_complex* in, fftw_complex* out, int dim, int radius) {
  *  Examples assuming offset = dim/2
  *
  *  If dimension even
- *  0 1 X 3     5 X X X
- *  2 X X X ->  X X 4 X
- *  X X 5 X ->  X 3 0 1
- *  4 X X X     X X 2 X
+   \verbatim
+   0 1 X 3     5 X X X
+   2 X X X ->  X X 4 X
+   X X 5 X ->  X 3 0 1
+   4 X X X     X X 2 X
+   \endverbatim
  * 
  *  If dimension is odd
- *  0 1 X X 3     5 X X X X
- *  2 X X X X     X X 4 X X
- *  X X X X X ->  X 3 0 1 X
- *  X X X 5 X     X X 2 X X
- *  4 X X X X     X X X X X
+   \verbatim
+   0 1 X X 3     5 X X X X
+   2 X X X X     X X 4 X X
+   X X X X X ->  X 3 0 1 X
+   X X X 5 X     X X 2 X X
+   4 X X X X     X X X X X
+   \endverbatim
  * 
  *  Applying for +offset and then -offset give the original matrix
  *
