@@ -13,6 +13,10 @@
 #include "include/tiffio.h"
 #include <omp.h>
 
+/**
+ * @brief The four direction possible when swarming
+ *
+ */
 enum direction {DOWN, LEFT, UP, RIGHT};
 
 void update_spectrum(double *thumb, int th_dim, fftw_plan forward,

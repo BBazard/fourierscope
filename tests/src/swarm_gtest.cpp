@@ -20,17 +20,22 @@ class swarm_suite : public ::testing::
  protected:
   int out_dim; /**< The dimension of the output used in the tests */
   int th_dim; /**< The dimension of the thumbnails created in the tests */
-  int radius;
+  int radius; /**< The radius of the circle centered on the zero frequency */
 
+  /**@{*/
   /**
    *  The number of thumbnails from the center to the extremities
    *  in the Fourier domain
    */
   int jorga_x, jorga_y;
+  /**@}*/
 
+  /**@{*/
   /** The distance in pixel between deux thumbnails */
   int delta_x, delta_y;
+  /**@}*/
 
+  /** The number of iteration in the swarm execution */
   int lap_nbr;
 
   /**
@@ -212,15 +217,32 @@ TEST_P(fftw_complex_units, swarm_gen) {
   fftw_complex_units::thumbs_gen(true);
 }
 
+/**
+ *  @cond DEV
+ *  @brief Instantiate the generation of some thumbnails with origin values
+ *
+ *  The values are:
+ *  * 3 for jorga_x and jorga_y
+ *  * 50 for delta_x and delta_y
+ *  * 40 for radius
+ *
+ *  The last value is not used but must still be provided.
+ *
+ */
 INSTANTIATE_TEST_CASE_P(swarm_gen, fftw_complex_units,
                         ::testing::Combine(::testing::Values(3),
                                            ::testing::Values(50),
                                            ::testing::Values(40),
                                            ::testing::Values(2)));
+/** @endcond */
 
+/**
+ *  @brief Class for swarm testing
+ *
+ */
 class swarm_unit : public fftw_complex_units {
  protected:
-  int name_size;
+  int name_size; /**< The size of the output name */
   virtual void SetUp() {
     fftw_complex_units::SetUp();
     fftw_complex_units::thumbs_gen(false);
@@ -251,21 +273,24 @@ class swarm_unit : public fftw_complex_units {
   }
 };
 
+/**
+ *  @brief swarm testcase
+ *
+ *  Following are the different tests cases for swarm.
+ *  Some of them are redundant.
+ *  In particular, don't execute all the tests plus full, because
+ *  full includes all the others.
+ *
+ */
 TEST_P(swarm_unit, swarm) {
   EXPECT_EQ(0, swarm(thumbnails, th_dim, out_dim,
                      delta_x, lap_nbr, radius, jorga_x, out));
 }
 
-/*
- * Following are the different tests cases for swarm.
- * Some of them are redundant.
- * In particular, don't execute all the tests plus full, because
- * full includes all the others.
- *
- */
-
-/*
- * Base parameters (Original parameters @todo change these)
+/**
+ * @brief Base parameters
+ * @todo Change parameters
+ * This test considers only one configuration.
  *
  */
 INSTANTIATE_TEST_CASE_P(origin, swarm_unit,
@@ -273,8 +298,11 @@ INSTANTIATE_TEST_CASE_P(origin, swarm_unit,
                                            ::testing::Values(50),
                                            ::testing::Values(40),
                                            ::testing::Values(2)));
-/*
- * Jorga variation on base parameters
+/**
+ * @brief Jorga variation on base parameters
+ *
+ * Variation of the number of thumbnails all others parameters
+ * stay identical to the base parameters.
  *
  */
 INSTANTIATE_TEST_CASE_P(jorga, swarm_unit,
@@ -283,8 +311,10 @@ INSTANTIATE_TEST_CASE_P(jorga, swarm_unit,
                                            ::testing::Values(50),
                                            ::testing::Values(40),
                                            ::testing::Values(2)));
-/*
- * Delta variation on base parameters
+/**
+ * @brief Delta variation on base parameters
+ *
+ * Variation of the distance between the thumbnails
  *
  */
 INSTANTIATE_TEST_CASE_P(delta, swarm_unit,
@@ -293,8 +323,11 @@ INSTANTIATE_TEST_CASE_P(delta, swarm_unit,
                                            ::testing::Values(40),
                                            ::testing::Values(2)));
 
-/*
- * Radius variation on base parameters
+/**
+ * @brief Radius variation on base parameters
+ *
+ * Variation of the radius of the disk used to computes
+ * the result in swarm
  *
  */
 INSTANTIATE_TEST_CASE_P(radius, swarm_unit,
@@ -304,8 +337,11 @@ INSTANTIATE_TEST_CASE_P(radius, swarm_unit,
                                                              45, 50),
                                            ::testing::Values(2)));
 
-/*
- * Lap_nbr variation on base parameters
+/**
+ * @brief Lap_nbr variation on base parameters
+ *
+ * Variation of the number of lap (number of iteration) done
+ * during the computation
  *
  */
 INSTANTIATE_TEST_CASE_P(lap_nbr, swarm_unit,
@@ -313,8 +349,15 @@ INSTANTIATE_TEST_CASE_P(lap_nbr, swarm_unit,
                                            ::testing::Values(50),
                                            ::testing::Values(40),
                                            ::testing::Values(2, 5, 10)));
-/*
- * Full variation.
+/**
+ * @brief Full variation.
+ *
+ * This test groups all the previous variations and should
+ * not be used with the others test applying to swarm
+ *
+ * Use either --gtest_filter="full/" to execute only swarm tests (but all
+ * swarm tests) or --gtest_filter="-full/" to exclude this test (and others
+ * if needed)
  *
  */
 INSTANTIATE_TEST_CASE_P(full, swarm_unit,

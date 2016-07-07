@@ -164,6 +164,13 @@ TEST_F(matrix_suite, matrix_cyclic) {
   EXPECT_EQ(10, matrix_cyclic(-190, 100));
 }
 
+/**
+ *  @brief show_copy_disk "visual" test
+ *
+ *  Displays the pretty printed result of
+ *  an original and a copied disk
+ *
+ */
 TEST_F(matrix_suite, show_copy_disk) {
   EXPECT_EQ(0, copy_disk(a, b, dim, 4));
 

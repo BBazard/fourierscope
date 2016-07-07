@@ -16,6 +16,10 @@
 
 #include <fftw3.h>
 
+/**
+ *  @brief Define pi constant
+ *
+ */
 #define PI acos(-1.0)
 
 void matrix_copy(fftw_complex *in, fftw_complex *out, int dim);

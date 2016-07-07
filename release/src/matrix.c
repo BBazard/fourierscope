@@ -266,9 +266,19 @@ void von_neumann(int x, int y, int radius, int *mat, int dim,
 
 /**
  *  @brief Copy a cell and call itself on the adjacent cells
+ *  @param[in] in The matrix in which to cut a disk
+ *  @param[out] out The matrix in which is stored the result
+ *  @param[in] dimIn The dimension of the input matrix
+ *  @param[in] dimOut The dimension of the output matrix
+ *  @param[in] inX The x coordinate of the center in the input matrix
+ *  @param[in] inY The y coordinate of the center in the input matrix
+ *  @param[in] outX The x coordinate of the center in the output matrix
+ *  @param[in] outY The y coordinate of the center in the output matrix
  *  @param[in,out] ref The reference matrix used to remember the previous states
  *  @param[in] refX The coordinate in ref
  *  @param[in] refY The coordinate in ref
+ *  @param[in] radius The radius of the circle to cut
+ *  @param[in] radius_max The maximum possible radius
  *  @see copy_disk_ultimate
  *
  *  This function is a recursive function spanning from the center
@@ -381,6 +391,8 @@ int copy_disk_ultimate(fftw_complex* in, fftw_complex* out,
  *  @param[out] out The fftw_complex 2d matrix used as output
  *  @param[in] dim The dimension of both matrix (assumed square)
  *  @param[in] radius The radius of the disk
+ *  @param[in] centerX The x coordinate of the disk center
+ *  @param[in] centerY The y coordinate of the disk center
  *  @return 1 If the radius is not adapted
  *  @return 0 Otherwise
  *

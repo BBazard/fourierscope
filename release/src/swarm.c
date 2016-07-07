@@ -76,7 +76,7 @@ int move_one(int* index_x, int* index_y, int direction) {
   return 0;
 }
 
-/*
+/**
  *  @brief Update the leds between two corners in a row
  *  @return 1 if move_one error
  *  @return 2 if radius too big
