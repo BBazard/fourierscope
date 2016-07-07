@@ -289,8 +289,9 @@ TEST_P(swarm_unit, swarm) {
 
 /**
  * @brief Base parameters
- * @todo Change parameters
+ *
  * This test considers only one configuration.
+ * @todo Change parameters
  *
  */
 INSTANTIATE_TEST_CASE_P(origin, swarm_unit,
