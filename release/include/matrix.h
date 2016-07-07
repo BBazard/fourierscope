@@ -23,7 +23,6 @@
 #define PI acos(-1.0)
 
 void matrix_copy(fftw_complex *in, fftw_complex *out, int dim);
-#define matrix_copy _matrix_copy
 
 void div_dim(fftw_complex *in, fftw_complex *out, int dim);
 
