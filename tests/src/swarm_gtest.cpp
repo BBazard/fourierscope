@@ -213,7 +213,7 @@ class fftw_complex_units : public swarm_suite {
  *  from this image
  *
  */
-TEST_P(fftw_complex_units, swarm_gen) {
+TEST_P(fftw_complex_units, thumbs_gen) {
   fftw_complex_units::thumbs_gen(true);
 }
 
@@ -246,7 +246,7 @@ class swarm_unit : public fftw_complex_units {
   virtual void SetUp() {
     fftw_complex_units::SetUp();
     fftw_complex_units::thumbs_gen(false);
-    name_size = strlen("build/swarm_with_jorga_eq_nn.tiff")+1;
+    name_size = strlen("build/swarm_with_jnn_dnn_rnn.tiff")+1;
     free(name);
     name = (char*) malloc(sizeof(char)*name_size);
     backward = fftw_plan_dft_2d(out_dim, out_dim, out, out,
